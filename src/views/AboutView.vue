@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <ArticleItem article-title="hogehoge" article-description="fugafuga"></ArticleItem>
   </div>
 </template>
 
@@ -13,3 +13,8 @@
   }
 }
 </style>
+
+<script setup lang="ts">
+import ArticleItem from '@/components/molecules/ArticleItem.vue'
+
+</script>
