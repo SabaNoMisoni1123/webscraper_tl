@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 
-const props = defineProps({
+defineProps({
   itemTitle: {
     type: String,
     required: true

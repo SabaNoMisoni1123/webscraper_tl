@@ -28,6 +28,5 @@ const props = defineProps({
   padding: 2pt 10pt;
   margin: 0pt;
   text-align: left;
-  virtical-align: top;
 }
 </style>

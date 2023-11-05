@@ -1,30 +1,53 @@
 <template>
-  <img class="goodButton" src="@/assets/heart_gray.png" alt="Good" @click="click">
+  <IconHeart class="goodButton" @click="click" :width="props.width" :height="props.height" :fill="iconColor" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue'
+import IconHeart from '@/components/icons/IconHeart.vue'
 
-export default defineComponent({
-  name: 'GoodButton',
-  emits: ['click'],
-  method: {
-    click() {
-      this.$emit('click');
-    }
+
+const props = defineProps({
+  goodValue: {
+    type: Boolean,
+    required: true,
   },
+  width: {
+    type: Number,
+    default: 20,
+  },
+  height: {
+    type: Number,
+    default: 20,
+  },
+})
+const emit = defineEmits<{
+  'update:goodValue': [value: Boolean],
+}>()
 
-  setup(props, { emit }) {
-    emit('click')
+const iconColor = ref("")
+if (props.goodValue) {
+  iconColor.value = "#DC003C"
+} else {
+  iconColor.value = "#939292"
+}
+
+function click() {
+  if (props.goodValue) {
+  iconColor.value = "#939292"
+    emit("update:goodValue", !props.goodValue)
+  } else {
+  iconColor.value = "#DC003C"
+    emit("update:goodValue", !props.goodValue)
   }
-});
+}
+
+
 </script>
 
 <style scoped>
-.goodButton {
-  background: white;
+img {
   border: none;
-  width: 3ex;
-  height: 3ex;
+  background: blue;
 }
 </style>
