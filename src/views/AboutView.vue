@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <ArticleItem />
+    <Timeline />
   </div>
 </template>
 
@@ -15,11 +15,6 @@
 </style>
 
 <script setup lang="ts">
-
-import { ref } from 'vue'
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
-
-
-
+import Timeline from '@/components/organisms/Timeline.vue'
 
 </script>

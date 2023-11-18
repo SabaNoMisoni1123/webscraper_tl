@@ -16,7 +16,6 @@ const props = defineProps({
 
 <style scoped>
 .itemBox {
-  width: 200pt;
   margin: 0pt;
   border: 0pt 1pt 1pt 1pt solid #3C82F5;
   box-sizing: border-box;
