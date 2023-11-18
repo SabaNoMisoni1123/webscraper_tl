@@ -1,9 +1,6 @@
 <template>
   <div class="about">
-    <FlagButton v-model:flag-value="flag"></FlagButton>
-    <p>{{ flag }}</p>
-    <GoodButton v-model:good-value="good" />
-    <p>{{ good }}</p>
+    <ArticleItem />
   </div>
 </template>
 
@@ -18,12 +15,11 @@
 </style>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import FlagButton from '@/components/atoms/button/FlagButton.vue'
-import GoodButton from '@/components/atoms/button/GoodButton.vue'
 
-const flag = ref(0)
-const good = ref(false)
+import { ref } from 'vue'
+import ArticleItem from '@/components/molecules/ArticleItem.vue'
+
+
 
 
 </script>

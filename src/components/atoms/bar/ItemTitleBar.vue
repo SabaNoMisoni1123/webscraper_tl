@@ -17,7 +17,8 @@ defineProps({
 
 <style scoped>
 .itemTitleBar {
-  width: 150pt;
+  width: 200pt;
+  height: 20pt;
   margin: 0pt;
   border-radius: 10pt 10pt 0 0;
   background: linear-gradient(to top, #3C82F5, #80AEF8);
@@ -28,7 +29,7 @@ defineProps({
 
 .itemTitleBar p {
   color: white;
-  padding: 3pt 15pt;
+  padding: 2pt 15pt;
   margin: 0pt;
   text-align: left;
 }

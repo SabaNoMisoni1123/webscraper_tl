@@ -33,3 +33,10 @@ function click() {
 }
 
 </script>
+
+<style scoped>
+.flagButton {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+</style>

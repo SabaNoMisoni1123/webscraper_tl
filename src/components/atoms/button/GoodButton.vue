@@ -34,10 +34,10 @@ if (props.goodValue) {
 
 function click() {
   if (props.goodValue) {
-  iconColor.value = "#939292"
+    iconColor.value = "#939292"
     emit("update:goodValue", !props.goodValue)
   } else {
-  iconColor.value = "#DC003C"
+    iconColor.value = "#DC003C"
     emit("update:goodValue", !props.goodValue)
   }
 }
@@ -46,8 +46,8 @@ function click() {
 </script>
 
 <style scoped>
-img {
-  border: none;
-  background: blue;
+.goodButton {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style>
