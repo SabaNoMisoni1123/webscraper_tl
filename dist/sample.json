@@ -1,0 +1,14 @@
+{
+  "name": "sample",
+  "number": 42,
+  "list": [
+    {
+      "str": "hoge1",
+      "num": 1
+    },
+    {
+      "str": "hoge2",
+      "num": 2
+    }
+  ]
+}
