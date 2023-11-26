@@ -15,5 +15,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: '/webscraper_tl/',
+  base: (process.env.NODE_ENV === 'poduction')
+    ? '/webscraper_tl/' : './',
+  build: {
+    outDir: 'docs'
+  },
 })
+
