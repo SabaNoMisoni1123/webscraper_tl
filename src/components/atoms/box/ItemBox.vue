@@ -1,6 +1,6 @@
 <template>
   <div class="itemBox">
-    <p>{{ itemString }}</p>
+    <p class="iStr">{{ props.itemString }}</p>
   </div>
 </template>
 
@@ -9,7 +9,7 @@ const props = defineProps({
   itemString: {
     type: String,
     required: true,
-  },
+  }
 })
 
 </script>
@@ -19,11 +19,11 @@ const props = defineProps({
   margin: 0pt;
   border: 0pt 1pt 1pt 1pt solid #3C82F5;
   box-sizing: border-box;
+  background: #E6E6E6;
 }
 
 .itemBox p {
   color: black;
-  background: #E6E6E6;
   padding: 2pt 10pt;
   margin: 0pt;
   text-align: left;

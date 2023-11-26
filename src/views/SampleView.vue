@@ -23,3 +23,9 @@ import Timeline from '@/components/organisms/Timeline.vue'
 const wsFileData = useWsFileListStore()
 
 </script>
+
+<style scoped>
+.sample {
+  width: 90vw;
+}
+</style>
