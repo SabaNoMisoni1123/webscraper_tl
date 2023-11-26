@@ -15,10 +15,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: (process.env.NODE_ENV === 'production')
-    ? '/webscraper_tl/' : './',
-  build: {
-    outDir: 'docs'
-  },
+  base: '/webscraper_tl/',
 })
 
