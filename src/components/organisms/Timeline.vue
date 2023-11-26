@@ -2,7 +2,8 @@
   <div class="timeline">
     <TLTitleBar :tl-title="props.fileData.dataName" />
     <div class="tlItemList">
-      <ArticleItem v-for="item in articles?.slice(0, nomShow.valueOf())" :article-source="item!.dataSource" :article-desctiption="item!.description" :article-url="item!.URL" :article-epoch="item!.epoch" />
+      <ArticleItem v-for="item in sorted_articles?.slice(0, numShow)" :article-source="item!.dataSource"
+        :article-desctiption="item!.description" :article-url="item!.URL" :article-epoch="item!.epoch" />
     </div>
     <div class="tlFooter">
     </div>
@@ -11,7 +12,7 @@
 
 
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { ref, computed, type PropType } from 'vue'
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
 
@@ -37,7 +38,12 @@ const props = defineProps({
 })
 
 const articles = ref<ArticleDataList>()
-const nomShow = ref(20)
+const numShow = ref(20)
+
+const sorted_articles = computed(() => {
+  return articles.value?.sort((a, b) => b.epoch.valueOf() - a.epoch.valueOf()
+  )
+})
 
 fetch('/data/' + props.fileData.fileName).then(response => {
   if (!response.ok) {

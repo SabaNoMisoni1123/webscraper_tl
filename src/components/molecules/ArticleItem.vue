@@ -3,7 +3,8 @@
     <ItemTitleBar :item-title="props.articleSource"></ItemTitleBar>
     <ItemBox :item-string="props.articleDesctiption"></ItemBox>
     <div class="itemFooter">
-      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() }}月{{ dateEpoch.getDay() }}日</p>
+      <a :href="props.articleUrl">Link</a>
+      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
       <FlagButton v-model:flag-value="flag" :width="15" :height="15" />
       <GoodButton v-model:good-value="good" :width="15" :height="15" />
     </div>
@@ -43,7 +44,7 @@ const props = defineProps({
 })
 
 const dateEpoch = ref(new Date(0))
-dateEpoch.value.setUTCSeconds(props.articleEpoch)
+dateEpoch.value.setSeconds(props.articleEpoch.valueOf())
 
 </script>
 
@@ -62,8 +63,17 @@ dateEpoch.value.setUTCSeconds(props.articleEpoch)
   color: black;
   margin-left: 10pt;
   margin-right: 10pt;
+  margin-top: 0pt;
   margin-bottom: 2pt;
   display: inline-block;
+}
+
+.itemFooter a {
+  float: left;
+  margin-left: 10pt;
+  margin-right: 10pt;
+  margin-top: 0pt;
+  margin-bottom: 2pt;
 }
 </style>
 
