@@ -1,9 +1,9 @@
 <template>
   <div class="articleItem">
-    <ItemTitleBar :item-title="title"></ItemTitleBar>
-    <ItemBox :item-string="desc"></ItemBox>
+    <ItemTitleBar :item-title="props.articleSource"></ItemTitleBar>
+    <ItemBox :item-string="props.articleDesctiption"></ItemBox>
     <div class="itemFooter">
-      <p>{{ itemFotterText }}</p>
+      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() }}月{{ dateEpoch.getDay() }}日</p>
       <FlagButton v-model:flag-value="flag" :width="15" :height="15" />
       <GoodButton v-model:good-value="good" :width="15" :height="15" />
     </div>
@@ -21,16 +21,29 @@ import FlagButton from "@/components/atoms/button/FlagButton.vue"
 
 const good = ref(false)
 const flag = ref(0)
-const title = ref("Title hoge")
-const desc = ref("Desc fuga")
-const itemFotterText = ref("Publisher piyo")
 
 const props = defineProps({
-  articleId: {
+  articleDesctiption: {
     type: String,
-    required: true,
+    required: true
+  },
+  articleSource: {
+    type: String,
+    required: true
+  },
+  articleUrl: {
+    type: String,
+    required: true
+  },
+  articleEpoch: {
+    type: Number,
+    required: true
   }
+
 })
+
+const dateEpoch = ref(new Date(0))
+dateEpoch.value.setUTCSeconds(props.articleEpoch)
 
 </script>
 
@@ -52,6 +65,5 @@ const props = defineProps({
   margin-bottom: 2pt;
   display: inline-block;
 }
-
 </style>
 

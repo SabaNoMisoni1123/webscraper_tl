@@ -1,8 +1,8 @@
 <template>
   <div class="timeline">
-    <TLTitleBar tl-title="Time line" />
+    <TLTitleBar :tl-title="props.fileData.dataName" />
     <div class="tlItemList">
-      <ArticleItem v-for="id in articleIdList" :key="id.valueOf" />
+      <ArticleItem v-for="item in articles?.slice(0, nomShow.valueOf())" :article-source="item!.dataSource" :article-desctiption="item!.description" :article-url="item!.URL" :article-epoch="item!.epoch" />
     </div>
     <div class="tlFooter">
     </div>
@@ -11,17 +11,44 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type PropType } from 'vue'
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
 
-const articleIdList = ref([
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-])
+import { type WsFileData } from '@/stores/wsFileList'
+
+interface ArticleData {
+  "datetime64": number,
+  "description": string,
+  "URL": string,
+  "dataSource": string,
+  "year": number,
+  "month": number,
+  "day": number,
+  "epoch": number
+}
+type ArticleDataList = Array<ArticleData>
+
+const props = defineProps({
+  fileData: {
+    type: Object as PropType<WsFileData>,
+    required: true,
+  }
+})
+
+const articles = ref<ArticleDataList>()
+const nomShow = ref(20)
+
+fetch('/data/' + props.fileData.fileName).then(response => {
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  return response.json()
+}).then(data => {
+  articles.value = data as ArticleDataList
+}).catch(error => {
+  console.log(error)
+})
 
 </script>
 
@@ -29,6 +56,8 @@ const articleIdList = ref([
 <style scoped>
 .timeline {
   margin-right: 5pt;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .tlItemList {

@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <Timeline />
+    <p>{{ fuga.sampleData?.list[0].num }}</p>
   </div>
 </template>
 
@@ -15,6 +15,9 @@
 </style>
 
 <script setup lang="ts">
-import Timeline from '@/components/organisms/Timeline.vue'
+import { useSampleStore } from '@/stores/sample'
+
+const fuga = useSampleStore()
+
 
 </script>
