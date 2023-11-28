@@ -4,7 +4,8 @@
     "env.d.ts",
     "src/**/*",
     "src/**/*.vue",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.json"
   ],
   "exclude": [
     "src/**/__tests__/*"
@@ -12,10 +13,11 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "composite": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./src/*"
-      ]
+        "./src/*",
+      ],
     }
   }
 }

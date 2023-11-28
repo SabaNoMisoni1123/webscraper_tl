@@ -4,7 +4,7 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header v-show="false" class="headerClass">
+  <header class="headerClass">
     <nav>
       <RouterLink to="/">Home</RouterLink>
     </nav>
@@ -18,7 +18,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <style scoped>
 .headerClass {
   display: block;
-  margin: 0 100pt;
+  margin: 0pt;
 }
 
 .appView {

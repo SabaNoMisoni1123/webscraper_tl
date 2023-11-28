@@ -17,7 +17,6 @@ defineProps({
 
 <style scoped>
 .tlTitleBar {
-  width: 25vw;
   border-radius: 10pt 10pt 0 0;
   background: linear-gradient(to bottom, #3C82F5, #80AEF8);
   background: -webkit-linear-gradient(to bottom, #3C82F5, #80AEF8);

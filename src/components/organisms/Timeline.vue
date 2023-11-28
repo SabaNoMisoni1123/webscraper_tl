@@ -17,6 +17,7 @@ import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
 
 import { type WsFileData } from '@/stores/wsFileList'
+import Urls from '@/assets/urls.json'
 
 interface ArticleData {
   "datetime64": number,
@@ -45,7 +46,7 @@ const sorted_articles = computed(() => {
   )
 })
 
-fetch('/data/' + props.fileData.fileName).then(response => {
+fetch(Urls.baseUrlOfData + '/data/' + props.fileData.fileName).then(response => {
   if (!response.ok) {
     throw new Error(response.statusText)
   }
@@ -64,11 +65,11 @@ fetch('/data/' + props.fileData.fileName).then(response => {
   margin-right: 5pt;
   display: inline-block;
   vertical-align: top;
+  width: 25vw;
 }
 
 .tlItemList {
   height: 90vh;
-  width: 25vw;
   background: #80AEF8;
   padding: 5pt;
 
@@ -82,7 +83,6 @@ fetch('/data/' + props.fileData.fileName).then(response => {
 }
 
 .tlFooter {
-  width: 25vw;
   height: 5pt;
   background: #80AEF8;
 }

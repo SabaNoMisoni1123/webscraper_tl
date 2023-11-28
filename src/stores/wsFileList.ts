@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import Urls from '@/assets/urls.json'
 
 export interface WsFileData {
   "dataName": string,
@@ -12,7 +13,7 @@ export const useWsFileListStore = defineStore('wsFileList', () => {
   const fileList = ref<Array<WsFileData>>()
 
   function getWsFileList() {
-    fetch('/wsFiles.json').then(response => {
+    fetch(Urls.baseUrlOfData + '/wsFiles.json').then(response => {
       if (!response.ok) {
         throw new Error(response.statusText)
       }
