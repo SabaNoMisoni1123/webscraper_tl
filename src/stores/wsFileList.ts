@@ -10,7 +10,7 @@ export interface WsFileData {
 
 export const useWsFileListStore = defineStore('wsFileList', () => {
 
-  const fileList = ref<Array<WsFileData>>()
+  const fileList = ref<Array<WsFileData>>();
 
   function getWsFileList() {
     fetch(Urls.baseUrlOfData + '/wsFiles.json').then(response => {

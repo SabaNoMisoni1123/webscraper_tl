@@ -20,13 +20,9 @@ import { type WsFileData } from '@/stores/wsFileList'
 import Urls from '@/assets/urls.json'
 
 interface ArticleData {
-  "datetime64": number,
   "description": string,
   "URL": string,
   "dataSource": string,
-  "year": number,
-  "month": number,
-  "day": number,
   "epoch": number
 }
 type ArticleDataList = Array<ArticleData>
@@ -46,6 +42,8 @@ const sorted_articles = computed(() => {
   )
 })
 
+// ウェブスクレイプ機能に書き換え予定
+// storeで実装するのが丸いかもしれない
 fetch(Urls.baseUrlOfData + '/data/' + props.fileData.fileName).then(response => {
   if (!response.ok) {
     throw new Error(response.statusText)
