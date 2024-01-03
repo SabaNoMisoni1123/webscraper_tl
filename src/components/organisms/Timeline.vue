@@ -1,9 +1,9 @@
 <template>
   <div class="timeline">
-    <TLTitleBar :tl-title="props.fileData.dataName" />
+    <TLTitleBar :tl-title="props.tlTitle" />
     <div class="tlItemList">
-      <ArticleItem v-for="item in sorted_articles?.slice(0, numShow)" :article-source="item!.dataSource"
-        :article-desctiption="item!.description" :article-url="item!.URL" :article-epoch="item!.epoch" />
+      <ArticleItem v-for="item in sorted_articles" :article-source="item!.org" :article-desctiption="item!.title"
+        :article-url="item!.url" :article-epoch="item!.epoch" />
     </div>
     <div class="tlFooter">
     </div>
@@ -12,66 +12,63 @@
 
 
 <script setup lang="ts">
-import { ref, computed, type PropType } from 'vue'
+import axios from 'axios'
+import { ref, computed } from 'vue'
+
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
-
-import { type WsFileData } from '@/stores/wsFileList'
 import Urls from '@/assets/urls.json'
 
+import { useWsSiteListStore } from '@/stores/wsSiteList'
+
 interface ArticleData {
-  "datetime64": number,
-  "description": string,
-  "URL": string,
-  "dataSource": string,
-  "year": number,
-  "month": number,
-  "day": number,
+  "title": string,
+  "url": string,
+  "org": string,
   "epoch": number
 }
 type ArticleDataList = Array<ArticleData>
 
 const props = defineProps({
-  fileData: {
-    type: Object as PropType<WsFileData>,
-    required: true,
+  siteId: {
+    type: String,
+    required: true
+  },
+  tlTitle: {
+    type: String,
+    required: true
   }
 })
 
 const articles = ref<ArticleDataList>()
-const numShow = ref(20)
 
 const sorted_articles = computed(() => {
   return articles.value?.sort((a, b) => b.epoch.valueOf() - a.epoch.valueOf()
   )
 })
 
-fetch(Urls.baseUrlOfData + '/data/' + props.fileData.fileName).then(response => {
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  return response.json()
-}).then(data => {
-  articles.value = data as ArticleDataList
-}).catch(error => {
-  console.log(error)
-})
-
+axios.get(Urls.webscAPI + "/data", { params: { id: props.siteId } }).then((response) => {
+  articles.value = response.data.data;
+  console.log(props.siteId);
+  console.log(response.data);
+});
 </script>
 
 
 <style scoped>
 .timeline {
-  margin-right: 5pt;
+  margin-right: 2pt;
   display: inline-block;
   vertical-align: top;
   width: 25vw;
+  height: 90vh;
 }
 
 .tlItemList {
-  height: 90vh;
   background: #80AEF8;
-  padding: 5pt;
+  padding: 2pt;
+  height: 90%;
+
 
   overflow: auto;
   -ms-overflow-style: none;

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import WSAppView from '@/views/WSAppView.vue'
 import SampleView from '@/views/SampleView.vue'
 
 const router = createRouter({
@@ -6,20 +7,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'app',
+      component: WSAppView
+    },
+    {
+      path: '/sample',
+      name: 'sample',
       component: SampleView
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('@/views/AboutView.vue')
-    // }
+    {
+      path: '/about',
+      name: 'about',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('@/views/AboutView.vue')
+    }
   ]
 })
-
-console.log("logloglog", import.meta.env.BASE_URL)
 
 export default router

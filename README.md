@@ -1,4 +1,4 @@
-# webscraper_tl
+# MagnumCrawler
 
 【開発中】
 
@@ -8,16 +8,22 @@ This template should help get you started developing with Vue 3 in Vite.
 
 ### 概要
 
-官公庁の web サイトが日々更新する情報を自動で取得し、タイムライン形式でまとめるアプリケーション。
+官公庁ウェブサイトから日々チェックしたい情報を収集し、ライムライン形式でまとめるサイトです。
+Web スクレイプの機能は、[別のレポジトリ(https://github.com/SabaNoMisoni1123/websc_ministry)](https://github.com/SabaNoMisoni1123/websc_ministry)で実装し、[Render](https://render.com/)を利用してデプロイしました。
 
 ### 目的
 
-~~官公庁サイトは見やすいとは言えないため、~~官公庁サイトが日々更新する情報をタイムライン形式にまとめることで、閲覧しやすくすることを目的とする。 web スクレイプの機能は、別で実装されているため、しばらくは集められた情報をタイムライン形式に表示させるフロント側の開発を中心に進める。最終的には、特定の官公庁のサイトを指定したうえでの web スクレイプ機能や、 Electron を利用したデスクトップアプリ化を想定している。
+複数の官公庁ウェブサイトにまたがる、チェックしたい情報をTwitterのタイムラインのような形式でまとめ、情報収集をより容易にすることを目的としています。
 
+Webスクレイプ機能を、[別レポジトリ](https://github.com/SabaNoMisoni1123/websc_ministry)に集約することで、本レポジトリでは、タイムライン形式での表示機能のみを取り扱います。
 
-## 使用法用
+Webスクレイプ機能は、APIとして公開する想定で、メール配信やチャットBotへの利用など、様々な用途に利用できるように、実装する予定です。
 
-開発中につき使用不可。
+## アクセス方法
+
+Github pagesにて公開中です。以下のURLからアクセスが可能です。
+
+[https://sabanomisoni1123.github.io/webscraper_tl/](https://sabanomisoni1123.github.io/webscraper_tl/)
 
 ## ライセンス
 
