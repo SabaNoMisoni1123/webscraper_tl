@@ -9,7 +9,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <RouterLink to="/">HOME</RouterLink>
       <RouterLink to="/about">ABOUT</RouterLink>
     </nav>
-    <p>MagnumCrawler V0.1</p>
+    <p>MagnumCrawler v0.1</p>
   </header>
 
   <div class="appView">
