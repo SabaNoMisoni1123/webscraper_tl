@@ -65,13 +65,13 @@ axios.get(Urls.webscAPI + "/data", { params: { id: props.siteId } }).then((respo
   vertical-align: top;
   width: 25vw;
   height: 90vh;
+  white-space: wrap;
 }
 
 .tlItemList {
   background: #3C82F5;
   padding: 2pt;
   height: 90%;
-
 
   overflow: auto;
   -ms-overflow-style: none;

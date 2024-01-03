@@ -16,10 +16,22 @@ const sites = useWsSiteListStore();
 
 <style scoped>
 .wsapp {
-  width: 90vw;
+  width: auto;
   height: auto;
   padding-top: 5pt;
   padding-left: 10pt;
   padding-right: 10pt;
+
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.wsapp::-webkit-scrollbar {
+  display: none;
+}
+
+.wsapp Timeline {
+  display: inline-block;
 }
 </style>
