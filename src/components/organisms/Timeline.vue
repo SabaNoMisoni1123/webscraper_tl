@@ -2,8 +2,8 @@
   <div class="timeline">
     <TLTitleBar :tl-title="props.tlTitle" />
     <div class="tlItemList">
-      <ArticleItem v-for="item in sorted_articles" :article-source="item!.org" :article-desctiption="item!.title"
-        :article-url="item!.url" :article-epoch="item!.epoch" />
+      <ArticleItem v-for="item in wsData.scrapedData[props.siteId]" :article-source="item!.org"
+        :article-desctiption="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" />
     </div>
     <div class="tlFooter">
     </div>
@@ -16,10 +16,10 @@ import axios from 'axios'
 import { ref, computed } from 'vue'
 
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue'
 import Urls from '@/assets/urls.json'
 
-import { useWsSiteListStore } from '@/stores/wsSiteList'
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
 
 interface ArticleData {
   "title": string,
@@ -39,6 +39,9 @@ const props = defineProps({
     required: true
   }
 })
+
+const wsData = useWsScrapedDataStore();
+wsData.scrape(props.siteId);
 
 const articles = ref<ArticleDataList>()
 
@@ -65,7 +68,7 @@ axios.get(Urls.webscAPI + "/data", { params: { id: props.siteId } }).then((respo
 }
 
 .tlItemList {
-  background: #80AEF8;
+  background: #3C82F5;
   padding: 2pt;
   height: 90%;
 
@@ -81,7 +84,7 @@ axios.get(Urls.webscAPI + "/data", { params: { id: props.siteId } }).then((respo
 
 .tlFooter {
   height: 5pt;
-  background: #80AEF8;
+  background: #3C82F5;
 }
 </style>
 
