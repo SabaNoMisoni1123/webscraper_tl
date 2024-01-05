@@ -9,6 +9,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <RouterLink to="/">HOME</RouterLink>
       <RouterLink to="/about">ABOUT</RouterLink>
     </nav>
+    <img src="/icon.svg" type="image/svg+xml" alt="icon">
     <p>MagnumCrawler v0.1</p>
   </header>
 
@@ -25,6 +26,15 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
 }
 
+.headerClass img {
+  height: 2ex;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: 20pt;
+
+}
+
 .headerClass a {
   margin-left: 10pt;
   padding: 2pt;
@@ -32,7 +42,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .headerClass p {
   color: #003f27;
-  margin-left: auto;
+  margin-left: 0pt;
   margin-right: 20pt;
   margin-top: 0;
   margin-bottom: 0;
