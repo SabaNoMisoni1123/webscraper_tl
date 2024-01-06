@@ -18,4 +18,13 @@ export default defineConfig({
   },
   base: '/webscraper_tl/',
   // base: '/',
+  server: {
+    proxy: {
+      '/api': {
+        target: "https://websc-ministry.onrender.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      }
+    }
+  }
 })

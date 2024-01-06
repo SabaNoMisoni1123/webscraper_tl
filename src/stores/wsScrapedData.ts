@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import Urls from '@/assets/urls.json'
 import axios from 'axios'
 
 export interface ArticleData {
@@ -18,11 +17,12 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const scrapedData = ref<ScrapedData>({} as ScrapedData);
 
   function scrape(siteId: string) {
-    axios.get(Urls.webscAPI + "/data", { params: { id: siteId } }).then((response) => {
+    axios.get("/api/data", { params: { id: siteId } }).then((response) => {
       scrapedData.value[siteId] = response.data.data;
+      console.log(siteId);
+      console.log(response.data.msg);
     });
   }
-
 
   return { scrapedData, scrape }
 }, { persist: true });

@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import Urls from '@/assets/urls.json'
 import axios from 'axios'
 
 export interface SiteData {
@@ -16,8 +15,10 @@ export const useWsSiteListStore = defineStore('wsSiteList', () => {
   const siteList = ref<SiteDataList>({} as SiteDataList);
 
   function getSiteList() {
-    axios.get(Urls.webscAPI + "/siteList").then((response) => {
+    axios.get('/api/siteList').then((response) => {
       siteList.value = response.data.data as SiteDataList;
+      console.log("Site List");
+      console.log(response.data.data);
     })
   }
   getSiteList();

@@ -12,22 +12,10 @@
 
 
 <script setup lang="ts">
-import axios from 'axios'
-import { ref, computed } from 'vue'
-
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
 import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue'
-import Urls from '@/assets/urls.json'
 
 import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
-
-interface ArticleData {
-  "title": string,
-  "url": string,
-  "org": string,
-  "epoch": number
-}
-type ArticleDataList = Array<ArticleData>
 
 const props = defineProps({
   siteId: {
@@ -43,20 +31,7 @@ const props = defineProps({
 const wsData = useWsScrapedDataStore();
 wsData.scrape(props.siteId);
 
-const articles = ref<ArticleDataList>()
-
-const sorted_articles = computed(() => {
-  return articles.value?.sort((a, b) => b.epoch.valueOf() - a.epoch.valueOf()
-  )
-})
-
-axios.get(Urls.webscAPI + "/data", { params: { id: props.siteId } }).then((response) => {
-  articles.value = response.data.data;
-  console.log(props.siteId);
-  console.log(response.data);
-});
 </script>
-
 
 <style scoped>
 .timeline {
