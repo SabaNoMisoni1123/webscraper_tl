@@ -27,10 +27,6 @@ const sites = useWsSiteListStore();
   -webkit-overflow-scrolling: touch;
 }
 
-.wsapp::-webkit-scrollbar {
-  display: none;
-}
-
 .wsapp Timeline {
   display: inline-block;
 }

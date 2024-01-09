@@ -24,6 +24,7 @@ import { RouterLink, RouterView } from 'vue-router'
   font-size: 20pt;
   background: #939292;
   display: flex;
+  width: 95vw;
 }
 
 .headerClass img {
@@ -50,5 +51,6 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .appView {
   background: #E6E6E6;
+  width: 95vw;
 }
 </style>

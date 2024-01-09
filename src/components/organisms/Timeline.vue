@@ -3,7 +3,7 @@
     <TLTitleBar :tl-title="props.tlTitle" />
     <div class="tlItemList">
       <ArticleItem v-for="item in wsData.scrapedData[props.siteId]" :article-source="item!.org"
-        :article-desctiption="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" />
+        :article-desctiption="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="props.tlTitle" />
     </div>
     <div class="tlFooter">
     </div>

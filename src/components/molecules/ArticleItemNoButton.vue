@@ -1,6 +1,6 @@
 <template>
   <div class="articleItem">
-    <ItemTitleBar :item-title="props.articleSource"></ItemTitleBar>
+    <ItemTitleBar :item-title="props.articleSource" v-if="false"></ItemTitleBar>
     <ItemBox :item-string="props.articleDesctiption"></ItemBox>
     <div class="itemFooter">
       <a :href="props.articleUrl">ページリンク</a>
@@ -33,6 +33,10 @@ const props = defineProps({
   articleEpoch: {
     type: Number,
     required: true
+  },
+  tlTitle: {
+    type: String,
+    default: ""
   }
 })
 
