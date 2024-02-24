@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import AppConfig from '@/assets/AppConfig.json';
+import { RouterLink, RouterView } from 'vue-router';
 
 </script>
 
@@ -10,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <RouterLink to="/about">ABOUT</RouterLink>
     </nav>
     <img src="/icon.svg" type="image/svg+xml" alt="icon">
-    <p>MagnumCrawler v0.1</p>
+    <p>{{ AppConfig.appName }} v{{ AppConfig.version }}</p>
   </header>
 
   <div class="appView">
