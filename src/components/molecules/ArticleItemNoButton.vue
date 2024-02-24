@@ -1,10 +1,10 @@
 <template>
   <div class="articleItem">
     <ItemTitleBar :item-title="props.articleSource" v-if="false"></ItemTitleBar>
-    <ItemBox :item-string="props.articleDesctiption"></ItemBox>
+    <ItemBox :item-string="props.articleDescription"></ItemBox>
     <div class="itemFooter">
       <a :href="props.articleUrl">ページリンク</a>
-      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
+      <p>{{ dateFromEpoch.getFullYear() }}年{{ dateFromEpoch.getMonth() + 1 }}月{{ dateFromEpoch.getDate() }}日</p>
     </div>
 
   </div>
@@ -12,13 +12,13 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ItemTitleBar from "@/components/atoms/bar/ItemTitleBar.vue"
-import ItemBox from "@/components/atoms/box/ItemBox.vue"
+import ItemTitleBar from "@/components/atoms/bar/ItemTitleBar.vue";
+import ItemBox from "@/components/atoms/box/ItemBox.vue";
+import { computed } from 'vue';
 
 
 const props = defineProps({
-  articleDesctiption: {
+  articleDescription: {
     type: String,
     required: true
   },
@@ -40,8 +40,11 @@ const props = defineProps({
   }
 })
 
-const dateEpoch = ref(new Date(0))
-dateEpoch.value.setSeconds(props.articleEpoch.valueOf())
+const dateFromEpoch = computed(() => {
+  const date = new Date(0)
+  date.setSeconds(props.articleEpoch.valueOf())
+  return date
+})
 
 </script>
 

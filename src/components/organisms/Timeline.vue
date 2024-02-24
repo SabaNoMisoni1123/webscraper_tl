@@ -3,7 +3,7 @@
     <TLTitleBar :tl-title="props.tlTitle" />
     <div class="tlItemList">
       <ArticleItem v-for="item in wsData.scrapedData[props.siteId]" :article-source="item!.org"
-        :article-desctiption="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="props.tlTitle" />
+        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="props.tlTitle" />
     </div>
     <div class="tlFooter">
     </div>
@@ -12,10 +12,10 @@
 
 
 <script setup lang="ts">
-import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue'
-import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue'
+import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
+import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue';
 
-import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
 
 const props = defineProps({
   siteId: {
