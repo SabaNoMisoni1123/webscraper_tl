@@ -1,15 +1,26 @@
 <template>
-  <div class="tlTitleBar">
-    <p>{{ tlTitle }}</p>
+  <div class="tlTitleBar" :style="styles">
+    <p>{{ props.tlTitle }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import ColorPallet from '@/assets/ColorPallet.json';
 
-defineProps({
+const props = defineProps({
   tlTitle: {
     type: String,
     required: true,
+  },
+  ttBackgroundColor: {
+    type: String,
+    default: ColorPallet.blue1
+  },
+  styles: {
+    type: Object,
+    default: {
+      "--tl-background-color": ColorPallet.blue1
+    }
   }
 })
 
@@ -18,7 +29,7 @@ defineProps({
 <style scoped>
 .tlTitleBar {
   border-radius: 10pt 10pt 0 0;
-  background: #3C82F5;
+  background: var(--tl-background-color);
 }
 
 .tlTitleBar p {

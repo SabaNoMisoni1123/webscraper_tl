@@ -1,10 +1,12 @@
 <template>
-  <div class="itemTitleBar">
+  <div class="itemTitleBar" :style="styles">
     <p>{{ itemTitle }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import ColorPallet from '@/assets/ColorPallet.json';
+import { computed } from 'vue';
 
 defineProps({
   itemTitle: {
@@ -13,12 +15,18 @@ defineProps({
   }
 });
 
+const styles = computed(() => {
+  return {
+    "--it-background-color": ColorPallet.gray3
+  }
+})
+
 </script>
 
 <style scoped>
 .itemTitleBar {
   margin: 0pt;
-  background: #E6E6E6;
+  background: var(--it-background-color);
 
 }
 
