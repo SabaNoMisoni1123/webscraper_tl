@@ -2,7 +2,7 @@
   <div class="articleItem">
     <ItemTitleBar :item-title="props.articleSource" v-if="false"></ItemTitleBar>
     <ItemBox :item-string="props.articleDescription"></ItemBox>
-    <div class="itemFooter" :style="styles">
+    <div class="itemFooter">
       <a :href="props.articleUrl">ページリンク</a>
       <p>{{ dateFromEpoch.getFullYear() }}年{{ dateFromEpoch.getMonth() + 1 }}月{{ dateFromEpoch.getDate() }}日</p>
     </div>
@@ -15,8 +15,6 @@
 import ItemTitleBar from "@/components/atoms/bar/ItemTitleBar.vue";
 import ItemBox from "@/components/atoms/box/ItemBox.vue";
 import { computed } from 'vue';
-import ColorPallet from '@/assets/ColorPallet.json'
-
 
 const props = defineProps({
   articleDescription: {
@@ -47,11 +45,6 @@ const dateFromEpoch = computed(() => {
   return date
 })
 
-const styles = computed(() => {
-  return {
-    "--if-background-color": ColorPallet.gray3
-  }
-})
 
 </script>
 
@@ -62,7 +55,7 @@ const styles = computed(() => {
 
 .itemFooter {
   margin: 0pt;
-  background: var(--if-background-color);
+  background: white;
   text-align: right;
 }
 

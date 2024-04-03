@@ -32,16 +32,24 @@ const props = defineProps({
   },
   colorTheme: {
     type: Number,
-    default: 0,
+    default: 0
   }
 })
 
 const wsData = useWsScrapedDataStore();
 wsData.scrape(props.siteId);
 
+const bgList = [
+  ColorPallet.blue1,
+  ColorPallet.red1,
+  ColorPallet.yellow1,
+  ColorPallet.green1,
+  ColorPallet.gray1,
+];
+
 const styles = computed(() => {
   return {
-    "--tl-background-color": ColorPallet.blue0
+    "--tl-background-color": bgList[props.colorTheme % bgList.length]
   }
 })
 
