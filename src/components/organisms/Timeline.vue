@@ -1,10 +1,10 @@
 <template>
   <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="props.tlTitle" :styles="styles" />
+    <TLTitleBar :tl-title="props.tlCfg.name" :styles="styles" />
     <div class="tlItemList">
-      <ArticleItem v-for="item in wsData.scrapedData[props.siteId]" :article-source="item!.org"
+      <ArticleItem v-for="item in wsData.scrapedData[props.tlCfg.id]" :article-source="item!.org"
         :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch"
-        :tl-title="props.tlTitle" />
+        :tl-title="props.tlCfg.name" />
     </div>
     <div class="tlFooter">
     </div>
@@ -20,24 +20,18 @@ import ColorPallet from '@/assets/ColorPallet.json'
 import { computed } from 'vue'
 
 import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
+import { type tlData } from '@/stores/tlData';
 
 const props = defineProps({
-  siteId: {
-    type: String,
+  tlCfg: {
+    type: Object as () => tlData,
     required: true
   },
-  tlTitle: {
-    type: String,
-    required: true
-  },
-  colorTheme: {
-    type: Number,
-    default: 0
-  }
 })
 
+
 const wsData = useWsScrapedDataStore();
-wsData.scrape(props.siteId);
+wsData.scrape(props.tlCfg.id);
 
 const bgList = [
   ColorPallet.blue1,
@@ -49,7 +43,7 @@ const bgList = [
 
 const styles = computed(() => {
   return {
-    "--tl-background-color": bgList[props.colorTheme % bgList.length]
+    "--tl-background-color": bgList[props.tlCfg.color % bgList.length]
   }
 })
 

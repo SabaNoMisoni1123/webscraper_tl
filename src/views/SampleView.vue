@@ -1,7 +1,7 @@
 <template>
   <div class="sample">
 
-    <Timeline site-id="micJoho" tl-title="hoge" />
+    <Timeline v-for="tld in tlData.tlDataList" :tl-cfg="tld" />
 
   </div>
 </template>
@@ -12,10 +12,6 @@ import Timeline from '@/components/organisms/Timeline.vue'
 import { useTlDataListStore } from '@/stores/tlData'
 
 const tlData = useTlDataListStore()
-console.log("sample=============")
-console.log(tlData.tlDataList)
-console.log("sample=============")
-
 
 </script>
 

@@ -57,7 +57,6 @@ export const useTlDataListStore = defineStore('wsSiteList', () => {
           tlDataList.value[idx].url = value.url
         }
       }
-
     })
   }
   getSiteList();

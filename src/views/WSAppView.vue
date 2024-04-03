@@ -1,16 +1,15 @@
 <template>
   <div class="wsapp">
-    <Timeline v-for="id in sites.idList" :site-id="id" :tl-title="sites.siteList[id].name" />
+    <Timeline v-for="tld in tlData.tlDataList" :tl-cfg="tld" />
   </div>
 </template>
 
 <script setup lang="ts">
 
 import Timeline from '@/components/organisms/Timeline.vue'
-import { useWsSiteListStore } from '@/stores/wsSiteList'
+import { useTlDataListStore } from '@/stores/tlData'
 
-const sites = useWsSiteListStore();
-
+const tlData = useTlDataListStore()
 
 </script>
 
