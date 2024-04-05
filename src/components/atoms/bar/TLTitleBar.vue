@@ -1,6 +1,7 @@
 <template>
   <div class="tlTitleBar" :style="styles">
     <p>{{ props.tlTitle }}</p>
+    <p class="loadingMsg" v-if="isLoading">-読み込み中-</p>
   </div>
 </template>
 
@@ -15,6 +16,10 @@ const props = defineProps({
   ttBackgroundColor: {
     type: String,
     default: ColorPallet.blue1
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
   styles: {
     type: Object,
@@ -39,4 +44,5 @@ const props = defineProps({
   text-align: left;
   font-weight: bold;
 }
+
 </style>

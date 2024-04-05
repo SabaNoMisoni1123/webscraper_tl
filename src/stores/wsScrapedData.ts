@@ -12,17 +12,22 @@ export interface ArticleData {
 }
 
 export interface ScrapedData {
-  [index: string]: Array<ArticleData>
+  [index: string]: {
+    "dataList": Array<ArticleData>
+    "isLoading": boolean
+  }
 }
 
 export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const scrapedData = ref<ScrapedData>({} as ScrapedData);
 
   function scrape(siteId: string) {
+    scrapedData.value[siteId]["isLoading"] = true;
     axios.get(ApiUrl.apiUrl + "/data", { params: { id: siteId } }).then((response) => {
-      scrapedData.value[siteId] = response.data.data;
+      scrapedData.value[siteId]["dataList"] = response.data.data;
       console.log(siteId);
       console.log(response.data.msg);
+      scrapedData.value[siteId]["isLoading"] = false;
     });
   }
 

@@ -1,8 +1,8 @@
 <template>
   <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlCfg.name" :styles="styles" />
+    <TLTitleBar :tl-title="tlCfg.name" :styles="styles" :is-loading="wsData.scrapedData[props.tlSiteId].isLoading" />
     <div class="tlItemList">
-      <ArticleItem v-for="item in wsData.scrapedData[props.tlSiteId]" :article-source="item!.org"
+      <ArticleItem v-for="item in wsData.scrapedData[props.tlSiteId].dataList" :article-source="item!.org"
         :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch"
         :tl-title="tlCfg.name" />
     </div>
