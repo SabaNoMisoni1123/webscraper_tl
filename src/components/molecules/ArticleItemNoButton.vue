@@ -1,8 +1,8 @@
 <template>
   <div class="articleItem">
     <ItemTitleBar :item-title="props.articleSource" v-if="false"></ItemTitleBar>
-    <ItemBox :item-string="props.articleDescription"></ItemBox>
-    <div class="itemFooter">
+    <ItemBox :item-string="props.articleDescription" :is-newer="isNewer" :style="styles"></ItemBox>
+    <div :class="isNewer ? 'itemFooterNew' : 'itemFooter'" :style="styles">
       <a :href="props.articleUrl">ページリンク</a>
       <p>{{ dateFromEpoch.getFullYear() }}年{{ dateFromEpoch.getMonth() + 1 }}月{{ dateFromEpoch.getDate() }}日</p>
     </div>
@@ -15,6 +15,8 @@
 import ItemTitleBar from "@/components/atoms/bar/ItemTitleBar.vue";
 import ItemBox from "@/components/atoms/box/ItemBox.vue";
 import { computed } from 'vue';
+
+import ColorPallet from '@/assets/ColorPallet.json'
 
 const props = defineProps({
   articleDescription: {
@@ -45,6 +47,20 @@ const dateFromEpoch = computed(() => {
   return date
 })
 
+const isNewer = computed(() => {
+  const today = new Date()
+  const artDate = new Date(0)
+  artDate.setSeconds(props.articleEpoch.valueOf())
+
+  return (today.getDate() == artDate.getDate()) && (today.getMonth() == artDate.getMonth()) && (today.getFullYear() == artDate.getFullYear())
+})
+
+const styles = computed(() => {
+  return {
+    "--bg-color": ColorPallet.yellow3
+  }
+})
+
 
 </script>
 
@@ -59,7 +75,13 @@ const dateFromEpoch = computed(() => {
   text-align: right;
 }
 
-.itemFooter p {
+.itemFooterNew {
+  margin: 0pt;
+  background: var(--bg-color);
+  text-align: right;
+}
+
+p {
   color: black;
   margin-left: 10pt;
   margin-right: 10pt;
@@ -68,7 +90,7 @@ const dateFromEpoch = computed(() => {
   display: inline-block;
 }
 
-.itemFooter a {
+a {
   float: left;
   margin-left: 10pt;
   margin-right: 10pt;
