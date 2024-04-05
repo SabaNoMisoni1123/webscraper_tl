@@ -1,7 +1,7 @@
 <template>
   <div class="sample">
 
-    <Timeline v-for="tld in tlData.tlDataList" :tl-cfg="tld" />
+    <Timeline v-for="id in tlData.sortedIds" :tl-site-id="id" />
 
   </div>
 </template>

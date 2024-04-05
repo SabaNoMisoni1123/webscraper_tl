@@ -1,6 +1,11 @@
 <template>
   <div class="wsapp">
-    <Timeline v-for="tld in tlData.tlDataList" :tl-cfg="tld" />
+    <div class="cfgArea">
+      <!-- 設定用の領域 -->
+    </div>
+    <div class="tlArea">
+      <Timeline v-for="id in tlData.sortedIds" :tl-site-id="id" />
+    </div>
   </div>
 </template>
 
@@ -10,7 +15,6 @@ import Timeline from '@/components/organisms/Timeline.vue'
 import { useTlDataListStore } from '@/stores/tlData'
 
 const tlData = useTlDataListStore()
-
 </script>
 
 <style scoped>
@@ -21,12 +25,19 @@ const tlData = useTlDataListStore()
   padding-left: 10pt;
   padding-right: 10pt;
 
+}
+
+.cfgArea {
+  float: left;
+}
+
+.tlArea {
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
 }
 
-.wsapp Timeline {
+.tlArea Timeline {
   display: inline-block;
 }
 </style>

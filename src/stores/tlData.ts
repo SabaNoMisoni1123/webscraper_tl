@@ -16,51 +16,70 @@ export interface SiteDataDict {
 }
 
 // タイムライン全体のデータ（配列）
-export interface tlData {
-  "id": string,
+export interface TlData {
   "name": string,
   "url": string,
   "weight": number,
   "color": number,
 }
 
+export interface TlDataDict {
+  [index: string]: TlData
+}
+
 // データロード
 export const useTlDataListStore = defineStore('wsSiteList', () => {
-  const tlDataList = ref<Array<tlData>>([] as Array<tlData>)
+  const tlData = ref<TlDataDict>({} as TlDataDict)
 
-  function getSiteList() {
+  function apiSiteList() {
     // キーの有無で処理を変えたい
-
     // API接続
     axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
-      const siteDict = response.data.data as SiteDataDict;
+      const dlSiteData = response.data.data as SiteDataDict;
       console.log("Site List");
 
-      const existKeys = tlDataList.value.map((i) => { return i["id"] });
-
       // APIで取得されたデータで処理
-      for (const [key, value] of Object.entries(siteDict)) {
-        const idx = existKeys.indexOf(key);
-        console.log(key, value, idx);
-        if (idx < 0) {
-          // キーが存在しない場合は追加
-          tlDataList.value.push({
-            "id": key,
+      for (const [key, value] of Object.entries(dlSiteData)) {
+        console.log(key, value);
+        if (key in tlData.value) {
+          // キーが存在する場合は情報の更新
+          tlData.value[key].name = value.name
+          tlData.value[key].url = value.url
+        } else {
+          tlData.value[key] = {
             "name": value.name,
             "url": value.url,
-            "weight": tlDataList.value.length,
+            "weight": Object.keys(tlData.value).length,
             "color": 0,
-          } as tlData)
-        } else {
-          // キーが存在する場合は情報の更新
-          tlDataList.value[idx].name = value.name
-          tlDataList.value[idx].url = value.url
+          } as TlData
         }
+
       }
     })
   }
-  getSiteList();
+  apiSiteList();
 
+  const sortedIds = computed(() => {
+    let sk = [] as Array<{ "id": string, "weight": number }>
 
-  return { tlDataList, getSiteList }
+    for (const [k, v] of Object.entries(tlData.value)) {
+      sk.push({
+        "id": k,
+        "weight": v.weight
+      })
+    }
+    sk.sort((a, b) => a.weight - b.weight)
+
+    return sk.map((a) => a.id)
+  })
+
+  function setColor(id: string, newC: number) {
+    tlData.value[id].color = newC
+  }
+
+  function setWeight(id: string, newW: number) {
+    tlData.value[id].weight = newW
+  }
+
+  return { tlData, sortedIds, apiSiteList, setColor, setWeight }
 }, { persist: true })
