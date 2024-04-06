@@ -1,17 +1,16 @@
 <template>
   <div class="sample">
-
-    <Timeline v-for="id in tlData.sortedIds" :tl-site-id="id" />
+    <SearchForm @search-text="newText" />
 
   </div>
 </template>
 
 <script setup lang="ts">
+import SearchForm from '@/components/molecules/SearchForm.vue'
 
-import Timeline from '@/components/organisms/Timeline.vue'
-import { useTlDataListStore } from '@/stores/tlData'
-
-const tlData = useTlDataListStore()
+function newText(t: string) {
+  alert("from sample: " + t);
+}
 
 </script>
 

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
@@ -34,5 +34,14 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
     });
   }
 
-  return { scrapedData, loadingStatus, scrape }
+  const searchedData = computed((w: string) => {
+    let sd = [] as Array<ArticleData>
+    for (const data of Object.values(scrapedData.value)) {
+      sd = [...sd, ...data.filter((article) => article.title.indexOf(w) >= 0)];
+    }
+    sd.sort((a, b) => b.epoch - a.epoch);
+    return sd
+  })
+
+  return { scrapedData, loadingStatus, searchedData, scrape }
 }, { persist: true });

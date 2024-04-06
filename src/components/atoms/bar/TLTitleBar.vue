@@ -13,10 +13,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  ttBackgroundColor: {
-    type: String,
-    default: ColorPallet.blue1
-  },
   isLoading: {
     type: Boolean,
     default: false,

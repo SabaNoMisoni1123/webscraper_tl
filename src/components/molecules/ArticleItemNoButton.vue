@@ -1,6 +1,6 @@
 <template>
   <div class="articleItem">
-    <ItemTitleBar :item-title="props.articleSource" v-if="false"></ItemTitleBar>
+    <ItemTitleBar :item-title="props.articleSource" v-if="props.showBar"></ItemTitleBar>
     <ItemBox :item-string="props.articleDescription" :is-newer="isNewer" :style="styles"></ItemBox>
     <div :class="isNewer ? 'itemFooterNew' : 'itemFooter'" :style="styles">
       <a :href="props.articleUrl">ページリンク</a>
@@ -38,6 +38,10 @@ const props = defineProps({
   tlTitle: {
     type: String,
     default: ""
+  },
+  showBar: {
+    type: Boolean,
+    default: false
   }
 })
 
