@@ -10,7 +10,7 @@ export interface SearchWordData {
 
 
 // データロード
-export const useTlDataListStore = defineStore('wsSiteList', () => {
+export const useTlDataListStore = defineStore('searchWordList', () => {
   const searchWord = ref<Array<SearchWordData>>([] as Array<SearchWordData>)
 
   function newWordItem(word: string) {

@@ -28,7 +28,7 @@ export interface TlDataDict {
 }
 
 // データロード
-export const useTlDataListStore = defineStore('wsSiteList', () => {
+export const useTlDataListStore = defineStore('tlData', () => {
   const tlData = ref<TlDataDict>({} as TlDataDict)
 
   function apiSiteList() {

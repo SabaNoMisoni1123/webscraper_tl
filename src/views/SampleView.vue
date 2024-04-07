@@ -1,21 +1,21 @@
 <template>
   <div class="sample">
-    <SearchForm @search-text="newText" />
+    <CfgTabBar />
+    <SearchedTimeline />
 
   </div>
 </template>
 
 <script setup lang="ts">
-import SearchForm from '@/components/molecules/SearchForm.vue'
+import CfgTabBar from '@/components/organisms/CfgTabBar.vue'
+import SearchedTimeline from '@/components/organisms/SearchedTimeline.vue'
 
-function newText(t: string) {
-  alert("from sample: " + t);
-}
 
 </script>
 
 <style scoped>
 .sample {
   width: auto;
+  height: 90vh;
 }
 </style>

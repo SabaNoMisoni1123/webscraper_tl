@@ -1,10 +1,10 @@
 <template>
   <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlCfg.name" :styles="styles" :is-loading="wsData.loadingStatus[props.tlSiteId]" />
+    <TLTitleBar :tl-title="tlCfg.name" :style="styles" />
     <div class="tlItemList">
+      <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
       <ArticleItem v-for="item in wsData.scrapedData[props.tlSiteId]" :article-source="item!.org"
-        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch"
-        :tl-title="tlCfg.name" />
+        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlCfg.name" />
     </div>
     <div class="tlFooter">
     </div>
@@ -78,5 +78,13 @@ const styles = computed(() => {
 .tlFooter {
   height: 5pt;
   background: var(--tl-background-color);
+}
+
+.loadingMsg {
+  color: white;
+  padding: 2pt 15pt;
+  margin: 0pt;
+  text-align: left;
+  font-weight: bold;
 }
 </style>

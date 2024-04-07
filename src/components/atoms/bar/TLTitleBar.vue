@@ -1,7 +1,6 @@
 <template>
-  <div class="tlTitleBar" :style="styles">
+  <div class="tlTitleBar" :style="style">
     <p>{{ props.tlTitle }}</p>
-    <p class="loadingMsg" v-if="isLoading">-読み込み中-</p>
   </div>
 </template>
 
@@ -17,7 +16,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  styles: {
+  style: {
     type: Object,
     default: {
       "--tl-background-color": ColorPallet.blue1

@@ -1,8 +1,8 @@
 <template>
   <div class="searchForm" :style="props.styles">
     <div class="inputArea">
-      <input type="search" name="" id="" v-model="text" placeholder="Enter text">
-      <SearchButton @click="searchClick" :height="10" :width="10" icon-color="white" />
+      <input type="search" name="" id="" v-model="text" placeholder="Enter text" size=25>
+      <SearchButton @click="searchClick" :height="12" :width="12" icon-color="white" />
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ const props = defineProps({
   styles: {
     type: Object,
     default: {
-      "--sf-bg-color": ColorPallet.blue1
+      "--tl-background-color": ColorPallet.blue1
     }
   }
 })
@@ -39,16 +39,17 @@ function searchClick() {
 
 <style scoped>
 .searchForm {
-  background: var(--sf-bg-color);
+  background: var(--tl-background-color);
   text-align: center;
-  padding-top: 2pt;
-  padding-bottom: 2pt;
+  padding-bottom: 5pt;
+  height: 25pt;
 }
 
 .inputArea input {
-  font-size: 15;
+  font-size: 20;
   vertical-align: middle;
   margin-right: 5pt;
+  margin-top:0;
 }
 
 .inputArea SearchButton {
