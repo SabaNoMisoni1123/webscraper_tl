@@ -1,7 +1,7 @@
 <template>
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="searchTlTitle" :style="styles" :is-loading="false" />
-    <SearchForm @search-text="newText" :style="styles" />
+    <SearchForm @search-text="newText" :style="styles" :init-value="appState.searchText" />
 
     <div class="tlItemList">
       <ArticleItem v-for="item in searchedArticles" :article-source="item!.org" :article-description="item!.title"
@@ -32,7 +32,7 @@ const appState = useAppState();
 const wsData = useWsScrapedDataStore();
 
 // 検索ワード
-const searchTlTitle = ref("検索");
+const searchTlTitle = ref("検索: " + appState.searchText);
 
 // 検索
 function newText(t: string) {

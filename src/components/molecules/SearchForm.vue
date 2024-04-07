@@ -17,7 +17,11 @@ const props = defineProps({
     type: Object,
     default: {
       "--tl-background-color": ColorPallet.blue1
-    }
+    },
+  },
+  initValue: {
+    type: Object as () => string,
+    default: "" as string,
   }
 })
 
@@ -25,8 +29,8 @@ const emit = defineEmits<{
   'searchText': [text: string],
 }>()
 
-const text = ref("")
-const lastText = ref("")
+const text = ref(props.initValue)
+const lastText = ref(props.initValue)
 
 function searchClick() {
   if (lastText.value != text.value) {
@@ -49,7 +53,7 @@ function searchClick() {
   font-size: 20;
   vertical-align: middle;
   margin-right: 5pt;
-  margin-top:0;
+  margin-top: 0;
 }
 
 .inputArea SearchButton {
