@@ -23,24 +23,27 @@ import ColorPallet from '@/assets/ColorPallet.json'
 
 import { ref, computed } from 'vue'
 import { useWsScrapedDataStore, type ArticleData } from '@/stores/wsScrapedData';
+import { useAppState } from '@/stores/appState';
+
+// アプリステータス
+const appState = useAppState();
 
 // ウェブスクレイプデータ
 const wsData = useWsScrapedDataStore();
 
 // 検索ワード
-const searchText = ref("")
 const searchTlTitle = ref("検索");
 
 // 検索
 function newText(t: string) {
-  searchText.value = t;
+  appState.searchText = t;
   searchTlTitle.value = "検索: " + t;
 }
 
 const searchedArticles = computed(() => {
   let sd = [] as Array<ArticleData>
   for (const data of Object.values(wsData.scrapedData)) {
-    sd = [...sd, ...data.filter((article) => article.title.indexOf(searchText.value) >= 0)];
+    sd = [...sd, ...data.filter((article) => article.title.indexOf(appState.searchText) >= 0)];
   }
   sd.sort((a, b) => b.epoch - a.epoch);
   return sd
