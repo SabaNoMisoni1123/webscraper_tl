@@ -47,7 +47,8 @@ export const useTlDataListStore = defineStore('tlData', () => {
           tlData.value[key].name = value.name;
           tlData.value[key].url = value.url;
 
-          if (!("isShow" in tlData.value[key] )){
+          // isShowがない場合
+          if (!("isShow" in tlData.value[key])) {
             tlData.value[key].isShow = true;
           }
         } else {
@@ -104,5 +105,52 @@ export const useTlDataListStore = defineStore('tlData', () => {
     tlData.value[id].weight = newW
   }
 
-  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight }
+  function upWeight(id: string) {
+    const currentWeight = tlData.value[id].weight;
+    if (currentWeight > 0) {
+      const targetWeight = currentWeight - 1;
+      const targetId = Object.keys(tlData.value).find(key => tlData.value[key].weight == targetWeight) as string;
+      console.log("upWeight");
+      console.log(currentWeight, id);
+      console.log(targetWeight, targetId);
+      tlData.value[id].weight = targetWeight;
+      tlData.value[targetId].weight = currentWeight;
+    }
+  }
+
+  function downWeight(id: string) {
+    const currentWeight = tlData.value[id].weight;
+    if (currentWeight < Object.keys(tlData.value).length - 1) {
+      const targetWeight = currentWeight + 1;
+      const targetId = Object.keys(tlData.value).find(key => tlData.value[key].weight == targetWeight) as string;
+      tlData.value[id].weight = targetWeight;
+      tlData.value[targetId].weight = currentWeight;
+    }
+  }
+
+  function resetTlData() {
+    // タイムライン設定の初期化
+    tlData.value = {} as TlDataDict;
+
+    // API接続
+    axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
+      const dlSiteData = response.data.data as SiteDataDict;
+      console.log("Site List");
+
+      // APIで取得されたデータで処理
+      for (const [key, value] of Object.entries(dlSiteData)) {
+        console.log(key, value);
+        tlData.value[key] = {
+          "name": value.name,
+          "url": value.url,
+          "weight": Object.keys(tlData.value).length,
+          "color": 0,
+          "isShow": true,
+        } as TlData
+      }
+    })
+
+  }
+
+  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetTlData }
 }, { persist: true })

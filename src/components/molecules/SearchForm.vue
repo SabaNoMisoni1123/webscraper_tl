@@ -1,7 +1,7 @@
 <template>
   <div class="searchForm" :style="props.styles">
     <div class="inputArea">
-      <input type="search" name="" id="" v-model="text" placeholder="Enter text" size=25>
+      <input type="search" name="" id="" v-model="text" placeholder="Enter text" size=25 @keydown.enter="searchClick">
       <SearchButton @click="searchClick" :height="12" :width="12" icon-color="white" />
     </div>
   </div>

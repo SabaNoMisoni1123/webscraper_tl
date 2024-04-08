@@ -1,6 +1,6 @@
 <template>
   <div class="wsapp" :style="styles">
-    <div class="cfgArea">
+    <div :class="{ cfgArea: true, borderClass: hasBorder }">
       <CfgTabBar />
     </div>
 
@@ -29,6 +29,10 @@ import { useTlDataListStore } from '@/stores/tlData'
 const appState = useAppState()
 const tlData = useTlDataListStore()
 
+const hasBorder = computed(() => {
+  return !appState.useSearch;
+})
+
 const styles = computed(() => {
   return {
     '--bg-color': ColorPallet.gray2,
@@ -53,6 +57,9 @@ const styles = computed(() => {
   width: auto;
   margin-right: 5pt;
   height: 100%;
+}
+
+.borderClass {
   border-right: 3pt solid var(--bg-color);
 }
 

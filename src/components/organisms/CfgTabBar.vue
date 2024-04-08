@@ -6,7 +6,8 @@
     <div class="menuArea">
       <MenuButton :width="50" :height="50" :fill="colMenu" @click="toggleMenu" />
       <div class="tlList" v-if="appState.useMenu">
-        <TlTitleBlock  v-for="id in tlData.sortedIds" :tl-site-id="id" />
+        <TlTitleBlock v-for="id in tlData.sortedIds" :tl-site-id="id" />
+        <input type="button" value="reset" @click="tlDataReset">
       </div>
     </div>
   </div>
@@ -37,6 +38,12 @@ function toggleSearch() {
 function toggleMenu() {
   appState.useMenu = !appState.useMenu;
   colMenu.value = appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2;
+}
+
+function tlDataReset() {
+  if (window.confirm("データをリセットしますか？")) {
+    tlData.resetTlData();
+  }
 }
 
 const styles = computed(() => {
@@ -77,4 +84,7 @@ const styles = computed(() => {
   margin-top: 10pt;
 }
 
+.tlList TlTitleBlock {
+  margin-top: 10pt;
+}
 </style>
