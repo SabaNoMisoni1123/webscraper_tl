@@ -64,7 +64,42 @@ export const useTlDataListStore = defineStore('tlData', () => {
       }
     })
   }
+
+  function resetApiSiteList() {
+    // タイムライン設定の初期化
+    tlData.value = {} as TlDataDict;
+
+    // API接続
+    axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
+      const dlSiteData = response.data.data as SiteDataDict;
+      console.log("Site List");
+
+      // APIで取得されたデータで処理
+      for (const [key, value] of Object.entries(dlSiteData)) {
+        console.log(key, value);
+        tlData.value[key] = {
+          "name": value.name,
+          "url": value.url,
+          "weight": Object.keys(tlData.value).length,
+          "color": 0,
+          "isShow": true,
+        } as TlData
+      }
+    })
+
+  }
   apiSiteList();
+
+  const invalidSiteList = computed(() => {
+    let weights = [] as Array<number>;
+    for (const v of Object.values(tlData.value)) {
+      weights.push(v.weight);
+    }
+
+    let weightsSet = new Set(weights);
+
+    return weightsSet.size != weights.length;
+  })
 
   const sortedIds = computed(() => {
     let sk = [] as Array<{ "id": string, "weight": number }>
@@ -128,29 +163,6 @@ export const useTlDataListStore = defineStore('tlData', () => {
     }
   }
 
-  function resetTlData() {
-    // タイムライン設定の初期化
-    tlData.value = {} as TlDataDict;
 
-    // API接続
-    axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
-      const dlSiteData = response.data.data as SiteDataDict;
-      console.log("Site List");
-
-      // APIで取得されたデータで処理
-      for (const [key, value] of Object.entries(dlSiteData)) {
-        console.log(key, value);
-        tlData.value[key] = {
-          "name": value.name,
-          "url": value.url,
-          "weight": Object.keys(tlData.value).length,
-          "color": 0,
-          "isShow": true,
-        } as TlData
-      }
-    })
-
-  }
-
-  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetTlData }
+  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetApiSiteList, invalidSiteList }
 }, { persist: true })

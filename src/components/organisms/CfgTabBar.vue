@@ -38,11 +38,14 @@ function toggleSearch() {
 function toggleMenu() {
   appState.useMenu = !appState.useMenu;
   colMenu.value = appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2;
+  if (tlData.invalidSiteList) {
+    tlData.resetApiSiteList();
+  }
 }
 
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
-    tlData.resetTlData();
+    tlData.resetApiSiteList();
   }
 }
 
