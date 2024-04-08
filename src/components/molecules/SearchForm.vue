@@ -21,7 +21,7 @@ const props = defineProps({
   },
   initValue: {
     type: Object as () => string,
-    default: "" as string,
+    default: "",
   }
 })
 

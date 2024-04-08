@@ -1,4 +1,4 @@
-# MagnumCrawler
+# MiniCrawler
 
 【開発中】
 

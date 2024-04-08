@@ -10,7 +10,7 @@
     </div>
 
     <div class="tlArea">
-      <Timeline v-for="id in tlData.sortedIds" :tl-site-id="id" />
+      <Timeline v-for="id in tlData.sortedIdsFiltered" :tl-site-id="id" />
     </div>
 
   </div>

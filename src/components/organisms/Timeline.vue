@@ -1,10 +1,11 @@
 <template>
   <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlCfg.name" :style="styles" />
+    <TLTitleBar :tl-title="tlData.tlData[props.tlSiteId].name" :style="styles" />
     <div class="tlItemList">
       <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
       <ArticleItem v-for="item in wsData.scrapedData[props.tlSiteId]" :article-source="item!.org"
-        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlCfg.name" />
+        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch"
+        :tl-title="tlData.tlData[props.tlSiteId].name" />
     </div>
     <div class="tlFooter">
     </div>
@@ -30,7 +31,6 @@ const props = defineProps({
 })
 
 const tlData = useTlDataListStore()
-const tlCfg = tlData.tlData[props.tlSiteId]
 
 const wsData = useWsScrapedDataStore();
 wsData.scrape(props.tlSiteId);
@@ -45,7 +45,7 @@ const bgList = [
 
 const styles = computed(() => {
   return {
-    "--tl-background-color": bgList[tlCfg.color % bgList.length]
+    "--tl-background-color": bgList[tlData.tlData[props.tlSiteId].color % bgList.length]
   }
 })
 

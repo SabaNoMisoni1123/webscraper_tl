@@ -6,12 +6,15 @@ import { RouterLink, RouterView } from 'vue-router';
 
 <template>
   <header class="headerClass">
-    <nav>
+    <nav class="headerNav">
       <RouterLink to="/">HOME</RouterLink>
       <RouterLink to="/about">ABOUT</RouterLink>
+      <RouterLink to="/contact">CONTACT</RouterLink>
     </nav>
-    <img src="/icon.svg" type="image/svg+xml" alt="icon">
-    <p>{{ AppConfig.appName }} v{{ AppConfig.version }}</p>
+    <div class="headerIconTitle">
+      <img src="/icon.svg" type="image/svg+xml" alt="icon">
+      <p>{{ AppConfig.appName }} v{{ AppConfig.version }}</p>
+    </div>
   </header>
 
   <div class="appView">
@@ -24,30 +27,42 @@ import { RouterLink, RouterView } from 'vue-router';
   margin: 0pt;
   font-size: 20pt;
   background: #939292;
-  display: flex;
   width: 95vw;
+  display: flex;
+  height: 33pt;
 }
 
-.headerClass img {
+.headerNav {
+  display: inline-block;
+}
+
+.headerNav a {
+  margin-left: 10pt;
+  padding-left: 2pt;
+  padding-right: 2pt;
+}
+
+.headerIconTitle {
+  display: inline-block;
+  margin-left: auto;
+}
+
+.headerIconTitle img {
   height: 2ex;
   margin-top: auto;
   margin-bottom: auto;
   margin-left: auto;
   margin-right: 20pt;
-
+  display: inline-block;
 }
 
-.headerClass a {
-  margin-left: 10pt;
-  padding: 2pt;
-}
-
-.headerClass p {
+.headerIconTitle p {
   color: #003f27;
   margin-left: 0pt;
   margin-right: 20pt;
   margin-top: 0;
   margin-bottom: 0;
+  display: inline-block;
 }
 
 .appView {

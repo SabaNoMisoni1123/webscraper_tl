@@ -21,6 +21,7 @@ export interface TlData {
   "url": string,
   "weight": number,
   "color": number,
+  "isShow": boolean,
 }
 
 export interface TlDataDict {
@@ -43,14 +44,19 @@ export const useTlDataListStore = defineStore('tlData', () => {
         console.log(key, value);
         if (key in tlData.value) {
           // キーが存在する場合は情報の更新
-          tlData.value[key].name = value.name
-          tlData.value[key].url = value.url
+          tlData.value[key].name = value.name;
+          tlData.value[key].url = value.url;
+
+          if (!("isShow" in tlData.value[key] )){
+            tlData.value[key].isShow = true;
+          }
         } else {
           tlData.value[key] = {
             "name": value.name,
             "url": value.url,
             "weight": Object.keys(tlData.value).length,
             "color": 0,
+            "isShow": true,
           } as TlData
         }
 
@@ -73,6 +79,23 @@ export const useTlDataListStore = defineStore('tlData', () => {
     return sk.map((a) => a.id)
   })
 
+  const sortedIdsFiltered = computed(() => {
+    let sk = [] as Array<{ "id": string, "weight": number }>
+
+    for (const [k, v] of Object.entries(tlData.value)) {
+      if (v.isShow == false) {
+        continue
+      }
+      sk.push({
+        "id": k,
+        "weight": v.weight
+      })
+    }
+    sk.sort((a, b) => a.weight - b.weight)
+
+    return sk.map((a) => a.id)
+  })
+
   function setColor(id: string, newC: number) {
     tlData.value[id].color = newC
   }
@@ -81,5 +104,5 @@ export const useTlDataListStore = defineStore('tlData', () => {
     tlData.value[id].weight = newW
   }
 
-  return { tlData, sortedIds, apiSiteList, setColor, setWeight }
+  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight }
 }, { persist: true })
