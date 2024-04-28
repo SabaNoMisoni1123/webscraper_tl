@@ -1,15 +1,28 @@
 <template>
   <div class="cfgTabBar" :style="styles">
+
     <div class="searchArea">
       <SearchButton :width="50" :height="50" :fill="colSearch" @click="toggleSearch" />
+      <div class="serchCfgArea" v-show="appState.useSearch">
+        <label for="noWindow">窓数</label>
+        <select name="noWindow" v-model="noWindow" @change="changeNoSearchWindow">
+          <option v-for="n in 3" :value="n">{{ n }}</option>
+        </select>
+      </div>
     </div>
+
+    <div class="newsArea">
+      <NewsButton :width="50" :height="50" :fill="colNews" @click="toggleNews" />
+    </div>
+
     <div class="menuArea">
       <MenuButton :width="50" :height="50" :fill="colMenu" @click="toggleMenu" />
-      <div class="tlList" v-if="appState.useMenu">
+      <div class="tlList" v-show="appState.useMenu">
         <TlTitleBlock v-for="id in tlData.sortedIds" :tl-site-id="id" />
         <input type="button" value="reset" @click="tlDataReset">
       </div>
     </div>
+
   </div>
 </template>
 
@@ -18,21 +31,47 @@ import { ref, computed } from 'vue'
 
 import SearchButton from '@/components/atoms/button/SearchButton.vue'
 import MenuButton from '@/components/atoms/button/MenuButton.vue'
+import NewsButton from '@/components/atoms/button/NewsButton.vue'
 import TlTitleBlock from '@/components/molecules/TlTitleBlock.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 import { useAppState } from '@/stores/appState'
 import { useTlDataListStore } from '@/stores/tlData'
+import { useSearchCondtionStore } from '@/stores/searchCondition'
 
 const appState = useAppState();
-const tlData = useTlDataListStore()
+const tlData = useTlDataListStore();
+const sc = useSearchCondtionStore();
 
 const colSearch = ref(appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2);
 const colMenu = ref(appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2);
+const colNews = ref(appState.useNews ? ColorPallet.green1 : ColorPallet.gray2);
+
+const noWindow = ref(0);
+noWindow.value = sc.size;
 
 function toggleSearch() {
   appState.useSearch = !appState.useSearch;
   colSearch.value = appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
+}
+
+function changeNoSearchWindow() {
+  if (noWindow.value > sc.size) {
+    const times = noWindow.value - sc.size;
+    for (let i = 0; i < times; i++) {
+      sc.pushCondition();
+    }
+  } else if (noWindow.value < sc.size) {
+    const times = sc.size - noWindow.value;
+    for (let i = 0; i < times; i++) {
+      sc.popCondition();
+    }
+  }
+}
+
+function toggleNews() {
+  appState.useNews = !appState.useNews;
+  colNews.value = appState.useNews ? ColorPallet.green1 : ColorPallet.gray2;
 }
 
 function toggleMenu() {

@@ -1,7 +1,7 @@
 <template>
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="searchTlTitle" :style="styles" :is-loading="false" />
-    <SearchForm @search-text="newText" :style="styles" :init-value="appState.searchText" />
+    <SearchForm :style="styles" :sc-idx="props.searchCondIdx" />
 
     <div class="tlItemList">
       <ArticleItem v-for="item in searchedArticles" :article-source="item!.org" :article-description="item!.title"
@@ -23,28 +23,39 @@ import ColorPallet from '@/assets/ColorPallet.json'
 
 import { ref, computed } from 'vue'
 import { useWsScrapedDataStore, type ArticleData } from '@/stores/wsScrapedData';
-import { useAppState } from '@/stores/appState';
+import { useSearchCondtionStore } from '@/stores/searchCondition'
 
-// アプリステータス
-const appState = useAppState();
+const props = defineProps({
+  searchCondIdx: {
+    type: Number,
+    default: 0,
+  }
+})
+
+// 検索条件データ
+const scStore = useSearchCondtionStore();
 
 // ウェブスクレイプデータ
 const wsData = useWsScrapedDataStore();
 
-// 検索ワード
-const searchTlTitle = ref("検索: " + appState.searchText);
+// タイムラインのタイトル文字列
+const searchTlTitle = ref("検索: " + scStore.searchCondition[props.searchCondIdx].word);
 
 // 検索
-function newText(t: string) {
-  appState.searchText = t;
-  searchTlTitle.value = "検索: " + t;
-}
-
 const searchedArticles = computed(() => {
-  let sd = [] as Array<ArticleData>
-  for (const data of Object.values(wsData.scrapedData)) {
-    sd = [...sd, ...data.filter((article) => article.title.indexOf(appState.searchText) >= 0)];
+  let sd = wsData.allArticles;
+  const c = scStore.searchCondition[props.searchCondIdx];
+  // 検索ワードのフィルタ
+  sd = sd.filter(((article) => article.title.indexOf(c.word) >= 0));
+
+  // 日付のフィルタ
+  if (c.day != "-" && c.month != "-" && c.year != "-") {
+    const epoch_s = new Date(c.year as number, c.month as number - 1, c.day as number).getTime();
+    const epoch_t = new Date(c.year as number, c.month as number - 1, c.day as number + 1).getTime();
+    sd = sd.filter((article) => epoch_s <= article.epoch && article.epoch < epoch_t);
   }
+
+  // 並び替え
   sd.sort((a, b) => b.epoch - a.epoch);
   return sd
 })
@@ -79,7 +90,7 @@ const styles = computed(() => {
 .tlItemList {
   background: var(--tl-background-color);
   padding: 2pt;
-  height: calc(90% - 25pt);
+  height: calc(90% - 40pt);
 
   overflow: auto;
   -ms-overflow-style: none;

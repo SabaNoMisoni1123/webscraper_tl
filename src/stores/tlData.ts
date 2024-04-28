@@ -30,7 +30,15 @@ export interface TlDataDict {
 
 // データロード
 export const useTlDataListStore = defineStore('tlData', () => {
-  const tlData = ref<TlDataDict>({} as TlDataDict)
+  const tlData = ref<TlDataDict>({
+    "all": {
+      "name": "all",
+      "url": "noURL",
+      "weight": 0,
+      "color": 3,
+      "isShow": false,
+    }
+  } as TlDataDict);
 
   function apiSiteList() {
     // キーの有無で処理を変えたい

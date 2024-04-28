@@ -1,12 +1,17 @@
 <template>
   <div class="wsapp" :style="styles">
-    <div :class="{ cfgArea: true, borderClass: hasBorder }">
-      <CfgTabBar />
-    </div>
+    <div class="sideArea">
+      <div :class="{ cfgArea: true, borderClass: hasBorder }">
+        <CfgTabBar />
+      </div>
 
-    <div class="searchArea" v-show="appState.useSearch">
-      <SearchedTimeline />
-      <!-- 検索用の領域 -->
+      <div class="newsArea" v-show="appState.useNews">
+        <Timeline tl-site-id="all" tl-title="新着情報" :last-epoch="today.getTime() / 1000" />
+      </div>
+
+      <div class="searchArea" v-show="appState.useSearch">
+        <SearchedTimeline v-for="idx in searchCond.size" :search-cond-idx="idx.valueOf() - 1" />
+      </div>
     </div>
 
     <div class="tlArea">
@@ -25,9 +30,14 @@ import ColorPallet from '@/assets/ColorPallet.json'
 
 import { useAppState } from '@/stores/appState'
 import { useTlDataListStore } from '@/stores/tlData'
+import { useSearchCondtionStore } from '@/stores/searchCondition'
 
-const appState = useAppState()
-const tlData = useTlDataListStore()
+const appState = useAppState();
+const tlData = useTlDataListStore();
+const searchCond = useSearchCondtionStore();
+
+let today = new Date();
+today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
 const hasBorder = computed(() => {
   return !appState.useSearch;
@@ -52,25 +62,42 @@ const styles = computed(() => {
 
 }
 
+.sideArea {
+  height: 100%;
+  float: left;
+  width: auto;
+  border-right: 3pt solid var(--bg-color);
+  margin-right: 5pt;
+}
+
 .cfgArea {
   float: left;
   width: auto;
-  margin-right: 5pt;
+  margin-right: 3pt;
   height: 100%;
 }
 
-.borderClass {
-  border-right: 3pt solid var(--bg-color);
+.newsArea {
+  float: left;
+  width: auto;
+  max-width: 50vw;
+  height: 100%;
+  margin-right: 3pt;
 }
 
 .searchArea {
   float: left;
   width: auto;
   max-width: 50vw;
-  height: 100%;
+  margin-right: 3pt;
 
-  margin-right: 5pt;
-  border-right: 3pt solid var(--bg-color);
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.searchArea Timeline {
+  display: inline-block;
 }
 
 .tlArea {

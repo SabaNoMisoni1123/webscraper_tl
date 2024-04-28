@@ -1,11 +1,10 @@
 <template>
   <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlData.tlData[props.tlSiteId].name" :style="styles" />
+    <TLTitleBar :tl-title="tlTitle" :style="styles" />
     <div class="tlItemList">
       <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
-      <ArticleItem v-for="item in wsData.scrapedData[props.tlSiteId]" :article-source="item!.org"
-        :article-description="item!.title" :article-url="item!.url" :article-epoch="item!.epoch"
-        :tl-title="tlData.tlData[props.tlSiteId].name" />
+      <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
+        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.tlData[props.tlSiteId].name" />
     </div>
     <div class="tlFooter">
     </div>
@@ -28,13 +27,23 @@ const props = defineProps({
     type: String,
     required: true
   },
+  lastEpoch: {
+    type: Number,
+    default: 0,
+  },
+  tlTitle: {
+    type: String,
+    default: "",
+  }
 })
 
 const tlData = useTlDataListStore()
-
 const wsData = useWsScrapedDataStore();
-wsData.scrape(props.tlSiteId);
+if (props.tlSiteId != "all") {
+  wsData.scrape(props.tlSiteId);
+}
 
+const tlTitle = props.tlTitle == "" ? tlData.tlData[props.tlSiteId].name : props.tlTitle;
 const bgList = [
   ColorPallet.blue1,
   ColorPallet.red1,
@@ -42,6 +51,11 @@ const bgList = [
   ColorPallet.green1,
   ColorPallet.gray1,
 ];
+
+const showArticles = computed(() => {
+  let ret = props.tlSiteId == "all" ? wsData.allArticles : wsData.scrapedData[props.tlSiteId];
+  return ret.filter((article) => article.epoch >= props.lastEpoch);
+})
 
 const styles = computed(() => {
   return {
