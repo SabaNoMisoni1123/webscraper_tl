@@ -43,16 +43,21 @@ const appState = useAppState();
 const tlData = useTlDataListStore();
 const sc = useSearchCondtionStore();
 
-const colSearch = ref(appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2);
-const colMenu = ref(appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2);
-const colNews = ref(appState.useNews ? ColorPallet.green1 : ColorPallet.gray2);
+const colSearch = computed(() => {
+  return appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
+})
+const colMenu = computed(() => {
+  return appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2;
+})
+const colNews = computed(() => {
+  return appState.useNews ? ColorPallet.green1 : ColorPallet.gray2;
+})
 
 const noWindow = ref(0);
 noWindow.value = sc.size;
 
 function toggleSearch() {
   appState.useSearch = !appState.useSearch;
-  colSearch.value = appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
 }
 
 function changeNoSearchWindow() {
@@ -71,12 +76,10 @@ function changeNoSearchWindow() {
 
 function toggleNews() {
   appState.useNews = !appState.useNews;
-  colNews.value = appState.useNews ? ColorPallet.green1 : ColorPallet.gray2;
 }
 
 function toggleMenu() {
   appState.useMenu = !appState.useMenu;
-  colMenu.value = appState.useMenu ? ColorPallet.green1 : ColorPallet.gray2;
   if (tlData.invalidSiteList) {
     tlData.resetApiSiteList();
   }

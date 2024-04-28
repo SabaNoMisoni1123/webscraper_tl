@@ -38,14 +38,27 @@ const props = defineProps({
 })
 
 const tlDataStore = useTlDataListStore();
-const tlData = props.tlSiteId in tlDataStore.tlData ? tlDataStore.tlData[props.tlSiteId] : tlDataStore.defaultTlData;
+const tlData = computed(() => {
+  if (props.tlSiteId in tlDataStore.tlData) {
+    return tlDataStore.tlData[props.tlSiteId];
+  } else {
+    return tlDataStore.defaultTlData;
+  }
+})
 
 const wsData = useWsScrapedDataStore();
 if (props.tlSiteId != "all") {
   wsData.scrape(props.tlSiteId);
 }
 
-const tlTitle = props.tlTitle == "" ? tlData.name : props.tlTitle;
+const tlTitle = computed(() => {
+  if (props.tlTitle == "") {
+    return tlData.value.name;
+  } else {
+    return props.tlTitle;
+  }
+})
+
 const bgList = [
   ColorPallet.blue1,
   ColorPallet.red1,
@@ -61,7 +74,7 @@ const showArticles = computed(() => {
 
 const styles = computed(() => {
   return {
-    "--tl-background-color": bgList[tlData.color % bgList.length]
+    "--tl-background-color": bgList[tlData.value.color % bgList.length]
   }
 })
 

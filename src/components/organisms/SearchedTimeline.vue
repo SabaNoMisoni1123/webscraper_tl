@@ -21,7 +21,7 @@ import SearchForm from '@/components/molecules/SearchForm.vue'
 
 import ColorPallet from '@/assets/ColorPallet.json'
 
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
 import { useSearchCondtionStore } from '@/stores/searchCondition'
 
@@ -39,7 +39,9 @@ const scStore = useSearchCondtionStore();
 const wsData = useWsScrapedDataStore();
 
 // タイムラインのタイトル文字列
-const searchTlTitle = ref("検索: " + scStore.searchCondition[props.searchCondIdx].word);
+const searchTlTitle = computed(() => {
+  return "検索: " + scStore.searchCondition[props.searchCondIdx].word
+})
 
 // 検索
 const searchedArticles = computed(() => {
