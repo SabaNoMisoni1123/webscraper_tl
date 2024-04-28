@@ -30,15 +30,14 @@ export interface TlDataDict {
 
 // データロード
 export const useTlDataListStore = defineStore('tlData', () => {
-  const tlData = ref<TlDataDict>({
-    "all": {
-      "name": "all",
-      "url": "noURL",
-      "weight": 0,
-      "color": 3,
-      "isShow": false,
-    }
-  } as TlDataDict);
+  const tlData = ref<TlDataDict>({} as TlDataDict);
+  const defaultTlData = ref<TlData>({
+    "name": "default",
+    "url": "noUrl",
+    "weight": -1,
+    "color": 3,
+    "isShow": false,
+  })
 
   function apiSiteList() {
     // キーの有無で処理を変えたい
@@ -171,6 +170,5 @@ export const useTlDataListStore = defineStore('tlData', () => {
     }
   }
 
-
-  return { tlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetApiSiteList, invalidSiteList }
+  return { tlData, defaultTlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetApiSiteList, invalidSiteList }
 }, { persist: true })

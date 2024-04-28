@@ -90,7 +90,7 @@ function tlDataReset() {
 
 const styles = computed(() => {
   return {
-    '--width': appState.useMenu ? "250px" : "60px",
+    '--width': appState.useMenu ? "280px" : "60px",
   }
 })
 </script>
@@ -124,6 +124,13 @@ const styles = computed(() => {
 
 .menuArea .tlList {
   margin-top: 10pt;
+}
+
+.tlList {
+  height: 200pt;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
 }
 
 .tlList TlTitleBlock {

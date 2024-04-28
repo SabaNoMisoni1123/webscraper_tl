@@ -4,7 +4,7 @@
     <div class="tlItemList">
       <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
       <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
-        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.tlData[props.tlSiteId].name" />
+        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.name" />
     </div>
     <div class="tlFooter">
     </div>
@@ -37,13 +37,15 @@ const props = defineProps({
   }
 })
 
-const tlData = useTlDataListStore()
+const tlDataStore = useTlDataListStore();
+const tlData = props.tlSiteId in tlDataStore.tlData ? tlDataStore.tlData[props.tlSiteId] : tlDataStore.defaultTlData;
+
 const wsData = useWsScrapedDataStore();
 if (props.tlSiteId != "all") {
   wsData.scrape(props.tlSiteId);
 }
 
-const tlTitle = props.tlTitle == "" ? tlData.tlData[props.tlSiteId].name : props.tlTitle;
+const tlTitle = props.tlTitle == "" ? tlData.name : props.tlTitle;
 const bgList = [
   ColorPallet.blue1,
   ColorPallet.red1,
@@ -59,7 +61,7 @@ const showArticles = computed(() => {
 
 const styles = computed(() => {
   return {
-    "--tl-background-color": bgList[tlData.tlData[props.tlSiteId].color % bgList.length]
+    "--tl-background-color": bgList[tlData.color % bgList.length]
   }
 })
 
