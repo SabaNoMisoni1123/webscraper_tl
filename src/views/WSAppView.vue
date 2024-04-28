@@ -6,7 +6,7 @@
       </div>
 
       <div class="newsArea" v-show="appState.useNews">
-        <Timeline tl-site-id="all" tl-title="新着情報" :last-epoch="today.getTime() / 1000" />
+        <Timeline tl-site-id="all" tl-title="新着情報" :last-epoch="today.getTime() / 1000" :show-bar="true" />
       </div>
 
       <div class="searchArea" v-show="appState.useSearch">

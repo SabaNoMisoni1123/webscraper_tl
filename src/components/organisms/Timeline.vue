@@ -4,7 +4,7 @@
     <div class="tlItemList">
       <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
       <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
-        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.name" />
+        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.name" :show-bar="props.showBar" />
     </div>
     <div class="tlFooter">
     </div>
@@ -34,6 +34,10 @@ const props = defineProps({
   tlTitle: {
     type: String,
     default: "",
+  },
+  showBar: {
+    type: Boolean,
+    default: false,
   }
 })
 
