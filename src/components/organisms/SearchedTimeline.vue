@@ -22,7 +22,7 @@ import SearchForm from '@/components/molecules/SearchForm.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 import { ref, computed } from 'vue'
-import { useWsScrapedDataStore, type ArticleData } from '@/stores/wsScrapedData';
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
 import { useSearchCondtionStore } from '@/stores/searchCondition'
 
 const props = defineProps({
@@ -50,9 +50,9 @@ const searchedArticles = computed(() => {
 
   // 日付のフィルタ
   if (c.day != "-" && c.month != "-" && c.year != "-") {
-    const epoch_s = new Date(c.year as number, c.month as number - 1, c.day as number).getTime();
-    const epoch_t = new Date(c.year as number, c.month as number - 1, c.day as number + 1).getTime();
-    sd = sd.filter((article) => epoch_s <= article.epoch && article.epoch < epoch_t);
+    const epoch_s = new Date(c.year as number, c.month as number - 1, c.day as number).getTime() / 1000;
+    const epoch_t = epoch_s + 60 * 60 * 24;
+    sd = sd.filter((article) => (epoch_s <= article.epoch && article.epoch < epoch_t));
   }
 
   // 並び替え
