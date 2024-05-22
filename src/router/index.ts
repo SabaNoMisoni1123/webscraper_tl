@@ -8,26 +8,26 @@ const router = createRouter({
     {
       path: '/',
       name: 'app',
-      component: WSAppView
-    },
-    {
-      path: '/sample',
-      name: 'sample',
       component: SampleView
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('@/views/AboutView.vue')
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: () => import('@/views/ContactView.vue')
-    }
+    // {
+    //   path: '/sample',
+    //   name: 'sample',
+    //   component: SampleView
+    // },
+    // {
+    //   path: '/about',
+    //   name: 'about',
+    //   // route level code-splitting
+    //   // this generates a separate chunk (About.[hash].js) for this route
+    //   // which is lazy-loaded when the route is visited.
+    //   component: () => import('@/views/AboutView.vue')
+    // },
+    // {
+    //   path: '/contact',
+    //   name: 'contact',
+    //   component: () => import('@/views/ContactView.vue')
+    // }
   ]
 })
 

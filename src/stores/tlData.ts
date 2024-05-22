@@ -3,11 +3,15 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 
 import ApiUrl from '@/assets/ApiUrl.json'
+import { db } from '@/firebase'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 
 // APIから得るサイトデータ
 export interface SiteData {
   "name": string,
   "url": string,
+  "id": string,
+  "no": number,
 }
 
 // サイトデータ一覧は辞書型
@@ -22,6 +26,7 @@ export interface TlData {
   "weight": number,
   "color": number,
   "isShow": boolean,
+  "valid": boolean,
 }
 
 export interface TlDataDict {
@@ -30,6 +35,8 @@ export interface TlDataDict {
 
 // データロード
 export const useTlDataListStore = defineStore('tlData', () => {
+  const firebaseDb = db;
+
   const tlData = ref<TlDataDict>({} as TlDataDict);
   const defaultTlData = ref<TlData>({
     "name": "default",
@@ -37,39 +44,41 @@ export const useTlDataListStore = defineStore('tlData', () => {
     "weight": -1,
     "color": 3,
     "isShow": false,
+    "valid": true,
   })
 
-  function apiSiteList() {
-    // キーの有無で処理を変えたい
-    // API接続
-    axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
-      const dlSiteData = response.data.data as SiteDataDict;
-      console.log("Site List");
+  const apiSiteList = async () => {
+    // すべてのデータをinvalidにする
+    allInvalid();
 
-      // APIで取得されたデータで処理
-      for (const [key, value] of Object.entries(dlSiteData)) {
-        console.log(key, value);
-        if (key in tlData.value) {
-          // キーが存在する場合は情報の更新
-          tlData.value[key].name = value.name;
-          tlData.value[key].url = value.url;
+    // データベースからサイトデータを取得
+    try {
+      const q = query(collection(db, 'siteData'), orderBy('no'));
+      const docsSiteData = await getDocs(q);
+      docsSiteData.forEach((doc) => {
+        const site = doc.data() as SiteData;
 
-          // isShowがない場合
-          if (!("isShow" in tlData.value[key])) {
-            tlData.value[key].isShow = true;
-          }
+        if (site.id in tlData.value) {
+          tlData.value[site.id].valid = true;
+          tlData.value[site.id].name = site.name;
+          tlData.value[site.id].url = site.url;
         } else {
-          tlData.value[key] = {
-            "name": value.name,
-            "url": value.url,
+          tlData.value[site.id] = {
+            "name": site.name,
+            "url": site.url,
             "weight": Object.keys(tlData.value).length,
             "color": 0,
             "isShow": true,
+            "valid": true,
           } as TlData
         }
+      })
 
-      }
-    })
+      // invalidなデータがあれば削除する必要がある
+      
+    } catch (error) {
+      console.error("Error fetching documents: ", error);
+    }
   }
 
   function resetApiSiteList() {
@@ -167,6 +176,20 @@ export const useTlDataListStore = defineStore('tlData', () => {
       const targetId = Object.keys(tlData.value).find(key => tlData.value[key].weight == targetWeight) as string;
       tlData.value[id].weight = targetWeight;
       tlData.value[targetId].weight = currentWeight;
+    }
+  }
+
+  function allInvalid() {
+    for (const [k, v] of Object.entries(tlData.value)) {
+      v.valid = false;
+    }
+  }
+
+  function rmInvalid() {
+    for (const [k, v] of Object.entries(tlData.value)) {
+      if (!v.valid) {
+        delete tlData.value[k];
+      }
     }
   }
 

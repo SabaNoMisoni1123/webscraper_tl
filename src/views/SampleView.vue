@@ -1,12 +1,13 @@
 <template>
   <div class="sample">
-    <SearchedTimeline />
-
+    {{ tlDataStore.tlData }}
   </div>
 </template>
 
 <script setup lang="ts">
-import SearchedTimeline from '@/components/organisms/SearchedTimeline.vue'
+import { useTlDataListStore } from '@/stores/tlData'
+
+const tlDataStore = useTlDataListStore()
 
 </script>
 
