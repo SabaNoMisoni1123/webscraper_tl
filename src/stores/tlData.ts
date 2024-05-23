@@ -1,8 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 
-import ApiUrl from '@/assets/ApiUrl.json'
 import { db } from '@/firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 
@@ -35,8 +33,6 @@ export interface TlDataDict {
 
 // データロード
 export const useTlDataListStore = defineStore('tlData', () => {
-  const firebaseDb = db;
-
   const tlData = ref<TlDataDict>({} as TlDataDict);
   const defaultTlData = ref<TlData>({
     "name": "default",
@@ -75,33 +71,34 @@ export const useTlDataListStore = defineStore('tlData', () => {
       })
 
       // invalidなデータがあれば削除する必要がある
-      
+      rmInvalid();
     } catch (error) {
       console.error("Error fetching documents: ", error);
     }
   }
 
-  function resetApiSiteList() {
+  const resetApiSiteList = async () => {
     // タイムライン設定の初期化
     tlData.value = {} as TlDataDict;
 
-    // API接続
-    axios.get(ApiUrl.apiUrl + '/siteList').then((response) => {
-      const dlSiteData = response.data.data as SiteDataDict;
-      console.log("Site List");
-
-      // APIで取得されたデータで処理
-      for (const [key, value] of Object.entries(dlSiteData)) {
-        console.log(key, value);
-        tlData.value[key] = {
-          "name": value.name,
-          "url": value.url,
+    // データベースからサイトデータを取得
+    try {
+      const q = query(collection(db, 'siteData'), orderBy('no'));
+      const docsSiteData = await getDocs(q);
+      docsSiteData.forEach((doc) => {
+        const site = doc.data() as SiteData;
+        tlData.value[site.id] = {
+          "name": site.name,
+          "url": site.url,
           "weight": Object.keys(tlData.value).length,
           "color": 0,
           "isShow": true,
+          "valid": true,
         } as TlData
-      }
-    })
+      });
+    } catch (error) {
+      console.error("Error fetching documents: ", error);
+    }
 
   }
   apiSiteList();
@@ -180,16 +177,29 @@ export const useTlDataListStore = defineStore('tlData', () => {
   }
 
   function allInvalid() {
-    for (const [k, v] of Object.entries(tlData.value)) {
+    for (const v of Object.values(tlData.value)) {
       v.valid = false;
     }
   }
 
   function rmInvalid() {
+    // 削除
     for (const [k, v] of Object.entries(tlData.value)) {
       if (!v.valid) {
         delete tlData.value[k];
       }
+    }
+    // 重みの再振り分け
+    let sortedList = [] as Array<{ "id": string, "weight": number }>
+    for (const [k, v] of Object.entries(tlData.value)) {
+      sortedList.push({
+        "id": k,
+        "weight": v.weight,
+      });
+    }
+    sortedList.sort((a, b) => a.weight - b.weight);
+    for (const [idx, element] of sortedList.entries()) {
+      tlData.value[element.id].weight = idx;
     }
   }
 

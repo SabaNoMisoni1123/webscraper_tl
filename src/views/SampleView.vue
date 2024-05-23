@@ -1,10 +1,14 @@
 <template>
   <div class="sample">
-    {{ tlDataStore.tlData }}
+    {{ tlDataStore.sortedIdsFiltered }}
+
+    <Timeline v-for="id in tlDataStore.sortedIdsFiltered" :tl-site-id="id as string" />
   </div>
 </template>
 
 <script setup lang="ts">
+import Timeline from '@/components/organisms/Timeline.vue'
+
 import { useTlDataListStore } from '@/stores/tlData'
 
 const tlDataStore = useTlDataListStore()

@@ -27,10 +27,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  lastEpoch: {
-    type: Number,
-    default: 0,
-  },
   tlTitle: {
     type: String,
     default: "",
@@ -72,8 +68,10 @@ const bgList = [
 ];
 
 const showArticles = computed(() => {
+  console.log("log");
+  console.log(props.tlSiteId);
   let ret = props.tlSiteId == "all" ? wsData.allArticles : wsData.scrapedData[props.tlSiteId];
-  return ret.filter((article) => article.epoch >= props.lastEpoch);
+  return ret
 })
 
 const styles = computed(() => {
