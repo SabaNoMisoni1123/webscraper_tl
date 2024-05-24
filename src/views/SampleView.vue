@@ -1,8 +1,6 @@
 <template>
   <div class="sample">
-    {{ tlDataStore.sortedIdsFiltered }}
-
-    <Timeline v-for="id in tlDataStore.sortedIdsFiltered" :tl-site-id="id as string" />
+    <Timeline tl-site-id="micJoho" />
   </div>
 </template>
 

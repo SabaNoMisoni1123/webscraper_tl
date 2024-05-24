@@ -48,7 +48,7 @@ const tlData = computed(() => {
 
 const wsData = useWsScrapedDataStore();
 if (props.tlSiteId != "all") {
-  wsData.scrape(props.tlSiteId);
+  wsData.loadDatabase(props.tlSiteId);
 }
 
 const tlTitle = computed(() => {

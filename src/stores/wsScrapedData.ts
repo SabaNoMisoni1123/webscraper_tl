@@ -1,8 +1,12 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 
+import axios from 'axios'
 import ApiUrl from '@/assets/ApiUrl.json'
+
+import { db } from '@/firebase'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+
 
 export interface ArticleData {
   "title": string,
@@ -24,14 +28,32 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const scrapedData = ref<ScrapedData>({} as ScrapedData);
   const loadingStatus = ref<LoadingStatusData>({} as LoadingStatusData)
 
-  function scrape(siteId: string) {
+  const loadDatabase = async (siteId: string) => {
     loadingStatus.value[siteId] = true
+    try {
+      const q = query(collection(db, siteId), orderBy("epoch"));
+      const docsArticleData = await getDocs(q);
+      let newData = [] as Array<ArticleData>;
+
+      docsArticleData.forEach((doc) => {
+        newData.push(doc.data() as ArticleData);
+      })
+      scrapedData.value[siteId] = newData;
+      loadingStatus.value[siteId] = false;
+    } catch (error) {
+      console.error("Error fetching documents: ", error);
+    }
+  }
+
+  function scrape(siteId: string) {
+
     axios.get(ApiUrl.apiUrl + "/data", { params: { id: siteId } }).then((response) => {
       scrapedData.value[siteId] = response.data.data;
       console.log(siteId);
       console.log(response.data.msg);
       loadingStatus.value[siteId] = false
     });
+
   }
 
   const allArticles = computed(() => {
@@ -42,5 +64,5 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
     return ret.sort((a, b) => b.epoch - a.epoch);
   })
 
-  return { scrapedData, loadingStatus, scrape, allArticles }
+  return { scrapedData, loadingStatus, scrape, loadDatabase, allArticles }
 }, { persist: true });
