@@ -29,14 +29,14 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const loadingStatus = ref<LoadingStatusData>({} as LoadingStatusData);
   const lastLoadTime = ref<LoadingTimeData>({} as LoadingTimeData);
 
-  const loadDatabase = async (siteId: string) => {
+  const loadDatabase = async (siteId: string, force = false) => {
     // 最終ロード時間からロードするのかを判定
     if (!(siteId in lastLoadTime.value)) {
       lastLoadTime.value[siteId] = 0;
     }
 
     const nowTime = Math.floor(Date.now() / 1000);
-    if (nowTime < lastLoadTime.value[siteId] + 3600 * 3) {
+    if (!force && nowTime < lastLoadTime.value[siteId] + 60 * 30) {
       return;
     }
 
@@ -67,5 +67,23 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
     return ret.sort((a, b) => b.epoch - a.epoch);
   })
 
-  return { scrapedData, loadingStatus, lastLoadTime, loadDatabase, allArticles }
+  const allLoadingStatus = computed(() => {
+    let retStatus = false;
+    for (const v of Object.values(loadingStatus.value)) {
+      retStatus = retStatus || v;
+    }
+    return retStatus;
+  })
+
+  function rmNoId(siteIdList: Array<string>){
+    for (const k of Object.keys(scrapedData.value)){
+      if (!(k in siteIdList)) {
+        delete scrapedData.value[k];
+        delete loadingStatus.value[k];
+        delete lastLoadTime.value[k];
+      }
+    }
+  }
+
+  return { scrapedData, loadingStatus, allLoadingStatus, lastLoadTime, loadDatabase, allArticles, rmNoId }
 }, { persist: true });

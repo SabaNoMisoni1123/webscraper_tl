@@ -23,6 +23,10 @@
       </div>
     </div>
 
+    <div class="reloadArea">
+      <ReloadButton :width="50" :height="50" :fill="colReload" @click="reloadWsData" />
+    </div>
+
   </div>
 </template>
 
@@ -32,16 +36,20 @@ import { ref, computed } from 'vue'
 import SearchButton from '@/components/atoms/button/SearchButton.vue'
 import MenuButton from '@/components/atoms/button/MenuButton.vue'
 import NewsButton from '@/components/atoms/button/NewsButton.vue'
+import ReloadButton from '@/components/atoms/button/ReloadButton.vue'
+
 import TlTitleBlock from '@/components/molecules/TlTitleBlock.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 import { useAppState } from '@/stores/appState'
 import { useTlDataListStore } from '@/stores/tlData'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
 
 const appState = useAppState();
 const tlData = useTlDataListStore();
 const sc = useSearchCondtionStore();
+const wsData = useWsScrapedDataStore();
 
 const colSearch = computed(() => {
   return appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
@@ -51,6 +59,9 @@ const colMenu = computed(() => {
 })
 const colNews = computed(() => {
   return appState.useNews ? ColorPallet.green1 : ColorPallet.gray2;
+})
+const colReload = computed(() => {
+  return wsData.allLoadingStatus ? ColorPallet.green1 : ColorPallet.gray2;
 })
 
 const noWindow = ref(0);
@@ -88,6 +99,15 @@ function toggleMenu() {
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
     tlData.resetSiteList();
+  }
+}
+
+function reloadWsData() {
+  for (const [k, v] of Object.entries(tlData.tlData)) {
+    if (v.isShow) {
+      console.log("reload: ", k);
+      wsData.loadDatabase(k, true);
+    }
   }
 }
 

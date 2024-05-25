@@ -1,7 +1,8 @@
 <template>
   <div class="sample">
     <p>{{ tlDataStore.tlData["micJoho"] }}</p>
-    <p>{{ wsScrapedData.lastLoadTime }}</p>
+    <p>{{ wsScrapedData.allLoadingStatus }}</p>
+    <p>{{ wsScrapedData.loadingStatus }}</p>
   </div>
 </template>
 

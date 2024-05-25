@@ -31,9 +31,11 @@ import ColorPallet from '@/assets/ColorPallet.json'
 import { useAppState } from '@/stores/appState'
 import { useTlDataListStore } from '@/stores/tlData'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
 
 const appState = useAppState();
 const tlData = useTlDataListStore();
+const wsData = useWsScrapedDataStore();
 const searchCond = useSearchCondtionStore();
 
 let today = new Date();
@@ -45,6 +47,7 @@ const hasBorder = computed(() => {
 
 onBeforeMount(() => {
   tlData.loadSiteList();
+  wsData.rmNoId(tlData.sortedIds);
 })
 
 const styles = computed(() => {
