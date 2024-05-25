@@ -17,7 +17,7 @@ import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
 import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue';
 import ColorPallet from '@/assets/ColorPallet.json'
 
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
 import { useTlDataListStore } from '@/stores/tlData';
@@ -37,7 +37,11 @@ const props = defineProps({
   }
 })
 
+// store
 const tlDataStore = useTlDataListStore();
+const wsData = useWsScrapedDataStore();
+
+// tlData
 const tlData = computed(() => {
   if (props.tlSiteId in tlDataStore.tlData) {
     return tlDataStore.tlData[props.tlSiteId];
@@ -45,11 +49,6 @@ const tlData = computed(() => {
     return tlDataStore.defaultTlData;
   }
 })
-
-const wsData = useWsScrapedDataStore();
-if (props.tlSiteId != "all") {
-  wsData.loadDatabase(props.tlSiteId);
-}
 
 const tlTitle = computed(() => {
   if (props.tlTitle == "") {
@@ -67,11 +66,19 @@ const bgList = [
   ColorPallet.gray1,
 ];
 
+// 表示記事
 const showArticles = computed(() => {
-  console.log("log");
-  console.log(props.tlSiteId);
   let ret = props.tlSiteId == "all" ? wsData.allArticles : wsData.scrapedData[props.tlSiteId];
   return ret
+})
+
+// マウント時のデータベースアクセス
+onMounted(() => {
+  if (props.tlSiteId != "all" && tlData.value.isShow) {
+    wsData.loadDatabase(props.tlSiteId);
+  } else {
+    console.log("Not load DB: ", props.tlSiteId);
+  }
 })
 
 const styles = computed(() => {

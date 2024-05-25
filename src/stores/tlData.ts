@@ -42,8 +42,15 @@ export const useTlDataListStore = defineStore('tlData', () => {
     "isShow": false,
     "valid": true,
   })
+  const lastLoadTime = ref<number>(0);
 
-  const apiSiteList = async () => {
+  const loadSiteList = async () => {
+    // 最終ロード時間からロードするのかを判定
+    const nowTime = Math.floor(Date.now() / 1000);
+    if (nowTime < lastLoadTime.value + 3600 * 24) {
+      return;
+    }
+
     // すべてのデータをinvalidにする
     allInvalid();
 
@@ -77,7 +84,7 @@ export const useTlDataListStore = defineStore('tlData', () => {
     }
   }
 
-  const resetApiSiteList = async () => {
+  const resetSiteList = async () => {
     // タイムライン設定の初期化
     tlData.value = {} as TlDataDict;
 
@@ -101,7 +108,6 @@ export const useTlDataListStore = defineStore('tlData', () => {
     }
 
   }
-  apiSiteList();
 
   const invalidSiteList = computed(() => {
     let weights = [] as Array<number>;
@@ -203,5 +209,5 @@ export const useTlDataListStore = defineStore('tlData', () => {
     }
   }
 
-  return { tlData, defaultTlData, sortedIds, sortedIdsFiltered, apiSiteList, setColor, setWeight, upWeight, downWeight, resetApiSiteList, invalidSiteList }
+  return { tlData, defaultTlData, sortedIds, sortedIdsFiltered, loadSiteList, setColor, setWeight, upWeight, downWeight, resetSiteList, invalidSiteList }
 }, { persist: true })

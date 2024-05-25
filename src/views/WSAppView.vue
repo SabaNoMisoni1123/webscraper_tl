@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import CfgTabBar from '@/components/organisms/CfgTabBar.vue'
 import Timeline from '@/components/organisms/Timeline.vue'
 import SearchedTimeline from '@/components/organisms/SearchedTimeline.vue'
@@ -41,6 +41,10 @@ today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
 const hasBorder = computed(() => {
   return !appState.useSearch;
+})
+
+onBeforeMount(() => {
+  tlData.loadSiteList();
 })
 
 const styles = computed(() => {

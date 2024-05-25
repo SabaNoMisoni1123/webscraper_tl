@@ -81,13 +81,13 @@ function toggleNews() {
 function toggleMenu() {
   appState.useMenu = !appState.useMenu;
   if (tlData.invalidSiteList) {
-    tlData.resetApiSiteList();
+    tlData.resetSiteList();
   }
 }
 
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
-    tlData.resetApiSiteList();
+    tlData.resetSiteList();
   }
 }
 

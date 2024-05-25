@@ -1,12 +1,8 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-import axios from 'axios'
-import ApiUrl from '@/assets/ApiUrl.json'
-
 import { db } from '@/firebase'
-import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
 
 export interface ArticleData {
   "title": string,
@@ -23,15 +19,30 @@ export interface LoadingStatusData {
   [index: string]: boolean
 }
 
+export interface LoadingTimeData {
+  [index: string]: number
+}
+
 
 export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const scrapedData = ref<ScrapedData>({} as ScrapedData);
-  const loadingStatus = ref<LoadingStatusData>({} as LoadingStatusData)
+  const loadingStatus = ref<LoadingStatusData>({} as LoadingStatusData);
+  const lastLoadTime = ref<LoadingTimeData>({} as LoadingTimeData);
 
   const loadDatabase = async (siteId: string) => {
+    // 最終ロード時間からロードするのかを判定
+    if (!(siteId in lastLoadTime.value)) {
+      lastLoadTime.value[siteId] = 0;
+    }
+
+    const nowTime = Math.floor(Date.now() / 1000);
+    if (nowTime < lastLoadTime.value[siteId] + 3600 * 3) {
+      return;
+    }
+
     loadingStatus.value[siteId] = true
     try {
-      const q = query(collection(db, siteId), orderBy("epoch"));
+      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(30));
       const docsArticleData = await getDocs(q);
       let newData = [] as Array<ArticleData>;
 
@@ -40,20 +51,12 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
       })
       scrapedData.value[siteId] = newData;
       loadingStatus.value[siteId] = false;
+      lastLoadTime.value[siteId] = Math.floor(Date.now() / 1000);
+
+      console.log("Load DB: ", siteId);
     } catch (error) {
       console.error("Error fetching documents: ", error);
     }
-  }
-
-  function scrape(siteId: string) {
-
-    axios.get(ApiUrl.apiUrl + "/data", { params: { id: siteId } }).then((response) => {
-      scrapedData.value[siteId] = response.data.data;
-      console.log(siteId);
-      console.log(response.data.msg);
-      loadingStatus.value[siteId] = false
-    });
-
   }
 
   const allArticles = computed(() => {
@@ -64,5 +67,5 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
     return ret.sort((a, b) => b.epoch - a.epoch);
   })
 
-  return { scrapedData, loadingStatus, scrape, loadDatabase, allArticles }
+  return { scrapedData, loadingStatus, lastLoadTime, loadDatabase, allArticles }
 }, { persist: true });

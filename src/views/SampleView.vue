@@ -1,6 +1,7 @@
 <template>
   <div class="sample">
-    <Timeline tl-site-id="micJoho" />
+    <p>{{ tlDataStore.tlData["micJoho"] }}</p>
+    <p>{{ wsScrapedData.lastLoadTime }}</p>
   </div>
 </template>
 
@@ -8,8 +9,10 @@
 import Timeline from '@/components/organisms/Timeline.vue'
 
 import { useTlDataListStore } from '@/stores/tlData'
+import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
 
-const tlDataStore = useTlDataListStore()
+const tlDataStore = useTlDataListStore();
+const wsScrapedData = useWsScrapedDataStore();
 
 </script>
 
