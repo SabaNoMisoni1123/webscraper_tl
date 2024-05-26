@@ -99,6 +99,7 @@ function toggleMenu() {
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
     tlData.resetSiteList();
+    wsData.rmNoId(tlData.sortedIds);
   }
 }
 

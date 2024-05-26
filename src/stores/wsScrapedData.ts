@@ -30,13 +30,15 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
   const lastLoadTime = ref<LoadingTimeData>({} as LoadingTimeData);
 
   const loadDatabase = async (siteId: string, force = false) => {
+    console.log("siteId in lastLoadTime.value: ", siteId in lastLoadTime.value);
     // 最終ロード時間からロードするのかを判定
     if (!(siteId in lastLoadTime.value)) {
       lastLoadTime.value[siteId] = 0;
     }
 
     const nowTime = Math.floor(Date.now() / 1000);
-    if (!force && nowTime < lastLoadTime.value[siteId] + 60 * 30) {
+    if (!force && !(nowTime >= lastLoadTime.value[siteId] + 60 * 30)) {
+      console.log("Stoped Loading: The specified time has not elapsed since the last loading.");
       return;
     }
 
@@ -75,8 +77,8 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
     return retStatus;
   })
 
-  function rmNoId(siteIdList: Array<string>){
-    for (const k of Object.keys(scrapedData.value)){
+  function rmNoId(siteIdList: Array<string>) {
+    for (const k of Object.keys(scrapedData.value)) {
       if (!(k in siteIdList)) {
         delete scrapedData.value[k];
         delete loadingStatus.value[k];
