@@ -38,13 +38,13 @@ export const useWsScrapedDataStore = defineStore('wsScrapedData', () => {
 
     const nowTime = Math.floor(Date.now() / 1000);
     if (!force && !(nowTime >= lastLoadTime.value[siteId] + 60 * 30)) {
-      console.log("Stoped Loading: The specified time has not elapsed since the last loading.");
+      console.log("Stopped Loading: The specified time has not elapsed since the last loading.");
       return;
     }
 
     loadingStatus.value[siteId] = true
     try {
-      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(30));
+      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(25));
       const docsArticleData = await getDocs(q);
       let newData = [] as Array<ArticleData>;
 

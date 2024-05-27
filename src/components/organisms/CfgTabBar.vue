@@ -23,9 +23,9 @@
       </div>
     </div>
 
-    <div class="reloadArea">
+    <!-- <div class="reloadArea">
       <ReloadButton :width="50" :height="50" :fill="colReload" @click="reloadWsData" />
-    </div>
+    </div> -->
 
   </div>
 </template>
