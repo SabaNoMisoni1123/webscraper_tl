@@ -19,7 +19,7 @@ import ColorPallet from '@/assets/ColorPallet.json'
 
 import { computed, onMounted } from 'vue'
 
-import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
+import { useWsScrapedDataStore, type ArticleData } from '@/stores/wsScrapedData';
 import { useTlDataListStore } from '@/stores/tlData';
 
 const props = defineProps({
@@ -34,6 +34,10 @@ const props = defineProps({
   showBar: {
     type: Boolean,
     default: false,
+  },
+  lastEpoch: {
+    type: Number,
+    default: -1,
   }
 })
 
@@ -68,8 +72,18 @@ const bgList = [
 
 // 表示記事
 const showArticles = computed(() => {
-  let ret = props.tlSiteId == "all" ? wsData.allArticles : wsData.scrapedData[props.tlSiteId];
-  return ret
+  let ret = [] as Array<ArticleData>;
+  if (props.tlSiteId == "all") {
+    for (const id of tlDataStore.sortedIdsFiltered) {
+      ret = [...ret, ...wsData.scrapedData[id]];
+    }
+  } else {
+    ret = wsData.scrapedData[props.tlSiteId];
+  }
+
+  return ret.filter((e) => {
+    return e.epoch >= props.lastEpoch;
+  })
 })
 
 // マウント時のデータベースアクセス
