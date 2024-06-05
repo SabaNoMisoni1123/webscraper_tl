@@ -2,7 +2,7 @@
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="tlTitle" :style="styles" />
     <div class="tlItemList">
-      <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--</p>
+      <p class="loadingMsg" v-if="wsData.loadingStatus[props.tlSiteId]">--読み込み中--<br>読み込みが終わらない場合はリログしてください。</p>
       <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
         :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="tlData.name" :show-bar="props.showBar" />
     </div>
@@ -54,6 +54,7 @@ const tlData = computed(() => {
   }
 })
 
+
 const tlTitle = computed(() => {
   if (props.tlTitle == "") {
     return tlData.value.name;
@@ -77,7 +78,7 @@ const showArticles = computed(() => {
     for (const id of tlDataStore.sortedIdsFiltered) {
       ret = [...ret, ...wsData.scrapedData[id]];
     }
-    ret = ret.sort((a, b)=> b.epoch - a.epoch);
+    ret = ret.sort((a, b) => b.epoch - a.epoch);
   } else {
     ret = wsData.scrapedData[props.tlSiteId];
   }
@@ -135,6 +136,13 @@ const styles = computed(() => {
 }
 
 .loadingMsg {
+  color: white;
+  padding: 2pt 15pt;
+  margin: 0pt;
+  text-align: left;
+  font-weight: bold;
+}
+.noDataState {
   color: white;
   padding: 2pt 15pt;
   margin: 0pt;

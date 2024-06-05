@@ -45,6 +45,7 @@ export const useTlDataListStore = defineStore('tlData', () => {
   const lastLoadTime = ref<number>(0);
 
   const loadSiteList = async () => {
+    console.log("Call loadSiteList function");
     // 最終ロード時間からロードするのかを判定
     const nowTime = Math.floor(Date.now() / 1000);
     // if (nowTime < lastLoadTime.value + 3600 * 24) {
@@ -58,6 +59,7 @@ export const useTlDataListStore = defineStore('tlData', () => {
     try {
       const q = query(collection(db, 'siteData'), orderBy('no'));
       const docsSiteData = await getDocs(q);
+      console.log("Fetching documents: loadSiteList function");
       docsSiteData.forEach((doc) => {
         const site = doc.data() as SiteData;
 
@@ -85,6 +87,7 @@ export const useTlDataListStore = defineStore('tlData', () => {
   }
 
   const resetSiteList = async () => {
+    console.log("Call resetSiteList function");
     // タイムライン設定の初期化
     tlData.value = {} as TlDataDict;
 
@@ -92,6 +95,7 @@ export const useTlDataListStore = defineStore('tlData', () => {
     try {
       const q = query(collection(db, 'siteData'), orderBy('no'));
       const docsSiteData = await getDocs(q);
+      console.log("Fetching documents: resetSiteList function");
       docsSiteData.forEach((doc) => {
         const site = doc.data() as SiteData;
         tlData.value[site.id] = {
