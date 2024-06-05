@@ -42,15 +42,12 @@ export const useTlDataListStore = defineStore('tlData', () => {
     "isShow": false,
     "valid": true,
   })
-  const lastLoadTime = ref<number>(0);
+
+  const nowLoading = ref(false);
 
   const loadSiteList = async () => {
+    nowLoading.value = true;
     console.log("Call loadSiteList function");
-    // 最終ロード時間からロードするのかを判定
-    const nowTime = Math.floor(Date.now() / 1000);
-    // if (nowTime < lastLoadTime.value + 3600 * 24) {
-    //   return;
-    // }
 
     // すべてのデータをinvalidにする
     allInvalid();
@@ -84,6 +81,8 @@ export const useTlDataListStore = defineStore('tlData', () => {
     } catch (error) {
       console.error("Error fetching documents: ", error);
     }
+
+    nowLoading.value = false;
   }
 
   const resetSiteList = async () => {
@@ -217,5 +216,5 @@ export const useTlDataListStore = defineStore('tlData', () => {
     loadSiteList();
   }
 
-  return { tlData, defaultTlData, sortedIds, sortedIdsFiltered, loadSiteList, setColor, setWeight, upWeight, downWeight, resetSiteList, invalidSiteList }
+  return { tlData, defaultTlData, nowLoading, sortedIds, sortedIdsFiltered, loadSiteList, setColor, setWeight, upWeight, downWeight, resetSiteList, invalidSiteList }
 }, { persist: true })

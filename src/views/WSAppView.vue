@@ -18,6 +18,7 @@
       <div class="noDataState" v-if="noData">
         <p>何度かリログすると正しく表示されるようになります。</p>
         <p>お手数ですが、「ctrl-R」を何度か押してください。</p>
+        <p v-show="tlData.nowLoading">現在読み込み中...</p>
       </div>
       <Timeline v-for="id in tlData.sortedIdsFiltered" :tl-site-id="id" />
     </div>
