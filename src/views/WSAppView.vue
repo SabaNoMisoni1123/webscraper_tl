@@ -15,6 +15,10 @@
     </div>
 
     <div class="tlArea">
+      <div class="noDataState" v-if="noData">
+        <p>何度かリログすると正しく表示されるようになります。</p>
+        <p>お手数ですが、「ctrl-R」を何度か押してください。</p>
+      </div>
       <Timeline v-for="id in tlData.sortedIdsFiltered" :tl-site-id="id" />
     </div>
 
@@ -38,6 +42,10 @@ const searchCond = useSearchCondtionStore();
 
 let today = new Date();
 today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+const noData = computed(() => {
+  return Object.keys(tlData.tlData).length < 2
+})
 
 const hasBorder = computed(() => {
   return !appState.useSearch;

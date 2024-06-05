@@ -47,9 +47,9 @@ export const useTlDataListStore = defineStore('tlData', () => {
   const loadSiteList = async () => {
     // 最終ロード時間からロードするのかを判定
     const nowTime = Math.floor(Date.now() / 1000);
-    if (nowTime < lastLoadTime.value + 3600 * 24) {
-      return;
-    }
+    // if (nowTime < lastLoadTime.value + 3600 * 24) {
+    //   return;
+    // }
 
     // すべてのデータをinvalidにする
     allInvalid();
@@ -207,6 +207,10 @@ export const useTlDataListStore = defineStore('tlData', () => {
     for (const [idx, element] of sortedList.entries()) {
       tlData.value[element.id].weight = idx;
     }
+  }
+
+  if (Object.keys(tlData).length < 2) {
+    loadSiteList();
   }
 
   return { tlData, defaultTlData, sortedIds, sortedIdsFiltered, loadSiteList, setColor, setWeight, upWeight, downWeight, resetSiteList, invalidSiteList }

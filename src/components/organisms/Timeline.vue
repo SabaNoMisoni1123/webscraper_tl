@@ -77,13 +77,15 @@ const showArticles = computed(() => {
     for (const id of tlDataStore.sortedIdsFiltered) {
       ret = [...ret, ...wsData.scrapedData[id]];
     }
+    ret = ret.sort((a, b)=> b.epoch - a.epoch);
   } else {
     ret = wsData.scrapedData[props.tlSiteId];
   }
 
-  return ret.filter((e) => {
-    return e.epoch >= props.lastEpoch;
-  })
+  // return ret.filter((e) => {
+  //   return e.epoch >= props.lastEpoch;
+  // })
+  return ret;
 })
 
 // マウント時のデータベースアクセス
