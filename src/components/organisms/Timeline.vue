@@ -83,9 +83,13 @@ const showArticles = computed(() => {
     ret = wsData.scrapedData[props.tlSiteId];
   }
 
-  // return ret.filter((e) => {
-  //   return e.epoch >= props.lastEpoch;
-  // })
+  // エポック時でフィルタ
+  if (ret.length > 0) {
+    ret = ret.filter((e) => {
+      return e.epoch >= props.lastEpoch;
+    })
+  }
+
   return ret;
 })
 
@@ -142,6 +146,7 @@ const styles = computed(() => {
   text-align: left;
   font-weight: bold;
 }
+
 .noDataState {
   color: white;
   padding: 2pt 15pt;

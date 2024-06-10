@@ -56,7 +56,10 @@ const isNewer = computed(() => {
   const artDate = new Date(0)
   artDate.setSeconds(props.articleEpoch.valueOf())
 
-  return (today.getDate() == artDate.getDate()) && (today.getMonth() == artDate.getMonth()) && (today.getFullYear() == artDate.getFullYear())
+  const isToday = (today.getDate() == artDate.getDate()) && (today.getMonth() == artDate.getMonth()) && (today.getFullYear() == artDate.getFullYear());
+  const cmpNow = props.articleEpoch.valueOf() >= Math.floor(today.getTime() / 1000);
+
+  return isToday || cmpNow;
 })
 
 const styles = computed(() => {
