@@ -2,7 +2,6 @@
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="tlTitle" :style="styles" />
     <div class="tlItemList">
-      <p class="loadingMsg" v-if="wsData.tlData[props.tlSiteId].loadingStatus">--読み込み中--<br>読み込みが終わらない場合はリログしてください。</p>
       <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
         :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="site.name" :show-bar="props.showBar" />
     </div>
@@ -10,6 +9,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
@@ -20,13 +20,8 @@ import { computed } from 'vue'
 
 import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
 import { useDbDataStore } from '@/stores/dbStore';
-import { convertCompilerOptionsFromJson } from 'typescript';
 
 const props = defineProps({
-  tlSiteId: {
-    type: String,
-    required: true
-  },
   tlTitle: {
     type: String,
     default: "",
@@ -46,20 +41,11 @@ const dbData = useDbDataStore();
 const wsData = useWsDataStore();
 
 // siteData
-const site = computed(() => {
-  if (props.tlSiteId in dbData.siteData) {
-    return dbData.siteData[props.tlSiteId];
-  } else {
-    return dbData.defaultSiteData;
-  }
-})
-
-// tlData
-// wsData.loadTlData(props.tlSiteId, dbData.dbTimestamp);
+const site = dbData.defaultSiteData;
 
 const tlTitle = computed(() => {
   if (props.tlTitle == "") {
-    return site.value.name;
+    return site.name;
   } else {
     return props.tlTitle;
   }
@@ -76,12 +62,8 @@ const bgList = [
 // 表示記事
 const showArticles = computed(() => {
   let articles = [] as Array<ArticleData>;
-  if (props.tlSiteId == "all") {
-    for (const k in dbData.getSortedSiteDataIdFiltered) {
-      articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
-    }
-  } else {
-    articles = wsData.tlData[props.tlSiteId].scrapedData;
+  for (const k of dbData.getSortedSiteDataIdFiltered) {
+    articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
   }
 
   // エポック時でフィルタ
@@ -96,7 +78,7 @@ const showArticles = computed(() => {
 
 const styles = computed(() => {
   return {
-    "--tl-background-color": bgList[site.value.color % bgList.length]
+    "--tl-background-color": bgList[site.color % bgList.length]
   }
 })
 

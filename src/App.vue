@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import AppConfig from '@/assets/AppConfig.json';
 import { RouterLink, RouterView } from 'vue-router';
+import { useDbDataStore } from '@/stores/dbStore'
+
+import IconCrowler from '@/components/icons/IconCrowler.vue'
+import ColorPallet from '@/assets/ColorPallet.json'
+
+const dbData = useDbDataStore();
 
 </script>
 
@@ -11,8 +17,11 @@ import { RouterLink, RouterView } from 'vue-router';
       <RouterLink to="/about">ABOUT</RouterLink>
       <RouterLink to="/contact">CONTACT</RouterLink>
     </nav>
+    <div class="headerNoVistor">
+      <p>閲覧者数: {{ dbData.noAccess }}</p>
+    </div>
     <div class="headerIconTitle">
-      <img src="/icon.svg" type="image/svg+xml" alt="icon">
+      <IconCrowler height=100% :fill="ColorPallet.green0" />
       <p>{{ AppConfig.appName }} v{{ AppConfig.version }}</p>
     </div>
   </header>
@@ -32,6 +41,10 @@ import { RouterLink, RouterView } from 'vue-router';
   height: 33pt;
 }
 
+.headerClass p {
+  color: #003f27;
+}
+
 .headerNav {
   display: inline-block;
 }
@@ -42,27 +55,29 @@ import { RouterLink, RouterView } from 'vue-router';
   padding-right: 2pt;
 }
 
-.headerIconTitle {
-  display: inline-block;
+.headerNoVistor {
   margin-left: auto;
 }
 
-.headerIconTitle img {
-  height: 2ex;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: 20pt;
+.headerNoVistor p {
+  font-size: 70%;
   display: inline-block;
+  vertical-align: sub;
+}
+
+.headerIconTitle {
+  display: flex;
+  margin-left: auto;
+  height: 100%;
 }
 
 .headerIconTitle p {
-  color: #003f27;
-  margin-left: 0pt;
+  margin-left: 10pt;
   margin-right: 20pt;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
   display: inline-block;
+  height: 100%;
 }
 
 .appView {

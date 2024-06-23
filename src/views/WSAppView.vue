@@ -6,7 +6,7 @@
       </div>
 
       <div class="newsArea" v-show="appState.useNews">
-        <Timeline tl-site-id="all" tl-title="新着情報" :last-epoch="today.getTime() / 1000" :show-bar="true" />
+        <NewsTimeline tl-site-id="all" tl-title="新着情報" :last-epoch="today.getTime() / 1000" :show-bar="true" />
       </div>
 
       <div class="searchArea" v-show="appState.useSearch">
@@ -18,42 +18,42 @@
       <div class="noDataState" v-if="noData">
         <p>何度かリログすると正しく表示されるようになります。</p>
         <p>お手数ですが、「ctrl-R」を何度か押してください。</p>
-        <p v-show="tlData.nowLoading">現在読み込み中...</p>
+        <p v-show="dbData.isLoadingSiteData">現在読み込み中...</p>
       </div>
-      <Timeline v-for="id in tlData.sortedIdsFiltered" :tl-site-id="id" />
+      <Timeline v-for="id in dbData.getSortedSiteDataIdFiltered" :tl-site-id="id" />
     </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount } from 'vue'
+import { computed } from 'vue'
 import CfgTabBar from '@/components/organisms/CfgTabBar.vue'
 import Timeline from '@/components/organisms/Timeline.vue'
+import NewsTimeline from '@/components/organisms/NewsTimeline.vue'
 import SearchedTimeline from '@/components/organisms/SearchedTimeline.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
+import { useDbDataStore } from '@/stores/dbStore'
+import { useWsDataStore } from '@/stores/wsStore'
 import { useAppState } from '@/stores/appState'
-import { useTlDataListStore } from '@/stores/tlData'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
 
+// 各種ストア
 const appState = useAppState();
-const tlData = useTlDataListStore();
 const searchCond = useSearchCondtionStore();
+const dbData = useDbDataStore();
+const wsData = useWsDataStore();
 
 let today = new Date();
 today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
 const noData = computed(() => {
-  return Object.keys(tlData.tlData).length < 2
+  return Object.keys(dbData.siteData).length < 2
 })
 
 const hasBorder = computed(() => {
   return !appState.useSearch;
-})
-
-onBeforeMount(() => {
-  tlData.loadSiteList();
 })
 
 const styles = computed(() => {
@@ -61,6 +61,13 @@ const styles = computed(() => {
     '--bg-color': ColorPallet.gray2,
   }
 });
+
+// データベースからのデータ取得
+dbData.updateSiteData();
+wsData.init(dbData.getSortedSiteDataId);
+for (const id of dbData.getSortedSiteDataIdFiltered) {
+  wsData.loadTlData(id, dbData.dbTimestamp);
+}
 
 </script>
 

@@ -18,7 +18,7 @@
     <div class="menuArea">
       <MenuButton :width="50" :height="50" :fill="colMenu" @click="toggleMenu" />
       <div class="tlList" v-show="appState.useMenu">
-        <TlTitleBlock v-for="id in tlData.sortedIds" :tl-site-id="id" />
+        <TlTitleBlock v-for="id in dbData.getSortedSiteDataId" :tl-site-id="id" />
         <input type="button" value="reset" @click="tlDataReset">
       </div>
     </div>
@@ -42,14 +42,14 @@ import TlTitleBlock from '@/components/molecules/TlTitleBlock.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 import { useAppState } from '@/stores/appState'
-import { useTlDataListStore } from '@/stores/tlData'
+import { useDbDataStore } from '@/stores/dbStore'
+import { useWsDataStore } from '@/stores/wsStore'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
-import { useWsScrapedDataStore } from '@/stores/wsScrapedData'
 
 const appState = useAppState();
-const tlData = useTlDataListStore();
 const sc = useSearchCondtionStore();
-const wsData = useWsScrapedDataStore();
+const dbData = useDbDataStore();
+const wsData = useWsDataStore();
 
 const colSearch = computed(() => {
   return appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
@@ -91,24 +91,11 @@ function toggleNews() {
 
 function toggleMenu() {
   appState.useMenu = !appState.useMenu;
-  if (tlData.invalidSiteList) {
-    tlData.resetSiteList();
-  }
 }
 
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
-    tlData.resetSiteList();
-    wsData.rmNoId(tlData.sortedIds);
-  }
-}
-
-function reloadWsData() {
-  for (const [k, v] of Object.entries(tlData.tlData)) {
-    if (v.isShow) {
-      console.log("reload: ", k);
-      wsData.loadDatabase(k, true);
-    }
+    dbData.resetSiteData();
   }
 }
 

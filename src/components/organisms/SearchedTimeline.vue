@@ -22,7 +22,8 @@ import SearchForm from '@/components/molecules/SearchForm.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 import { computed } from 'vue'
-import { useWsScrapedDataStore } from '@/stores/wsScrapedData';
+import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
+import { useDbDataStore } from '@/stores/dbStore';
 import { useSearchCondtionStore } from '@/stores/searchCondition'
 
 const props = defineProps({
@@ -36,7 +37,8 @@ const props = defineProps({
 const scStore = useSearchCondtionStore();
 
 // ウェブスクレイプデータ
-const wsData = useWsScrapedDataStore();
+const dbData = useDbDataStore();
+const wsData = useWsDataStore();
 
 // タイムラインのタイトル文字列
 const searchTlTitle = computed(() => {
@@ -45,21 +47,24 @@ const searchTlTitle = computed(() => {
 
 // 検索
 const searchedArticles = computed(() => {
-  let sd = wsData.allArticles;
+  let articles = [] as Array<ArticleData>;
+  for (const k of dbData.getSortedSiteDataIdFiltered) {
+    articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
+  }
   const c = scStore.searchCondition[props.searchCondIdx];
   // 検索ワードのフィルタ
-  sd = sd.filter(((article) => article.title.indexOf(c.word) >= 0));
+  articles = articles.filter(((article) => article.title.indexOf(c.word) >= 0));
 
   // 日付のフィルタ
   if (c.day != "-" && c.month != "-" && c.year != "-") {
     const epoch_s = new Date(c.year as number, c.month as number - 1, c.day as number).getTime() / 1000;
     const epoch_t = epoch_s + 60 * 60 * 24;
-    sd = sd.filter((article) => (epoch_s <= article.epoch && article.epoch < epoch_t));
+    articles = articles.filter((article) => (epoch_s <= article.epoch && article.epoch < epoch_t));
   }
 
   // 並び替え
-  sd.sort((a, b) => b.epoch - a.epoch);
-  return sd
+  articles.sort((a, b) => b.epoch - a.epoch);
+  return articles;
 })
 
 
