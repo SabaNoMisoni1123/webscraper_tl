@@ -38,6 +38,7 @@ import { useDbDataStore } from '@/stores/dbStore'
 import { useWsDataStore } from '@/stores/wsStore'
 import { useAppState } from '@/stores/appState'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
+import { db } from '@/firebase'
 
 // 各種ストア
 const appState = useAppState();
@@ -63,6 +64,7 @@ const styles = computed(() => {
 });
 
 // データベースからのデータ取得
+dbData.init();
 dbData.updateSiteData();
 wsData.init(dbData.getSortedSiteDataId);
 for (const id of dbData.getSortedSiteDataIdFiltered) {
