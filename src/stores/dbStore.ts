@@ -3,8 +3,6 @@ import { defineStore } from 'pinia'
 import { db } from '@/firebase'
 import { collection, getDocs, query, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore'
 
-import siteDataWeightPreset from '@/assets/siteDataWeightPreset.json'
-
 // APIから得るサイトデータ
 export interface DbSiteData {
   "name": string,
@@ -13,6 +11,7 @@ export interface DbSiteData {
   "no": number,
 }
 
+// サイトデータ
 export interface SiteData {
   "name": string,
   "url": string,
@@ -29,6 +28,15 @@ export interface SiteData {
 // このストアのメインのコンテンツ
 export interface SiteDataDict {
   [index: string]: SiteData
+}
+
+// サイト並び替えプリセットのデータ型
+export interface SiteOrder {
+  "name": string,
+  "order": Array<{
+    "id": string,
+    "weight": number,
+  }>
 }
 
 export const useDbDataStore = defineStore('dbDataStore', () => {
@@ -168,16 +176,21 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
   };
 
   // siteDataの整列順を変更する関数
-  function setSiteDataPreset(mode = "default") {
-    if (mode == "default") {
+  function setOrderSiteDataPreset(weightPreset: SiteOrder) {
+    if (weightPreset.name == "default") {
       // デフォルトは、サイト番号を参照して、その順番で整列
       for (const k of Object.keys(siteData.value)) {
         siteData.value[k].weight = siteData.value[k].no;
       }
     } else {
       // 他の場合は、jsonファイルにプリセットを用意し、その順番で整列
-      // TODO: 実装する
-      ;
+      for (const v of Object.values(siteData.value)) {
+        v.weight = v.weight + weightPreset.order.length + 10;
+      }
+      for (const item of weightPreset.order) {
+        siteData.value[item.id].weight = item.weight;
+      }
+      reweighSiteData();
     }
   }
 
@@ -288,7 +301,7 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
     isLoadingSiteData,
     updateSiteData,
     resetSiteData,
-    setSiteDataPreset,
+    setOrderSiteDataPreset,
     getSortedSiteDataId,
     getSortedSiteDataIdFiltered,
     upWeight,

@@ -17,8 +17,14 @@
 
     <div class="menuArea">
       <MenuButton :width="50" :height="50" :fill="colMenu" @click="toggleMenu" />
-      <div class="tlList" v-show="appState.useMenu">
-        <TlTitleBlock v-for="id in dbData.getSortedSiteDataId" :tl-site-id="id" />
+      <div class="menuItems" v-show="appState.useMenu">
+        <div class="tlList">
+          <TlTitleBlock v-for="id in dbData.getSortedSiteDataId" :tl-site-id="id" />
+        </div>
+        <p>並び替えプリセット</p>
+        <input type="button" v-for="k of Object.keys(siteOrderPreset)" :value="siteOrderPreset[k].name"
+          @click="sortTlPreset(siteOrderPreset[k])">
+        <p>初期化</p>
         <input type="button" value="reset" @click="tlDataReset">
       </div>
     </div>
@@ -37,12 +43,13 @@ import SearchButton from '@/components/atoms/button/SearchButton.vue'
 import MenuButton from '@/components/atoms/button/MenuButton.vue'
 import NewsButton from '@/components/atoms/button/NewsButton.vue'
 import ReloadButton from '@/components/atoms/button/ReloadButton.vue'
-
 import TlTitleBlock from '@/components/molecules/TlTitleBlock.vue'
+
 import ColorPallet from '@/assets/ColorPallet.json'
+import SiteDataWeightPreset from '@/assets/siteDataWeightPreset.json'
 
 import { useAppState } from '@/stores/appState'
-import { useDbDataStore } from '@/stores/dbStore'
+import { useDbDataStore, type SiteOrder } from '@/stores/dbStore'
 import { useWsDataStore } from '@/stores/wsStore'
 import { useSearchCondtionStore } from '@/stores/searchCondition'
 
@@ -50,6 +57,9 @@ const appState = useAppState();
 const sc = useSearchCondtionStore();
 const dbData = useDbDataStore();
 const wsData = useWsDataStore();
+const siteOrderPreset = SiteDataWeightPreset as {
+  [index: string]: SiteOrder,
+};
 
 const colSearch = computed(() => {
   return appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
@@ -93,6 +103,10 @@ function toggleMenu() {
   appState.useMenu = !appState.useMenu;
 }
 
+function sortTlPreset(so: SiteOrder) {
+  dbData.setOrderSiteDataPreset(so);
+}
+
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
     dbData.resetSiteData();
@@ -102,11 +116,17 @@ function tlDataReset() {
 const styles = computed(() => {
   return {
     '--width': appState.useMenu ? "280px" : "60px",
+    '--textColor': ColorPallet.green0,
   }
 })
 </script>
 
 <style scoped>
+p {
+  color: var(--textColor);
+  margin-top: 3pt;
+}
+
 .cfgTabBar {
   padding-top: 5pt;
   width: var(--width);
@@ -138,7 +158,7 @@ const styles = computed(() => {
 }
 
 .tlList {
-  height: 200pt;
+  height: 150pt;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: thin;
