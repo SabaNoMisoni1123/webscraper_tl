@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy, limit, startAfter, type QueryDocumentSnapshot, type DocumentData } from 'firebase/firestore'
 
 export interface ArticleData {
   "title": string,
@@ -18,10 +18,13 @@ export interface TlData {
     "scrapedData": Array<ArticleData>,
     "loadingStatus": boolean,
     "dataTimestamp": number,
+    "lastArticle": QueryDocumentSnapshot<DocumentData, DocumentData>,
   }
 }
 
 export const useWsDataStore = defineStore('wsDataStore', () => {
+  const noLoadArticles = 25; // １回のロード件数
+
   // スクレイプの結果情報
   const tlData = ref<TlData>({} as TlData);
 
@@ -32,6 +35,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         "scrapedData": [] as Array<ArticleData>,
         "dataTimestamp": -1,
         "loadingStatus": false,
+        "lastArticle": {} as QueryDocumentSnapshot<DocumentData, DocumentData>,
       }
     }
   }
@@ -51,8 +55,9 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     tlData.value[siteId].dataTimestamp = dbTimestamp.valueOf();
 
     try {
-      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(25));
+      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(noLoadArticles));
       const docsArticleData = await getDocs(q);
+
       let newData = [] as Array<ArticleData>;
 
       docsArticleData.forEach((doc) => {
@@ -61,11 +66,46 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       tlData.value[siteId].scrapedData = newData;
       tlData.value[siteId].loadingStatus = false;
 
+      tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
       console.log("Load DB: ", siteId);
     } catch (error) {
       console.error("Error fetching documents: ", error);
       tlData.value[siteId].loadingStatus = false;
     }
+  }
+
+  // 追加でデータをロードする関数
+  const loadNextTlData = async (siteId: string) => {
+    console.log("Call loadNextTlData function");
+    if (tlData.value[siteId].lastArticle == {} as QueryDocumentSnapshot<DocumentData, DocumentData>) {
+      console.log("Last ArticleData is undefined.");
+      return;
+    }
+
+    tlData.value[siteId].loadingStatus = true;
+    try {
+      const q = query(
+        collection(db, siteId),
+        orderBy("epoch", "desc"),
+        startAfter(tlData.value[siteId].lastArticle),
+        limit(noLoadArticles),
+      );
+      const docsArticleData = await getDocs(q);
+      let newData = [] as Array<ArticleData>;
+
+      docsArticleData.forEach((doc) => {
+        newData.push(doc.data() as ArticleData);
+      });
+      tlData.value[siteId].scrapedData = [...tlData.value[siteId].scrapedData, ...newData];
+      tlData.value[siteId].loadingStatus = false;
+
+      tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
+      console.log("Load DB: ", siteId);
+    } catch (error) {
+      console.error("Error fetching documents: ", error);
+      tlData.value[siteId].loadingStatus = false;
+    }
+    tlData.value[siteId].loadingStatus = false;
   }
 
   // 全てのロードステータスを取得する
@@ -76,6 +116,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     }
     return retStatus;
   })
+
 
   // 初期化
   function init(ids: Array<string>) {
@@ -88,6 +129,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         "scrapedData": [] as Array<ArticleData>,
         "loadingStatus": false,
         "dataTimestamp": -1,
+        "lastArticle": {} as QueryDocumentSnapshot<DocumentData, DocumentData>,
       }
     }
   }
@@ -97,6 +139,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     newTlData,
     loadTlData,
     allLoadingStatus,
+    loadNextTlData,
     init,
   }
 

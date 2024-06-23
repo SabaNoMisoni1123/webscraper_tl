@@ -5,6 +5,9 @@
       <p class="loadingMsg" v-if="wsData.tlData[props.tlSiteId].loadingStatus">--読み込み中--<br>読み込みが終わらない場合はリログしてください。</p>
       <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
         :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="site.name" :show-bar="props.showBar" />
+      <div class="loadNext">
+        <input type="button" :value="loadNextText" @click="loadMore">
+      </div>
     </div>
     <div class="tlFooter">
     </div>
@@ -20,7 +23,6 @@ import { computed } from 'vue'
 
 import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
 import { useDbDataStore } from '@/stores/dbStore';
-import { convertCompilerOptionsFromJson } from 'typescript';
 
 const props = defineProps({
   tlSiteId: {
@@ -63,6 +65,19 @@ const tlTitle = computed(() => {
   } else {
     return props.tlTitle;
   }
+})
+
+// 追加読み込み
+function loadMore() {
+  wsData.loadNextTlData(props.tlSiteId);
+}
+const loadNextText = computed(() => {
+  if (wsData.tlData[props.tlSiteId].loadingStatus) {
+    return "読み込み中";
+  } else {
+    return "さらに読み込み";
+  }
+
 })
 
 const bgList = [
@@ -137,6 +152,11 @@ const styles = computed(() => {
   margin: 0pt;
   text-align: left;
   font-weight: bold;
+}
+
+.loadNext p {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .noDataState {
