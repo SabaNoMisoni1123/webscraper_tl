@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import AppConfig from '@/assets/AppConfig.json';
 import { RouterLink, RouterView } from 'vue-router';
 import { useDbDataStore } from '@/stores/dbStore'
 
 import IconCrowler from '@/components/icons/IconCrowler.vue'
+import IconCracker from '@/components/icons/IconCracker.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 const dbData = useDbDataStore();
+
+const isFunny = computed(() => {
+  return dbData.noAccess % 100 == 0;
+})
 
 </script>
 
@@ -19,6 +25,9 @@ const dbData = useDbDataStore();
     </nav>
     <div class="headerNoVistor">
       <p>閲覧者数: {{ dbData.noAccess }}</p>
+      <div class="celebrate" v-if="isFunny">
+        <IconCracker :fill="ColorPallet.red0" />
+      </div>
     </div>
     <div class="headerIconTitle">
       <IconCrowler height=100% :fill="ColorPallet.green0" />
