@@ -82,7 +82,7 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
 
         // すでに記録されいてる場合は情報の更新
         // 記録されていない場合は新規追加
-        if (site.id in Object.keys(siteData.value)) {
+        if (site.id in siteData.value) {
           // 情報更新
           siteData.value[site.id].valid = true;
           siteData.value[site.id].name = site.name;
