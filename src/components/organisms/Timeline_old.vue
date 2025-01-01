@@ -1,27 +1,25 @@
 <template>
-  <v-card class="timeline m-0 p-0">
-    <v-toolbar>
-      <v-toolbar-title>{{ tlTitle }}</v-toolbar-title>
-    </v-toolbar>
-
-    <v-infinite-scroll mode="manual" @load="loadMore" side="end" height="400pt">
-      <template v-for="art in showArticles" :key="art.url">
-        <div class="art">
-          <ArticleItem :article-source="art.org" :article-desctiption="art.title" :article-url="art.url"
-            :article-epoch="art.epoch">
-          </ArticleItem>
-        </div>
-      </template>
-    </v-infinite-scroll>
-  </v-card>
-
+  <div class="timeline" :style="styles">
+    <TLTitleBar :tl-title="tlTitle" :style="styles" />
+    <div class="tlItemList">
+      <p class="loadingMsg" v-if="wsData.tlData[props.tlSiteId].loadingStatus">--読み込み中--<br>読み込みが終わらない場合はリログしてください。</p>
+      <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
+        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="site.name" :show-bar="props.showBar" />
+      <div class="loadNext">
+        <input type="button" :value="loadNextText" @click="loadMore">
+      </div>
+    </div>
+    <div class="tlFooter">
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
+import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue';
 import ColorPallet from '@/assets/ColorPallet.json'
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
 import { useDbDataStore } from '@/stores/dbStore';
@@ -59,10 +57,7 @@ const site = computed(() => {
 })
 
 // tlData
-const articles = ref([] as Array<ArticleData>);
-wsData.loadTlData(props.tlSiteId, dbData.dbTimestamp).then((data) => {
-  articles.value = data;
-});
+wsData.loadTlData(props.tlSiteId, dbData.dbTimestamp);
 
 const tlTitle = computed(() => {
   if (props.tlTitle == "") {
@@ -73,12 +68,17 @@ const tlTitle = computed(() => {
 })
 
 // 追加読み込み
-async function loadMore({ side, done }: { side: 'end' | 'start' | 'both', done: (status: 'error' | 'loading' | 'empty' | 'ok') => void }) {
-  console.log("call loadMore function (Timeline.vue)");
-  const newData = await wsData.loadNextTlData(props.tlSiteId);
-  articles.value.push(...newData);
-  done('ok');
+function loadMore() {
+  wsData.loadNextTlData(props.tlSiteId);
 }
+const loadNextText = computed(() => {
+  if (wsData.tlData[props.tlSiteId].loadingStatus) {
+    return "読み込み中";
+  } else {
+    return "さらに読み込み";
+  }
+
+})
 
 const bgList = [
   ColorPallet.blue1,
@@ -90,12 +90,23 @@ const bgList = [
 
 // 表示記事
 const showArticles = computed(() => {
-  let ret = [] as Array<ArticleData>;
-  ret = articles.value;
+  let articles = [] as Array<ArticleData>;
+  if (props.tlSiteId == "all") {
+    for (const k in dbData.getSortedSiteDataIdFiltered) {
+      articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
+    }
+  } else {
+    articles = wsData.tlData[props.tlSiteId].scrapedData;
+  }
 
-  // 必要なフィルタがあれば
+  // エポック時でフィルタ
+  if (articles.length > 0) {
+    articles = articles.filter((e) => {
+      return e.epoch >= props.lastEpoch;
+    })
+  }
 
-  return ret;
+  return articles;
 })
 
 const styles = computed(() => {

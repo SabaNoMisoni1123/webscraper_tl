@@ -45,9 +45,13 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
   const loadTlData = async (siteId: string, dbTimestamp: number) => {
     // ローカルのデータがデータベースのデータと
     // 同じであれば、関数は実行せず終了
-    if (tlData.value[siteId].dataTimestamp == dbTimestamp) {
+    let newData = [] as Array<ArticleData>;
+    if (
+      tlData.value[siteId].scrapedData.length > 0 &&
+      tlData.value[siteId].dataTimestamp == dbTimestamp
+    ) {
       console.log("Not load data (id: ", siteId, "). The timestamp is the Newest.");
-      return;
+      return tlData.value[siteId].scrapedData;
     }
 
     console.log("Call loadTlData (id: ", siteId, "timestamp", tlData.value[siteId].dataTimestamp, dbTimestamp, ")");
@@ -57,8 +61,6 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     try {
       const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(noLoadArticles));
       const docsArticleData = await getDocs(q);
-
-      let newData = [] as Array<ArticleData>;
 
       docsArticleData.forEach((doc) => {
         newData.push(doc.data() as ArticleData);
@@ -72,14 +74,17 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       console.error("Error fetching documents: ", error);
       tlData.value[siteId].loadingStatus = false;
     }
+    return newData;
   }
 
   // 追加でデータをロードする関数
   const loadNextTlData = async (siteId: string) => {
+    let newData = [] as Array<ArticleData>;
+
     console.log("Call loadNextTlData function");
     if (tlData.value[siteId].lastArticle == {} as QueryDocumentSnapshot<DocumentData, DocumentData>) {
       console.log("Last ArticleData is undefined.");
-      return;
+      return newData;
     }
 
     tlData.value[siteId].loadingStatus = true;
@@ -91,7 +96,6 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         limit(noLoadArticles),
       );
       const docsArticleData = await getDocs(q);
-      let newData = [] as Array<ArticleData>;
 
       docsArticleData.forEach((doc) => {
         newData.push(doc.data() as ArticleData);
@@ -106,6 +110,8 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       tlData.value[siteId].loadingStatus = false;
     }
     tlData.value[siteId].loadingStatus = false;
+
+    return newData;
   }
 
   // 全てのロードステータスを取得する

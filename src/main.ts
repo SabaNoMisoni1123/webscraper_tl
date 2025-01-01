@@ -1,4 +1,5 @@
 import './assets/main.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -6,8 +7,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
 
 import App from './App.vue'
 import router from './router'
-
-import { useDbDataStore } from '@/stores/dbStore'
+import vuetify from './vuetify'
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -15,5 +15,6 @@ pinia.use(createPersistedState());
 
 app.use(pinia)
 app.use(router)
+app.use(vuetify)
 
 app.mount('#app')
