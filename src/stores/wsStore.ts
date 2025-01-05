@@ -19,6 +19,7 @@ export interface TlData {
     "loadingStatus": boolean,
     "dataTimestamp": number,
     "lastArticle": QueryDocumentSnapshot<DocumentData, DocumentData>,
+    "lastArticleUrl": string,
   }
 }
 
@@ -36,6 +37,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         "dataTimestamp": -1,
         "loadingStatus": false,
         "lastArticle": {} as QueryDocumentSnapshot<DocumentData, DocumentData>,
+        "lastArticleUrl": "",
       }
     }
   }
@@ -43,12 +45,15 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
   // スクレイプデータをデータベースより取得する関数
   // 無駄にデータベースにアクセスしない判断はこの関数が行う
   const loadTlData = async (siteId: string, dbTimestamp: number) => {
-    // ローカルのデータがデータベースのデータと
-    // 同じであれば、関数は実行せず終了
     let newData = [] as Array<ArticleData>;
+    // 以下の条件を順番すべてに満たせば、関数を実行せずに終了
+    // 1. 過去のデータ(scrapedData)が1以上ある
+    // 2. データ取得のタイムスタンプが、データベースから得られたタイムスタンプと同じ
+    // 3. 最後のarticleのURLの記録が正しい場合
     if (
       tlData.value[siteId].scrapedData.length > 0 &&
-      tlData.value[siteId].dataTimestamp == dbTimestamp
+      tlData.value[siteId].dataTimestamp == dbTimestamp &&
+      tlData.value[siteId].scrapedData.slice(-1)[0].url == tlData.value[siteId].lastArticleUrl
     ) {
       console.log("Not load data (id: ", siteId, "). The timestamp is the Newest.");
       return tlData.value[siteId].scrapedData;
@@ -67,8 +72,10 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       });
       tlData.value[siteId].scrapedData = newData;
       tlData.value[siteId].loadingStatus = false;
-
       tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
+      tlData.value[siteId].lastArticleUrl = newData.slice(-1)[0].url;
+
+
       console.log("Load DB: ", siteId);
     } catch (error) {
       console.error("Error fetching documents: ", error);
@@ -102,8 +109,9 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       });
       tlData.value[siteId].scrapedData = [...tlData.value[siteId].scrapedData, ...newData];
       tlData.value[siteId].loadingStatus = false;
-
       tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
+      tlData.value[siteId].lastArticleUrl = newData.slice(-1)[0].url;
+
       console.log("Load DB: ", siteId);
     } catch (error) {
       console.error("Error fetching documents: ", error);

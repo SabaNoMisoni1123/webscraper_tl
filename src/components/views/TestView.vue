@@ -4,12 +4,6 @@
     <h1>タイムラインコンポーネント作成用テストページ</h1>
 
     <div class="tlArea">
-      <div class="noDataState" v-if="noData">
-        <p>何度かリログすると正しく表示されるようになります。</p>
-        <p>お手数ですが、「ctrl-R」を何度か押してください。</p>
-        <p v-show="dbData.isLoadingSiteData">現在読み込み中...</p>
-      </div>
-      <TimelineOld tl-site-id="micRSS" />
       <Timeline tl-site-id="micJoho" />
     </div>
   </div>
