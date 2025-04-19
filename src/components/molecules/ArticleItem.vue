@@ -8,8 +8,8 @@
     <v-footer>
       <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
       <v-spacer></v-spacer>
-      <v-btn icon="mdiContentCopy" @click="copyText"></v-btn>
-      <v-btn icon="mdiOpenInNew" :href="props.articleUrl" target="_brank"></v-btn>
+      <v-btn size="35" icon="mdi-content-copy" @click="copyText"></v-btn>
+      <v-btn size="35" icon="mdi-open-in-new" :href="props.articleUrl" target="_brank"></v-btn>
     </v-footer>
   </v-card>
 </template>
@@ -48,7 +48,7 @@ const copySuccess = ref(false);
 const copyText = async () => {
   try {
     await navigator.clipboard.writeText(
-      props.articleDesctiption + "\n" + props.articleUrl
+      props.articleDesctiption + `\n` + props.articleUrl
     )
     copySuccess.value = true;
 
@@ -62,5 +62,4 @@ const copyText = async () => {
 
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
