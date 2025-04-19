@@ -1,10 +1,10 @@
 <template>
-  <IconLoupe class="searchButton" @click="emit('click')" :width="props.width" :height="props.height"
+  <IconReload class="searchButton" @click="emit('click')" :width="props.width" :height="props.height"
     :fill="props.iconColor" />
 </template>
 
 <script setup lang="ts">
-import IconLoupe from '@/components/icons/IconLoupe.vue'
+import IconReload from '@/components/icons/IconReload.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 const props = defineProps({

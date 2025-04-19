@@ -1,26 +1,70 @@
+<template>
+  <v-app class="v-app">
+
+    <v-app-bar app class="titleBar">
+      <template v-slot:prepend>
+        <v-app-bar-nav-icon :icon="IconCrowler" onclick @click.end="drawer = !drawer" />
+      </template>
+      <v-app-bar-title>{{ AppConfig.appName }} v{{ AppConfig.version }}</v-app-bar-title>
+
+      <v-btn icon="mdi-chevron-double-left" @click.end="drawer = !drawer" />
+    </v-app-bar>
+
+    <v-main app class="p-0">
+      <RouterView />
+    </v-main>
+
+    <v-footer app>
+      <v-icon :icon="IconCrowler" class="mr-5"></v-icon>
+      {{ AppConfig.appName }}
+      <v-spacer />
+
+      <template v-for="i in 5" v-if="isCelebrate">
+        <v-icon icon="mdi-party-popper" />
+      </template>
+      <p>閲覧者数: {{ dbData.noAccess }}</p>
+      <template v-for="i in 5">
+        <v-icon icon="mdi-party-popper" v-if="isCelebrate" />
+      </template>
+
+      <v-spacer />
+      (c) Sota Kondo
+    </v-footer>
+
+    <v-navigation-drawer v-model="drawer" location="right" temporary>
+      <v-list>
+        <v-list-item @click.end="$router.push('/')">
+          HOME
+        </v-list-item>
+        <v-list-item @click.end="$router.push('/about')">
+          ABOUT
+        </v-list-item>
+        <v-list-item @click.end="$router.push('/contact')">
+          CONTACT
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+  </v-app>
+</template>
+
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import AppConfig from '@/assets/AppConfig.json';
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
+import { useDbDataStore } from '@/stores/dbStore'
+
+import IconCrowler from '@/components/icons/IconCrowler.vue'
+
+const dbData = useDbDataStore();
+
+const drawer = ref(false);
+
+const isCelebrate = computed(() => {
+  return dbData.noAccess % 100 == 0;
+})
 
 </script>
-
-<template>
-  <header class="headerClass">
-    <nav class="headerNav">
-      <RouterLink to="/">HOME</RouterLink>
-      <RouterLink to="/about">ABOUT</RouterLink>
-      <RouterLink to="/contact">CONTACT</RouterLink>
-    </nav>
-    <div class="headerIconTitle">
-      <img src="/icon.svg" type="image/svg+xml" alt="icon">
-      <p>{{ AppConfig.appName }} v{{ AppConfig.version }}</p>
-    </div>
-  </header>
-
-  <div class="appView">
-    <RouterView />
-  </div>
-</template>
 
 <style scoped>
 .headerClass {
@@ -30,6 +74,10 @@ import { RouterLink, RouterView } from 'vue-router';
   width: 95vw;
   display: flex;
   height: 33pt;
+}
+
+.headerClass p {
+  color: #003f27;
 }
 
 .headerNav {
@@ -42,31 +90,33 @@ import { RouterLink, RouterView } from 'vue-router';
   padding-right: 2pt;
 }
 
-.headerIconTitle {
-  display: inline-block;
+.headerNoVistor {
   margin-left: auto;
 }
 
-.headerIconTitle img {
-  height: 2ex;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: 20pt;
+.headerNoVistor p {
+  font-size: 70%;
   display: inline-block;
+  vertical-align: sub;
+}
+
+.headerIconTitle {
+  display: flex;
+  margin-left: auto;
+  height: 100%;
 }
 
 .headerIconTitle p {
-  color: #003f27;
-  margin-left: 0pt;
+  margin-left: 10pt;
   margin-right: 20pt;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
   display: inline-block;
+  height: 100%;
 }
 
-.appView {
-  background: #E6E6E6;
-  width: 95vw;
+.v-app {
+  width: 98vw;
+  background-color: pink;
 }
 </style>

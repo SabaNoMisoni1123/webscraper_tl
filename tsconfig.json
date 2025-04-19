@@ -14,5 +14,9 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "path": {
+      "@/*": ["src/*"]
+    }
   }
 }

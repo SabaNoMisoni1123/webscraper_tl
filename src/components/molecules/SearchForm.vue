@@ -1,16 +1,40 @@
 <template>
   <div class="searchForm" :style="props.styles">
-    <div class="inputArea">
-      <input type="search" name="" id="" v-model="text" placeholder="Enter text" size=25 @keydown.enter="searchClick">
+
+    <div class="textArea">
+      <input ty pe="search" v-model="condition.word" placeholder="Enter text" size=25 @keydown.enter="searchClick">
       <SearchButton @click="searchClick" :height="12" :width="12" icon-color="white" />
     </div>
+
+    <div class="dateArea">
+      <select name="year" id="selctMonth" v-model="condition.year">
+        <option key="noSelct">-</option>
+        <option v-for="y in years" :key="y">{{ y }}</option>
+      </select>
+      <p>年</p>
+      <select name="month" id="selctMonth" v-model="condition.month">
+        <option key="noSelct">-</option>
+        <option v-for="m in 12" :key="m">{{ m }}</option>
+      </select>
+      <p>月</p>
+      <select name="day" id="selectDay" v-model="condition.day">
+        <option key="noSelct">-</option>
+        <option v-for="d in days" :key="d">{{ d }}</option>
+      </select>
+      <p>日</p>
+      <XButton @click="crearDate" :height="12" :width="12" icon-color="white" />
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import SearchButton from '@/components/atoms/button/SearchButton.vue'
+import XButton from '@/components/atoms/button/XButton.vue'
 import ColorPallet from '@/assets/ColorPallet.json';
+
+import { ref, computed } from 'vue'
+import { useSearchCondtionStore } from '@/stores/searchCondition'
 
 const props = defineProps({
   styles: {
@@ -19,26 +43,32 @@ const props = defineProps({
       "--tl-background-color": ColorPallet.blue1
     },
   },
-  initValue: {
-    type: Object as () => string,
-    default: "",
+  scIdx: {
+    type: Number,
+    require: true,
   }
 })
 
-const emit = defineEmits<{
-  'searchText': [text: string],
-}>()
+const scStore = useSearchCondtionStore();
+const condition = ref(scStore.searchCondition[props.scIdx as number]);
 
-const text = ref(props.initValue)
-const lastText = ref(props.initValue)
+const years = [2023, 2024];
+const days = computed(() => {
+  if (condition.value.month == "-" || condition.value.year == "-") {
+    return 0;
+  } else {
+    return new Date(condition.value.year as number, condition.value.month as number, 0).getDate();
+  }
+})
 
 function searchClick() {
-  if (lastText.value != text.value) {
-    lastText.value = text.value;
-    emit("searchText", text.value);
-  }
+  scStore.setCondition(props.scIdx as number, condition.value);
 }
 
+function crearDate() {
+  condition.value.day = "-";
+  condition.value.month = "-";
+}
 </script>
 
 <style scoped>
@@ -46,17 +76,26 @@ function searchClick() {
   background: var(--tl-background-color);
   text-align: center;
   padding-bottom: 5pt;
-  height: 25pt;
+  height: 40pt;
 }
 
-.inputArea input {
+.searchForm p {
+  display: inline-block;
+  color: white;
+}
+
+.searchForm p:last-of-type {
+  margin-right: 5pt;
+}
+
+.textArea input {
   font-size: 20;
   vertical-align: middle;
   margin-right: 5pt;
   margin-top: 0;
 }
 
-.inputArea SearchButton {
+.textArea SearchButton {
   vertical-align: middle;
 }
 </style>

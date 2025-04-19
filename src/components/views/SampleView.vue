@@ -1,13 +1,10 @@
 <template>
   <div class="sample">
-    <CfgTabBar />
-
   </div>
 </template>
 
 <script setup lang="ts">
-import CfgTabBar from '@/components/organisms/CfgTabBar.vue'
-
+import Timeline from '@/components/organisms/Timeline.vue'
 
 </script>
 

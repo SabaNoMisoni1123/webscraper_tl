@@ -1,0 +1,49 @@
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import ColorPallet from '@/assets/ColorPallet.json'
+
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+export default createVuetify({
+  components: components,
+  directives: directives,
+  theme: {
+    defaultTheme: "light",
+    themes: {
+      light: {
+        colors: {
+          primary: ColorPallet.mriblue,
+          secondary: ColorPallet.gray2,
+          accent: ColorPallet.green1,
+          error: ColorPallet.red1,
+          warning: ColorPallet.yellow1,
+          info: ColorPallet.blue2,
+          success: ColorPallet.green1,
+          mriblue: "#003B83",
+          red0: "#420011",
+          red1: "#DC003C",
+          red2: "#EC7394",
+          red3: "#FAD9E2",
+          blue0: "#001942",
+          blue1: "#0054DC",
+          blue2: "#80AEF8",
+          blue3: "#E2ECFD",
+          gray0: "#212121",
+          gray1: "#595757",
+          gray2: "#939292",
+          gray3: "#E6E6E6",
+          green0: "#004229",
+          green1: "#329B73",
+          green2: "#7ABEA4",
+          green3: "#E0F0EA",
+          yellow0: "#423100",
+          yellow1: "#DCA000",
+          yellow2: "#E8C159",
+          yellow3: "#E8FCCC"
+        }
+      }
+    }
+  }
+
+})

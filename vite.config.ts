@@ -10,6 +10,9 @@ export default defineConfig({
     vue(),
     vueJsx(),
   ],
+  define: {
+    'process.env': process.env,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/'),

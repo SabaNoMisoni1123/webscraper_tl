@@ -1,0 +1,99 @@
+{
+  "mic": {
+    "name": "総務省",
+    "order": [
+      {
+        "id": "micJoho",
+        "weight": 0
+      },
+      {
+        "id": "micNews",
+        "weight": 1
+      },
+      {
+        "id": "micRSS",
+        "weight": 2
+      },
+      {
+        "id": "micDenpaKanri",
+        "weight": 3
+      }
+    ]
+  },
+  "mlit": {
+    "name": "国交省",
+    "order": [
+      {
+        "id": "mlitNewsRSS",
+        "weight": 0
+      },
+      {
+        "id": "mlitPressRSS",
+        "weight": 1
+      },
+      {
+        "id": "mlitAutomobile",
+        "weight": 2
+      },
+      {
+        "id": "mlitPolicy",
+        "weight": 3
+      },
+      {
+        "id": "mlitAviation",
+        "weight": 4
+      }
+    ]
+  },
+  "meti": {
+    "name": "経産省",
+    "order": [
+      {
+        "id": "metiNewsRSS",
+        "weight": 0
+      },
+      {
+        "id": "metiStatRSS",
+        "weight": 1
+      },
+      {
+        "id": "metiShingikai",
+        "weight": 2
+      }
+    ]
+  },
+  "digital": {
+    "name": "デジ庁",
+    "order": [
+      {
+        "id": "digitalConf",
+        "weight": 0
+      },
+      {
+        "id": "digitalNews",
+        "weight": 1
+      },
+      {
+        "id": "digitalRSS",
+        "weight": 2
+      }
+    ]
+  },
+  "other": {
+    "name": "厚労省他",
+    "order": [
+      {
+        "id": "mhlwRSS",
+        "weight": 0
+      },
+      {
+        "id": "envCentralEarth",
+        "weight": 1
+      },
+      {
+        "id": "caoPressRSS",
+        "weight": 2
+      }
+    ]
+  }
+}

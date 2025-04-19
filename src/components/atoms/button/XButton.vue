@@ -1,10 +1,9 @@
 <template>
-  <IconLoupe class="searchButton" @click="emit('click')" :width="props.width" :height="props.height"
-    :fill="props.iconColor" />
+  <IconX class="xButton" @click="emit('click')" :width="props.width" :height="props.height" :fill="props.iconColor" />
 </template>
 
 <script setup lang="ts">
-import IconLoupe from '@/components/icons/IconLoupe.vue'
+import IconX from '@/components/icons/IconX.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 const props = defineProps({
@@ -21,6 +20,6 @@ const props = defineProps({
     default: ColorPallet.gray2
   }
 })
+
 const emit = defineEmits(["click"])
 </script>
-
