@@ -10,11 +10,13 @@
       <v-btn icon="mdi-chevron-double-left" @click.end="drawer = !drawer" />
     </v-app-bar>
 
-    <v-main app class="p-0">
-      <RouterView />
+    <v-main app class="appBody p-0">
+      <div class="routerViewWrapper">
+        <RouterView />
+      </div>
     </v-main>
 
-    <v-footer app>
+    <v-footer app class="footerBar">
       <v-icon :icon="IconCrowler" class="mr-5"></v-icon>
       {{ AppConfig.appName }}
       <v-spacer />
@@ -67,56 +69,24 @@ const isCelebrate = computed(() => {
 </script>
 
 <style scoped>
-.headerClass {
-  margin: 0pt;
-  font-size: 20pt;
-  background: #939292;
-  width: 95vw;
-  display: flex;
-  height: 33pt;
-}
-
-.headerClass p {
-  color: #003f27;
-}
-
-.headerNav {
-  display: inline-block;
-}
-
-.headerNav a {
-  margin-left: 10pt;
-  padding-left: 2pt;
-  padding-right: 2pt;
-}
-
-.headerNoVistor {
-  margin-left: auto;
-}
-
-.headerNoVistor p {
-  font-size: 70%;
-  display: inline-block;
-  vertical-align: sub;
-}
-
-.headerIconTitle {
-  display: flex;
-  margin-left: auto;
-  height: 100%;
-}
-
-.headerIconTitle p {
-  margin-left: 10pt;
-  margin-right: 20pt;
-  margin-top: auto;
-  margin-bottom: auto;
-  display: inline-block;
-  height: 100%;
-}
-
 .v-app {
-  width: 98vw;
-  background-color: pink;
+  width: 99vw;
+  height: 100vh;
+}
+
+.titleBar {
+  height: 10vh;
+}
+
+.appBody {
+  height: 80vh;
+}
+
+.footerBar {
+  height: 5vh;
+}
+
+.routerViewWrapper {
+  height: 100%;
 }
 </style>

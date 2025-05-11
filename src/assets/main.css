@@ -1,7 +1,12 @@
 @import './base.css';
 
+html, body, #app {
+  height: 100%;
+}
+
 #app {
-  max-width: 1280px;
+  max-width: 1960px;
+  height: 100%;
   padding: 2rem;
 
   font-weight: normal;
@@ -25,7 +30,6 @@ a,
   body {
     place-items: center;
   }
-
   #app {
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;

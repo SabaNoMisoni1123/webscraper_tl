@@ -1,10 +1,10 @@
 <template>
   <v-card class="timeline m-0 p-0">
-    <v-toolbar>
+    <v-toolbar class="timelineBar">
       <v-toolbar-title>{{ tlTitle }}</v-toolbar-title>
     </v-toolbar>
 
-    <v-infinite-scroll mode="manual" @load="loadMore" side="end" height="400pt">
+    <v-infinite-scroll mode="manual" @load="loadMore" side="end" class="scrollArea">
       <template v-for="art in showArticles" :key="art.url">
         <div class="art">
           <ArticleItem :article-source="art.org" :article-desctiption="art.title" :article-url="art.url"
@@ -20,9 +20,7 @@
 <script setup lang="ts">
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
-
 import { computed, ref } from 'vue'
-
 import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
 import { useDbDataStore } from '@/stores/dbStore';
 
@@ -109,50 +107,16 @@ const styles = computed(() => {
 <style scoped>
 .timeline {
   margin-right: 2pt;
-  display: inline-block;
-  vertical-align: top;
   width: max(200pt, 20vw);
-  height: 90vh;
+  min-width: 200pt;
   white-space: normal;
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
 }
-
-.tlItemList {
-  background: var(--tl-background-color);
-  padding: 2pt;
-  height: 90%;
-
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.tlItemList::-webkit-scrollbar {
-  display: none;
-}
-
-.tlFooter {
-  height: 5pt;
-  background: var(--tl-background-color);
-}
-
-.loadingMsg {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
-}
-
-.loadNext p {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.noDataState {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
+.scrollArea {
+  flex-grow: 1;
+  overflow-y: auto;
 }
 </style>
