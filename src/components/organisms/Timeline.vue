@@ -1,122 +1,118 @@
 <template>
   <v-card class="timeline m-0 p-0">
     <v-toolbar class="timelineBar">
-      <v-toolbar-title>{{ tlTitle }}</v-toolbar-title>
+      <v-toolbar-title>{{ headerTitle }}</v-toolbar-title>
     </v-toolbar>
 
-    <v-infinite-scroll mode="manual" @load="loadMore" side="end" class="scrollArea">
+    <v-infinite-scroll mode="manual" side="end" class="scrollArea" @load="onInfiniteLoad">
+      <!-- 記事リスト -->
       <template v-for="art in showArticles" :key="art.url">
         <div class="art">
           <ArticleItem :article-source="art.org" :article-desctiption="art.title" :article-url="art.url"
-            :article-epoch="art.epoch">
-          </ArticleItem>
+            :article-epoch="art.epoch" />
         </div>
       </template>
     </v-infinite-scroll>
   </v-card>
-
 </template>
 
 <script setup lang="ts">
+import { computed, toRefs, watch } from 'vue'
+
+import { useTimelineStore } from '@/stores/timelineStore'
+import { useSiteStore } from '@/stores/siteStore'
+
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
-import ColorPallet from '@/assets/ColorPallet.json'
-import { computed, ref } from 'vue'
-import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
-import { useDbDataStore } from '@/stores/dbStore';
+import type { ArticleData } from '@/stores/timelineStore'
 
 const props = defineProps({
-  tlSiteId: {
-    type: String,
-    required: true
-  },
-  tlTitle: {
-    type: String,
-    default: "",
-  },
-  showBar: {
-    type: Boolean,
-    default: false,
-  },
-  lastEpoch: {
-    type: Number,
-    default: -1,
-  }
+  siteId: { type: String, required: true },
+  dbTimestamp: { type: Number, default: -1 },
+  title: { type: String, default: '' },
+  showBar: { type: Boolean, default: false }
 })
+
+/** 任意: 親でリロードボタン等を置く場合（既存のI/F維持） */
+defineEmits<{ (e: 'reload'): void }>()
+
+const { siteId, dbTimestamp, title, showBar } = toRefs(props)
 
 // store
-const dbData = useDbDataStore();
-const wsData = useWsDataStore();
+const tl = useTimelineStore()
+const sites = useSiteStore()
 
-// siteData
-const site = computed(() => {
-  if (props.tlSiteId in dbData.siteData) {
-    return dbData.siteData[props.tlSiteId];
-  } else {
-    return dbData.defaultSiteData;
-  }
+// この Timeline が扱う記事バケット（存在しなければ undefined → store が初期化するまで待つ）
+const bucket = computed(() => tl.buckets[siteId.value])
+
+// 見出し文言（props.title が無ければサイト名にフォールバック）
+const headerTitle = computed(() => {
+  if (title?.value && title.value.trim() !== '') return title.value
+  const s = sites.siteData[siteId.value]
+  return s ? s.name : ''
 })
 
-// tlData
-const articles = ref([] as Array<ArticleData>);
-wsData.loadTlData(props.tlSiteId, dbData.dbTimestamp).then((data) => {
-  articles.value = data;
-});
-
-const tlTitle = computed(() => {
-  if (props.tlTitle == "") {
-    return site.value.name;
-  } else {
-    return props.tlTitle;
-  }
+// 表示する記事（必要なフィルタやソートをここに集約）
+const showArticles = computed<ArticleData[]>(() => {
+  const list = bucket.value?.scraped ?? []
+  return list
 })
 
-// 追加読み込み
-async function loadMore({ side, done }: { side: 'end' | 'start' | 'both', done: (status: 'error' | 'loading' | 'empty' | 'ok') => void }) {
-  console.log("call loadMore function (Timeline.vue)");
-  const newData = await wsData.loadNextTlData(props.tlSiteId);
-  articles.value.push(...newData);
-  done('ok');
+// ---- 初回＆依存変化時ロード ----
+watch([siteId, dbTimestamp], async ([id, ts]) => {
+  if (!id || !Number.isFinite(ts)) return
+  await tl.load(id, ts) // 内部でキャッシュ条件を満たせば no-op
+}, { immediate: true })
+
+// ---- 追加読み込み (v-infinite-scroll: manual) ----
+type LoadArg = { side: 'end' | 'start' | 'both', done: (s: 'error' | 'loading' | 'empty' | 'ok') => void }
+async function onInfiniteLoad({ done }: LoadArg) {
+  if (!siteId.value) return done('error')
+
+  try {
+    const before = bucket.value?.scraped?.length ?? 0
+    const afterList = await tl.loadMore(siteId.value)
+    const added = (afterList?.length ?? 0) - before
+    if (added <= 0) done('empty')
+    else done('ok')
+  } catch (e) {
+    console.error('[Timeline.vue] loadMore error:', e)
+    done('error')
+  }
 }
-
-const bgList = [
-  ColorPallet.blue1,
-  ColorPallet.red1,
-  ColorPallet.yellow1,
-  ColorPallet.green1,
-  ColorPallet.gray1,
-];
-
-// 表示記事
-const showArticles = computed(() => {
-  let ret = [] as Array<ArticleData>;
-  ret = articles.value;
-
-  // 必要なフィルタがあれば
-
-  return ret;
-})
-
-const styles = computed(() => {
-  return {
-    "--tl-background-color": bgList[site.value.color % bgList.length]
-  }
-})
-
 </script>
 
 <style scoped>
+/* =========================================
+   横並びの1カラム（カード）本体
+   - 親の v-row が row-scroll(height=var(--row-h)) を持つ前提
+   - カード自身も同じ高さに合わせて内部スクロールを成立させる
+   ========================================= */
 .timeline {
-  margin-right: 2pt;
-  width: max(200pt, 20vw);
-  min-width: 200pt;
-  white-space: normal;
+  height: 100%;
   display: flex;
   flex-direction: column;
-
-  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
+
+/* 見出しツールバー固定（任意：使っているなら有効） */
+.timelineBar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--v-theme-surface);
+}
+
+/* 縦スク本体 */
 .scrollArea {
-  flex-grow: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.art {
+  margin-bottom: 6px;
 }
 </style>

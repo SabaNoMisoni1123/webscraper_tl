@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { db } from '@/firebase'
 import { collection, getDocs, query, orderBy, limit, startAfter, type QueryDocumentSnapshot, type DocumentData } from 'firebase/firestore'
 
+// 記事データ
 export interface ArticleData {
   "title": string,
   "url": string,
@@ -13,6 +14,7 @@ export interface ArticleData {
 // ストアで管理するデータその②
 // データベースから取得するウェブスクレイプの結果
 // タイムラインコンポーネントとのみやり取りを想定
+// key: siteId
 export interface TlData {
   [index: string]: {
     "scrapedData": Array<ArticleData>,
@@ -24,13 +26,24 @@ export interface TlData {
 }
 
 export const useWsDataStore = defineStore('wsDataStore', () => {
-  const noLoadArticles = 25; // １回のロード件数
+  // データ
+  // １回のロード件数
+  const noLoadArticles = ref(25);
 
-  // スクレイプの結果情報
+  // データベースからロードしたウェブスクレイプ結果のデータ
   const tlData = ref<TlData>({} as TlData);
 
-  // siteIdによる新規追加
-  function newTlData(siteId: string) {
+  // 関数
+
+  // noLoadArticlesについての関数
+  // noLoadArticlesの値を設定する関数
+  function setNoLoadArticles(new_n = 25) {
+    noLoadArticles.value = new_n;
+  }
+
+  // tlDataについての関数
+  // tlDataの新しいkeyの追加
+  function addNewKeyTlData(siteId: string) {
     if (!(siteId in Object.keys(tlData.value))) {
       tlData.value[siteId] = {
         "scrapedData": [] as Array<ArticleData>,
@@ -42,12 +55,12 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     }
   }
 
-  // スクレイプデータをデータベースより取得する関数
-  // 無駄にデータベースにアクセスしない判断はこの関数が行う
-  const loadTlData = async (siteId: string, dbTimestamp: number) => {
+  // key（siteId）を指定してデータベースから記事データをダウンロードする関数
+  // リログを繰り返した場合に毎回データベースにアクセスしないようにする。
+  const loadTlData = async (siteId: string, dbTimestamp: number): Promise<ArticleData[]> => {
     let newData = [] as Array<ArticleData>;
     // 以下の条件を順番すべてに満たせば、関数を実行せずに終了
-    // 1. 過去のデータ(scrapedData)が1以上ある
+    // 1. scrapedDataの長さが1以上ある
     // 2. データ取得のタイムスタンプが、データベースから得られたタイムスタンプと同じ
     // 3. 最後のarticleのURLの記録が正しい場合
     if (
@@ -64,7 +77,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     tlData.value[siteId].dataTimestamp = dbTimestamp.valueOf();
 
     try {
-      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(noLoadArticles));
+      const q = query(collection(db, siteId), orderBy("epoch", "desc"), limit(noLoadArticles.value));
       const docsArticleData = await getDocs(q);
 
       docsArticleData.forEach((doc) => {
@@ -149,12 +162,13 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
   }
 
   return {
+    noLoadArticles,
     tlData,
-    newTlData,
+    addNewKeyTlData,
     loadTlData,
     allLoadingStatus,
     loadNextTlData,
     init,
   }
 
-}, { persist: true });
+}, { persist: false });

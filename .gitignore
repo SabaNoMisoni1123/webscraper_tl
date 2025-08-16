@@ -27,5 +27,7 @@ coverage
 *.sw?
 
 .env
+.env.local
+tree.txt
 
 package-lock.json
