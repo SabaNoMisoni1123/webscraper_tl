@@ -1,14 +1,26 @@
 import { fileURLToPath } from 'node:url'
-import { mergeConfig, defineConfig, configDefaults } from 'vitest/config'
-import viteConfig from './vite.config'
+import { resolve } from 'node:path'
+import { defineConfig, configDefaults } from 'vitest/config'
+import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
+import vuetify from 'vite-plugin-vuetify'
 
-export default mergeConfig(
-  viteConfig,
-  defineConfig({
-    test: {
-      environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'e2e/*'],
-      root: fileURLToPath(new URL('./', import.meta.url))
-    }
-  })
-)
+const root = fileURLToPath(new URL('./', import.meta.url))
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    vueJsx(),
+    vuetify({ autoImport: true }),
+  ],
+  resolve: {
+    alias: {
+      '@': resolve(root, 'src'),
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    exclude: [...configDefaults.exclude, 'e2e/*'],
+    root,
+  },
+})

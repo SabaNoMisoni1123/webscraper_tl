@@ -43,6 +43,21 @@ export const useAppState = defineStore(
       () => ui.useSearch || ui.useMenu || ui.useNews
     )
 
+    // 旧 UI が appState.useSearch のように直接参照しているため、
+    // ui 配下へ移行しつつ後方互換の writable computed を公開します。
+    const useSearch = computed<boolean>({
+      get: () => ui.useSearch,
+      set: value => setFlag('useSearch', value),
+    })
+    const useMenu = computed<boolean>({
+      get: () => ui.useMenu,
+      set: value => setFlag('useMenu', value),
+    })
+    const useNews = computed<boolean>({
+      get: () => ui.useNews,
+      set: value => setFlag('useNews', value),
+    })
+
     // --- actions ---
     /**
      * 単一フラグを更新（変更があったときだけ履歴を追記）
@@ -96,6 +111,9 @@ export const useAppState = defineStore(
       appVersion,
       ui,
       history,
+      useSearch,
+      useMenu,
+      useNews,
 
       // getters
       isAnyPanelOpen,

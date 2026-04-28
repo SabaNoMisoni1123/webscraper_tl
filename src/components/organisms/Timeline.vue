@@ -8,7 +8,7 @@
       <!-- 記事リスト -->
       <template v-for="art in showArticles" :key="art.url">
         <div class="art">
-          <ArticleItem :article-source="art.org" :article-desctiption="art.title" :article-url="art.url"
+          <ArticleItem :article-source="art.org" :article-description="art.title" :article-url="art.url"
             :article-epoch="art.epoch" />
         </div>
       </template>

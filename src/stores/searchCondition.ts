@@ -13,7 +13,7 @@ export interface SearchConditionData {
 const today = new Date();
 
 // データロード
-export const useSearchCondtionStore = defineStore('searchConditionStore', () => {
+export const useSearchConditionStore = defineStore('searchConditionStore', () => {
   const searchCondition = ref<Array<SearchConditionData>>([] as Array<SearchConditionData>)
 
   function newCondition(word: string, year: number | string, month: number | string, day: number | string) {
@@ -38,7 +38,7 @@ export const useSearchCondtionStore = defineStore('searchConditionStore', () => 
 
   function rmCondition(idx: number) {
     if (idx >= 0 && idx < searchCondition.value.length) {
-      searchCondition.value.splice(idx);
+      searchCondition.value.splice(idx, 1);
     }
   }
 
@@ -64,3 +64,6 @@ export const useSearchCondtionStore = defineStore('searchConditionStore', () => 
 
   return { searchCondition, newCondition, setCondition, rmCondition, pushCondition, popCondition, size }
 }, { persist: true })
+
+// 既存コードに typo を含む import が残っているため、移行完了まで互換 export を残します。
+export const useSearchCondtionStore = useSearchConditionStore

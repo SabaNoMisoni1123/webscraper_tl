@@ -1,35 +1,34 @@
 #app {
-  /* width の明示は基本不要、99vw は横スクロールの原因になるので回避 */
-  min-height: var(--vh);
-  overflow: hidden; /* 横スクロールが出やすいなら保険として */
-
-  max-width: 1960px;
+  min-height: 100dvh;
   height: 100%;
-  padding: 2rem;
-
+  width: 100%;
+  overflow: hidden;
   font-weight: normal;
 }
 
-/* App.vue から移動：Vuetifyクラスを直接いじらず、自前クラスで制御 */
 .titleBar {
   height: var(--appbar-h);
 }
+
 .footerBar {
   height: var(--footer-h);
 }
 
-/* メイン領域は AppBar/ Footer を差し引きで確保 */
 .appBody {
-  /* v-main 自体が高さ管理するため “height固定” より “min-height” が安全 */
   min-height: calc(var(--vh) - var(--appbar-h) - var(--footer-h));
-  /* 必要なら overflow: auto; でスクロールを許可 */
 }
 
-/* RouterView の中身が短いときでもフッターが下に張り付くように */
 .routerViewWrapper {
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.u-wh100 {
+  min-height: 0;
+  height: 100%;
+  width: 100%;
 }
 
 a,
@@ -47,11 +46,7 @@ a,
 }
 
 @media (min-width: 1024px) {
-  body {
-    place-items: center;
-  }
   #app {
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    padding: 0;
   }
 }

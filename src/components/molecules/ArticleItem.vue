@@ -3,52 +3,44 @@
     <v-toolbar :title="props.articleSource" v-if="props.showBar">
     </v-toolbar>
 
-    <p>{{ props.articleDesctiption }}</p>
+    <p>{{ articleDescription }}</p>
 
     <v-footer>
       <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
       <v-spacer></v-spacer>
       <v-btn size="35" icon="mdi-content-copy" @click="copyText"></v-btn>
-      <v-btn size="35" icon="mdi-open-in-new" :href="props.articleUrl" target="_brank"></v-btn>
+      <v-btn size="35" icon="mdi-open-in-new" :href="props.articleUrl" target="_blank" rel="noopener noreferrer"></v-btn>
     </v-footer>
   </v-card>
 </template>
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
-const props = defineProps({
-  articleDesctiption: {
-    type: String,
-    required: true
-  },
-  articleSource: {
-    type: String,
-    required: true
-  },
-  articleUrl: {
-    type: String,
-    required: true
-  },
-  articleEpoch: {
-    type: Number,
-    required: true
-  },
-  showBar: {
-    type: Boolean,
-    default: false
-  }
+const props = withDefaults(defineProps<{
+  articleDescription?: string
+  articleDesctiption?: string
+  articleSource: string
+  articleUrl: string
+  articleEpoch: number
+  showBar?: boolean
+}>(), {
+  articleDescription: '',
+  articleDesctiption: '',
+  showBar: false,
 })
 
 const dateEpoch = ref(new Date(0));
 dateEpoch.value.setSeconds(props.articleEpoch.valueOf());
 
+const articleDescription = computed(() => props.articleDescription || props.articleDesctiption)
+
 const copySuccess = ref(false);
 const copyText = async () => {
   try {
     await navigator.clipboard.writeText(
-      props.articleDesctiption + `\n` + props.articleUrl
+      articleDescription.value + `\n` + props.articleUrl
     )
     copySuccess.value = true;
 

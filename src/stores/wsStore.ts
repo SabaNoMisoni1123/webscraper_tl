@@ -20,7 +20,7 @@ export interface TlData {
     "scrapedData": Array<ArticleData>,
     "loadingStatus": boolean,
     "dataTimestamp": number,
-    "lastArticle": QueryDocumentSnapshot<DocumentData, DocumentData>,
+    "lastArticle": QueryDocumentSnapshot<DocumentData, DocumentData> | null,
     "lastArticleUrl": string,
   }
 }
@@ -44,12 +44,12 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
   // tlDataについての関数
   // tlDataの新しいkeyの追加
   function addNewKeyTlData(siteId: string) {
-    if (!(siteId in Object.keys(tlData.value))) {
+    if (!tlData.value[siteId]) {
       tlData.value[siteId] = {
         "scrapedData": [] as Array<ArticleData>,
         "dataTimestamp": -1,
         "loadingStatus": false,
-        "lastArticle": {} as QueryDocumentSnapshot<DocumentData, DocumentData>,
+        "lastArticle": null,
         "lastArticleUrl": "",
       }
     }
@@ -58,6 +58,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
   // key（siteId）を指定してデータベースから記事データをダウンロードする関数
   // リログを繰り返した場合に毎回データベースにアクセスしないようにする。
   const loadTlData = async (siteId: string, dbTimestamp: number): Promise<ArticleData[]> => {
+    addNewKeyTlData(siteId);
     let newData = [] as Array<ArticleData>;
     // 以下の条件を順番すべてに満たせば、関数を実行せずに終了
     // 1. scrapedDataの長さが1以上ある
@@ -66,7 +67,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
     if (
       tlData.value[siteId].scrapedData.length > 0 &&
       tlData.value[siteId].dataTimestamp == dbTimestamp &&
-      tlData.value[siteId].scrapedData.slice(-1)[0].url == tlData.value[siteId].lastArticleUrl
+      (tlData.value[siteId].scrapedData.at(-1)?.url ?? "") == tlData.value[siteId].lastArticleUrl
     ) {
       console.log("Not load data (id: ", siteId, "). The timestamp is the Newest.");
       return tlData.value[siteId].scrapedData;
@@ -85,8 +86,8 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       });
       tlData.value[siteId].scrapedData = newData;
       tlData.value[siteId].loadingStatus = false;
-      tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
-      tlData.value[siteId].lastArticleUrl = newData.slice(-1)[0].url;
+      tlData.value[siteId].lastArticle = docsArticleData.docs.at(-1) ?? null;
+      tlData.value[siteId].lastArticleUrl = newData.at(-1)?.url ?? "";
 
 
       console.log("Load DB: ", siteId);
@@ -99,10 +100,11 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
 
   // 追加でデータをロードする関数
   const loadNextTlData = async (siteId: string) => {
+    addNewKeyTlData(siteId);
     let newData = [] as Array<ArticleData>;
 
     console.log("Call loadNextTlData function");
-    if (tlData.value[siteId].lastArticle == {} as QueryDocumentSnapshot<DocumentData, DocumentData>) {
+    if (!tlData.value[siteId].lastArticle) {
       console.log("Last ArticleData is undefined.");
       return newData;
     }
@@ -113,7 +115,7 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         collection(db, siteId),
         orderBy("epoch", "desc"),
         startAfter(tlData.value[siteId].lastArticle),
-        limit(noLoadArticles),
+        limit(noLoadArticles.value),
       );
       const docsArticleData = await getDocs(q);
 
@@ -122,8 +124,8 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
       });
       tlData.value[siteId].scrapedData = [...tlData.value[siteId].scrapedData, ...newData];
       tlData.value[siteId].loadingStatus = false;
-      tlData.value[siteId].lastArticle = docsArticleData.docs[docsArticleData.docs.length - 1];
-      tlData.value[siteId].lastArticleUrl = newData.slice(-1)[0].url;
+      tlData.value[siteId].lastArticle = docsArticleData.docs.at(-1) ?? null;
+      tlData.value[siteId].lastArticleUrl = tlData.value[siteId].scrapedData.at(-1)?.url ?? "";
 
       console.log("Load DB: ", siteId);
     } catch (error) {
@@ -156,7 +158,8 @@ export const useWsDataStore = defineStore('wsDataStore', () => {
         "scrapedData": [] as Array<ArticleData>,
         "loadingStatus": false,
         "dataTimestamp": -1,
-        "lastArticle": {} as QueryDocumentSnapshot<DocumentData, DocumentData>,
+        "lastArticle": null,
+        "lastArticleUrl": "",
       }
     }
   }

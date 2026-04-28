@@ -1,41 +1,38 @@
 <template>
-  <v-container class="appPage m-0 p-0" fluid>
-    <v-row dense class="height100">
-      <v-col :cols="widthCfgCol" class="height100 m-0 p-0">
+  <v-container class="app-page pa-0" fluid>
+    <v-row no-gutters class="u-wh100 flex-nowrap">
+      <v-col :cols="CONFIG_COLS" class="u-wh100 pa-0 config-col">
         <WsConfigView />
       </v-col>
 
-      <v-col :cols="widthAppView" class="height100 m-0 p-0" style="height: 100%;">
+      <v-col :cols="timelineCols" class="u-wh100 pa-0 timeline-col">
         <WsAppView />
       </v-col>
     </v-row>
-
   </v-container>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import WsConfigView from '@/components/views/WsConfigView.vue'
 import WsAppView from '@/components/views/WsAppView.vue'
 
-import { ref, computed } from 'vue'
+const GRID_COLS = 12
+const CONFIG_COLS = 3
 
-const widthCfgCol = ref(3);
-
-const widthAppView = computed(() => {
-  return 12 - widthCfgCol.value;
-})
+const timelineCols = computed(() => GRID_COLS - CONFIG_COLS)
 
 </script>
 
 <style scoped>
-.appPage {
+.app-page {
   width: 100%;
   height: 100%;
   min-height: 0;
 }
 
-.height100 {
-  min-height: 0;
-  height: 100%;
+.config-col,
+.timeline-col {
+  min-width: 0;
 }
 </style>

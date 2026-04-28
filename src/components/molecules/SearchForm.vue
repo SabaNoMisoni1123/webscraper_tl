@@ -2,7 +2,7 @@
   <div class="searchForm" :style="props.styles">
 
     <div class="textArea">
-      <input ty pe="search" v-model="condition.word" placeholder="Enter text" size=25 @keydown.enter="searchClick">
+      <input type="search" v-model="condition.word" placeholder="Enter text" size=25 @keydown.enter="searchClick">
       <SearchButton @click="searchClick" :height="12" :width="12" icon-color="white" />
     </div>
 
@@ -39,20 +39,21 @@ import { useSearchCondtionStore } from '@/stores/searchCondition'
 const props = defineProps({
   styles: {
     type: Object,
-    default: {
+    default: () => ({
       "--tl-background-color": ColorPallet.blue1
-    },
+    }),
   },
   scIdx: {
     type: Number,
-    require: true,
+    required: true,
   }
 })
 
 const scStore = useSearchCondtionStore();
 const condition = ref(scStore.searchCondition[props.scIdx as number]);
 
-const years = [2023, 2024];
+const thisYear = new Date().getFullYear();
+const years = Array.from({ length: thisYear - 2023 + 1 }, (_, i) => 2023 + i);
 const days = computed(() => {
   if (condition.value.month == "-" || condition.value.year == "-") {
     return 0;

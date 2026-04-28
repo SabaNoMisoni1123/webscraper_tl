@@ -1,28 +1,28 @@
 <template>
-  <v-container fluid class="wsView py-2 h-100 d-flex">
+  <v-container fluid class="ws-view h-100 min-h-0 pa-2 d-flex flex-column">
     <!-- 画面レベルのローディング -->
-    <div v-if="metaLoading || sitesLoading" class="text-center h-100 my-6" aria-live="polite">
-      <div class="mb-2">データを読み込んでいます…</div>
+    <div v-if="isLoading" class="loading-state text-center h-100" aria-live="polite">
+      <div class="mb-2 text-body-2">データを読み込んでいます...</div>
       <v-progress-linear indeterminate />
 
       <!-- 横並びスケルトン（通常時と同じ横スクロール挙動） -->
-      <div class="h-scroll-row">
-        <v-col v-for="n in 4" :key="n" cols="auto" class="timeline-col">
+      <div class="timeline-row mt-4">
+        <v-col v-for="n in SKELETON_COUNT" :key="n" cols="auto" class="timeline-col pa-0">
           <v-skeleton-loader type="card" class="skeleton-card" />
         </v-col>
       </div>
     </div>
 
     <!-- 非ローディング時 -->
-    <div v-else class="h-100">
+    <div v-else class="content-state h-100 min-h-0">
       <!-- 空状態 -->
-      <div v-if="visibleIds.length === 0" class="text-center my-6">
+      <v-alert v-if="visibleIds.length === 0" type="info" variant="tonal" class="ma-4">
         表示可能なサイトが見つかりません。
-      </div>
+      </v-alert>
 
       <!-- 横並び（横スクロール可）: 1 siteId = 1 Timeline -->
-      <div class="h-scroll-row">
-        <v-col v-for="id in visibleIds" :key="id" cols="auto" class="timeline-col">
+      <div v-else class="timeline-row">
+        <v-col v-for="id in visibleIds" :key="id" cols="auto" class="timeline-col pa-0">
           <Timeline :site-id="id" :db-timestamp="dbTimestamp" @reload="handleManualReload" />
         </v-col>
       </div>
@@ -44,6 +44,7 @@ const sites = useSiteStore()
 // ローディング
 const metaLoading = ref(false)
 const sitesLoading = computed(() => sites.isLoading)
+const isLoading = computed(() => metaLoading.value || sitesLoading.value)
 
 // 表示対象の siteId（isShow=true を weight 順で）
 const visibleIds = computed(() => sites.sortedVisibleIds)
@@ -51,21 +52,32 @@ const visibleIds = computed(() => sites.sortedVisibleIds)
 // dbTimestamp（Firestore 側の最終更新 epoch）
 const dbTimestamp = computed(() => meta.dbTimestamp)
 
-onMounted(async () => {
-  // 1) メタ（アクセス+1 & 更新時刻の取得）
+const SKELETON_COUNT = 4
+
+async function refreshMeta() {
   metaLoading.value = true
-  await meta.refreshMeta()
-  metaLoading.value = false
+  try {
+    return await meta.refreshMeta()
+  } finally {
+    metaLoading.value = false
+  }
+}
+
+async function loadInitialData() {
+  // 1) メタ（アクセス+1 & 更新時刻の取得）
+  await refreshMeta()
 
   // 2) サイト一覧
   await sites.fetchSites()
+}
+
+onMounted(async () => {
+  await loadInitialData()
 })
 
 /** 子から「更新」ボタンが押された際の挙動（任意） */
 async function handleManualReload() {
-  metaLoading.value = true
-  const updated = await meta.refreshMeta()
-  metaLoading.value = false
+  const updated = await refreshMeta()
   if (updated) {
     await sites.fetchSites()
   }
@@ -73,25 +85,19 @@ async function handleManualReload() {
 </script>
 
 <style scoped>
-.wsView {
+.loading-state,
+.content-state,
+.timeline-row {
   height: 100%;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 /* 横一列 + 横スクロール */
-.h-scroll-row {
-  height: 100%;
-  /* 70vh をそのまま使う */
-  min-height: 0;
+.timeline-row {
   display: flex;
   flex-wrap: nowrap;
   gap: 16px;
-
   overflow-x: auto;
-  /* 横スク本体 */
-
   --hbar: 12px;
   padding-bottom: var(--hbar);
   margin-bottom: calc(-1 * var(--hbar));
@@ -99,9 +105,13 @@ async function handleManualReload() {
   -webkit-overflow-scrolling: touch;
 }
 
-.height100 {
+.timeline-col {
+  width: clamp(260px, 25vw, 420px);
   height: 100%;
-  min-height: 0;
+  flex: 0 0 auto;
 }
 
+.skeleton-card {
+  height: 100%;
+}
 </style>
