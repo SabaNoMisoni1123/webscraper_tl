@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import WsAppPage from '@/components/pages/WsAppPage.vue'
 import SampleView from '@/components/views/SampleView.vue'
 
+// GitHub Pages 配信時の base と合わせるため、履歴モードは import.meta.env.BASE_URL を利用します。
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

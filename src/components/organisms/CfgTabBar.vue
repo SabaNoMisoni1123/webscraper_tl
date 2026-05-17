@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI の縦型設定バー。現行画面では WsConfigView 系への置き換え対象です。 -->
   <div class="cfgTabBar" :style="styles">
 
     <div class="searchArea">
@@ -57,11 +58,14 @@ const appState = useAppState();
 const sc = useSearchCondtionStore();
 const dbData = useDbDataStore();
 const wsData = useWsDataStore();
+
+// 旧ストア用の並び替えプリセット。新ストアでは SiteDisplayConfigPanel から同じ JSON を利用します。
 const siteOrderPreset = SiteDataWeightPreset as {
   [index: string]: SiteOrder,
 };
 
 const colSearch = computed(() => {
+  // 各アイコンは ON/OFF 状態を色で表します。
   return appState.useSearch ? ColorPallet.green1 : ColorPallet.gray2;
 })
 const colMenu = computed(() => {
@@ -75,6 +79,7 @@ const colReload = computed(() => {
 })
 
 const noWindow = ref(0);
+// 起動時点の検索条件数を select の初期値に反映します。
 noWindow.value = sc.size;
 
 function toggleSearch() {
@@ -82,6 +87,7 @@ function toggleSearch() {
 }
 
 function changeNoSearchWindow() {
+  // 検索条件配列を select の値に合わせて伸縮します。
   if (noWindow.value > sc.size) {
     const times = noWindow.value - sc.size;
     for (let i = 0; i < times; i++) {
@@ -104,16 +110,19 @@ function toggleMenu() {
 }
 
 function sortTlPreset(so: SiteOrder) {
+  // 旧ストアの weight をプリセットで再配置します。
   dbData.setOrderSiteDataPreset(so);
 }
 
 function tlDataReset() {
   if (window.confirm("データをリセットしますか？")) {
+    // Firestore からサイト設定を読み直すため、確認ダイアログ後にだけ実行します。
     dbData.resetSiteData();
   }
 }
 
 const styles = computed(() => {
+  // メニュー展開時だけ横幅を広げ、通常時はアイコン列として細く表示します。
   return {
     '--width': appState.useMenu ? "280px" : "60px",
     '--textColor': ColorPallet.green0,

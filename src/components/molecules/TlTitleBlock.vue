@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧設定メニュー内のサイト行。表示切替と上下移動を 1 行にまとめます。 -->
   <div class="tlTitleBlock" :style="styles">
     <p>{{ dbData.siteData[props.tlSiteId].weight + 1 }} {{ dbData.siteData[props.tlSiteId].name }}</p>
     <div class="buttons">
@@ -27,9 +28,11 @@ const props = defineProps({
 const dbData = useDbDataStore();
 
 function clickedUp() {
+  // weight を小さくするほど上位に表示される旧ストア仕様に合わせます。
   dbData.upWeight(props.tlSiteId);
 }
 function clickedDown() {
+  // weight を大きくするほど下位に表示される旧ストア仕様に合わせます。
   dbData.downWeight(props.tlSiteId);
 }
 

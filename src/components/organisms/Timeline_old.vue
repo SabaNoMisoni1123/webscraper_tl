@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI のサイト別タイムライン。現行実装では organisms/Timeline.vue を優先します。 -->
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="tlTitle" :style="styles" />
     <div class="tlItemList">
@@ -47,7 +48,7 @@ const props = defineProps({
 const dbData = useDbDataStore();
 const wsData = useWsDataStore();
 
-// siteData
+// siteData: URL 直打ちや初期化前でも落ちないよう defaultSiteData にフォールバックします。
 const site = computed(() => {
   if (props.tlSiteId in dbData.siteData) {
     return dbData.siteData[props.tlSiteId];
@@ -56,7 +57,7 @@ const site = computed(() => {
   }
 })
 
-// tlData
+// tlData: 旧実装は setup 時に即時ロードします。新実装は watch で依存変化を追います。
 wsData.loadTlData(props.tlSiteId, dbData.dbTimestamp);
 
 const tlTitle = computed(() => {
@@ -69,6 +70,7 @@ const tlTitle = computed(() => {
 
 // 追加読み込み
 function loadMore() {
+  // Firestore の startAfter を使った旧ストアの追加ロードを呼び出します。
   wsData.loadNextTlData(props.tlSiteId);
 }
 const loadNextText = computed(() => {
@@ -92,6 +94,7 @@ const bgList = [
 const showArticles = computed(() => {
   let articles = [] as Array<ArticleData>;
   if (props.tlSiteId == "all") {
+    // all 指定時は表示中サイトの全記事を結合します。
     for (const k in dbData.getSortedSiteDataIdFiltered) {
       articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
     }

@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧記事カード本文。新着判定に応じて背景色を切り替えます。 -->
   <div :class="isNewer ? 'itemBoxNew' : 'itemBox'">
     <p class="iStr">{{ props.itemString }}</p>
   </div>
@@ -19,6 +20,7 @@ const props = defineProps({
   }
 })
 
+// 新着色を CSS 変数化し、旧 atom のクラス構造を変えずに色だけ差し替えます。
 const styles = computed(() => {
   return {
     "--bg-color": ColorPallet.yellow3

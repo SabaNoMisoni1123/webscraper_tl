@@ -1,4 +1,5 @@
 <template>
+  <!-- フィードバック導線を案内する静的ページ。アプリ名とバージョンは設定 JSON から表示します。 -->
   <div class="contact">
     <div class="contactBoddy">
       <h1>{{ AppConfig.appName }} v{{ AppConfig.version }}</h1>
@@ -20,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+// 表示文言内のアプリ名・バージョンを AppConfig に合わせます。
 import AppConfig from '@/assets/AppConfig.json';
 </script>
 
@@ -41,4 +43,3 @@ import AppConfig from '@/assets/AppConfig.json';
   margin-top: 20pt;
 }
 </style>
-

@@ -1,3 +1,5 @@
+// 旧系ストア: スクレイプ対象サイトのメタ情報と DB メタ情報をまとめて扱います。
+// 現行主要画面では siteStore/dbMetaStore へ分割済みですが、旧 UI 互換のため残しています。
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'

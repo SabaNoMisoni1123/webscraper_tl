@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI の検索操作に使う虫眼鏡 SVG。SearchButton がラップします。 -->
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
     <g>
       <path d="M449.803,62.197C408.443,20.807,353.85-0.037,299.646-0.006C245.428-0.037,190.85,20.807,149.49,62.197

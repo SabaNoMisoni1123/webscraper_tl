@@ -1,4 +1,5 @@
 <template>
+  <!-- 現行 Vuetify 版の記事カード。検索結果・サイト別タイムラインの共通表示に使います。 -->
   <v-card class="articleItem">
     <v-toolbar :title="props.articleSource" v-if="props.showBar">
     </v-toolbar>
@@ -20,6 +21,7 @@ import { computed, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
   articleDescription?: string
+  // 旧コンポーネント由来の typo 名。呼び出し側の互換性のため一時的に受けます。
   articleDesctiption?: string
   articleSource: string
   articleUrl: string
@@ -34,11 +36,13 @@ const props = withDefaults(defineProps<{
 const dateEpoch = ref(new Date(0));
 dateEpoch.value.setSeconds(props.articleEpoch.valueOf());
 
+// 正式名を優先し、旧 typo props しか渡されない場合も表示できるようにします。
 const articleDescription = computed(() => props.articleDescription || props.articleDesctiption)
 
 const copySuccess = ref(false);
 const copyText = async () => {
   try {
+    // タイトルと URL を改行区切りにして、チャットやメールへ貼り付けやすい形式にします。
     await navigator.clipboard.writeText(
       articleDescription.value + `\n` + props.articleUrl
     )

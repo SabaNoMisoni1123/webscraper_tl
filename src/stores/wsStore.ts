@@ -1,3 +1,5 @@
+// 旧系ストア: siteId ごとの記事データを Firestore からページング取得します。
+// 現行主要画面では timelineStore を使いますが、旧コンポーネント互換のため維持しています。
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'

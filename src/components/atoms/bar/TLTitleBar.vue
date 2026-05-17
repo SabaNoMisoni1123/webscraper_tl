@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧タイムライン列のタイトルバー。背景色は親から CSS 変数で受け取ります。 -->
   <div class="tlTitleBar" :style="style">
     <p>{{ props.tlTitle }}</p>
   </div>
@@ -16,6 +17,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // Vue の style バインディングへそのまま渡す CSS 変数マップです。
   style: {
     type: Object,
     default: {

@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI のいいね状態を示すハート SVG。塗り色は GoodButton が切り替えます。 -->
   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-heart-filled" viewBox="0 0 24 24"
     stroke="none" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path
@@ -6,4 +7,3 @@
       stroke-width="0" />
   </svg>
 </template>
-

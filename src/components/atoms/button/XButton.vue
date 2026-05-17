@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI 用のクリアボタン。主に検索フォームの日付リセットに使います。 -->
   <IconX class="xButton" @click="emit('click')" :width="props.width" :height="props.height" :fill="props.iconColor" />
 </template>
 
@@ -7,6 +8,7 @@ import IconX from '@/components/icons/IconX.vue'
 import ColorPallet from '@/assets/ColorPallet.json'
 
 const props = defineProps({
+  // SVG ボタンの見た目だけを調整する props です。
   width: {
     type: Number,
     default: 20,
@@ -21,5 +23,6 @@ const props = defineProps({
   }
 })
 
+// クリックの意味づけはフォーム側に任せます。
 const emit = defineEmits(["click"])
 </script>

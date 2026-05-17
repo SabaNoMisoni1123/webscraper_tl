@@ -1,4 +1,5 @@
 <template>
+  <!-- アプリ概要と収集元一覧を表示する静的ページ。サイト一覧だけ旧ストアから取得します。 -->
   <div class="about">
     <div class="aboutBoddy">
       <h1>{{ AppConfig.appName }} v{{ AppConfig.version }}</h1>
@@ -26,6 +27,7 @@
 import AppConfig from '@/assets/AppConfig.json';
 import { useDbDataStore } from '@/stores/dbStore'
 
+// 旧 About ページは dbStore の siteData を直接参照します。
 const dbData = useDbDataStore()
 
 </script>

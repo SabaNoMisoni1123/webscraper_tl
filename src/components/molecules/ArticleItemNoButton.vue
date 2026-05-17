@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI 用の記事カード。独自 atom 構成を残しつつ、新規実装では ArticleItem を優先します。 -->
   <div class="articleItem">
     <ItemTitleBar :item-title="props.articleSource" v-if="props.showBar"></ItemTitleBar>
     <ItemBox :item-string="props.articleDescription" :is-newer="isNewer" :style="styles"></ItemBox>
@@ -45,6 +46,7 @@ const props = defineProps({
   }
 })
 
+// Firestore の epoch 秒を表示用 Date に変換します。
 const dateFromEpoch = computed(() => {
   const date = new Date(0)
   date.setSeconds(props.articleEpoch.valueOf())
@@ -59,6 +61,7 @@ const isNewer = computed(() => {
   const isToday = (today.getDate() == artDate.getDate()) && (today.getMonth() == artDate.getMonth()) && (today.getFullYear() == artDate.getFullYear());
   const cmpNow = props.articleEpoch.valueOf() >= Math.floor(today.getTime() / 1000);
 
+  // 当日記事、または未来時刻の記事を新着色で強調します。
   return isToday || cmpNow;
 })
 

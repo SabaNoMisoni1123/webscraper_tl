@@ -108,7 +108,6 @@ const toggleDrawer = () => {
 
 .footer-bar {
   height: var(--footer-h);
-  background-color: blue;
 }
 
 .app-main {

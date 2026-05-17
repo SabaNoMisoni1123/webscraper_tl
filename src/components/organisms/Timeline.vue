@@ -1,4 +1,5 @@
 <template>
+  <!-- 現行のサイト別タイムライン列。1 siteId ごとに 1 枚のカードとして横並び表示します。 -->
   <v-card class="timeline m-0 p-0">
     <v-toolbar class="timelineBar">
       <v-toolbar-title>{{ headerTitle }}</v-toolbar-title>
@@ -69,6 +70,7 @@ async function onInfiniteLoad({ done }: LoadArg) {
   if (!siteId.value) return done('error')
 
   try {
+    // Vuetify の manual infinite-scroll は done() の状態でフッター表示を切り替えます。
     const before = bucket.value?.scraped?.length ?? 0
     const afterList = await tl.loadMore(siteId.value)
     const added = (afterList?.length ?? 0) - before

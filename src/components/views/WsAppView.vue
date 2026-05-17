@@ -22,6 +22,15 @@
 
       <!-- 横並び（横スクロール可）: 1 siteId = 1 Timeline -->
       <div v-else class="timeline-row">
+        <v-col
+          v-for="idx in searchColumnIndexes"
+          :key="`search-${idx}`"
+          cols="auto"
+          class="timeline-col pa-0"
+        >
+          <SearchTimeline :search-cond-idx="idx" />
+        </v-col>
+
         <v-col v-for="id in visibleIds" :key="id" cols="auto" class="timeline-col pa-0">
           <Timeline :site-id="id" :db-timestamp="dbTimestamp" @reload="handleManualReload" />
         </v-col>
@@ -33,12 +42,17 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue'
 import Timeline from '@/components/organisms/Timeline.vue'
+import SearchTimeline from '@/components/organisms/SearchTimeline.vue'
 
+import { useAppState } from '@/stores/appState'
 import { useDbMetaStore } from '@/stores/dbMetaStore'
+import { useSearchConditionStore } from '@/stores/searchCondition'
 import { useSiteStore } from '@/stores/siteStore'
 
 // 各種ストア
+const appState = useAppState()
 const meta = useDbMetaStore()
+const searchStore = useSearchConditionStore()
 const sites = useSiteStore()
 
 // ローディング
@@ -49,12 +63,20 @@ const isLoading = computed(() => metaLoading.value || sitesLoading.value)
 // 表示対象の siteId（isShow=true を weight 順で）
 const visibleIds = computed(() => sites.sortedVisibleIds)
 
+// 検索機能が有効なときだけ、検索条件数に応じた検索タイムライン列を先頭に追加します。
+const searchColumnIndexes = computed(() =>
+  appState.useSearch
+    ? searchStore.searchCondition.map((_, idx) => idx)
+    : []
+)
+
 // dbTimestamp（Firestore 側の最終更新 epoch）
 const dbTimestamp = computed(() => meta.dbTimestamp)
 
 const SKELETON_COUNT = 4
 
 async function refreshMeta() {
+  // メタ情報取得は画面全体のローディングに反映するため、個別にフラグを持ちます。
   metaLoading.value = true
   try {
     return await meta.refreshMeta()

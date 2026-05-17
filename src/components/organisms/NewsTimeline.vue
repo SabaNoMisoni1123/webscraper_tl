@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI の全サイト横断「新規情報」タイムライン。現行画面では SearchTimeline/Timeline が主系です。 -->
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="tlTitle" :style="styles" />
     <div class="tlItemList">
@@ -40,7 +41,7 @@ const props = defineProps({
 const dbData = useDbDataStore();
 const wsData = useWsDataStore();
 
-// siteData
+// siteData: 旧実装では全サイト横断列の見出し色・名前に defaultSiteData を使います。
 const site = dbData.defaultSiteData;
 
 const tlTitle = computed(() => {
@@ -62,6 +63,7 @@ const bgList = [
 // 表示記事
 const showArticles = computed(() => {
   let articles = [] as Array<ArticleData>;
+  // 表示対象サイトの記事をすべて結合し、新着情報列としてまとめます。
   for (const k of dbData.getSortedSiteDataIdFiltered) {
     articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
   }
@@ -77,6 +79,7 @@ const showArticles = computed(() => {
 })
 
 const styles = computed(() => {
+  // defaultSiteData.color を利用し、旧タイムライン列と同じ色選択ロジックに合わせます。
   return {
     "--tl-background-color": bgList[site.color % bgList.length]
   }

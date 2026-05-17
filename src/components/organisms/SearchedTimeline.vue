@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI の検索結果タイムライン。現行 Vuetify 版では SearchTimeline を利用します。 -->
   <div class="timeline" :style="styles">
     <TLTitleBar :tl-title="searchTlTitle" :style="styles" :is-loading="false" />
     <SearchForm :style="styles" :sc-idx="props.searchCondIdx" />
@@ -42,12 +43,14 @@ const wsData = useWsDataStore();
 
 // タイムラインのタイトル文字列
 const searchTlTitle = computed(() => {
+  // 旧タイトルバーは検索語を直接見出しに出す仕様です。
   return "検索: " + scStore.searchCondition[props.searchCondIdx].word
 })
 
 // 検索
 const searchedArticles = computed(() => {
   let articles = [] as Array<ArticleData>;
+  // 表示中サイトだけを横断し、非表示サイトは検索対象から外します。
   for (const k of dbData.getSortedSiteDataIdFiltered) {
     articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
   }
@@ -77,6 +80,7 @@ const bgList = [
 ];
 
 const styles = computed(() => {
+  // 旧検索列は固定で緑系の背景色を使います。
   return {
     "--tl-background-color": bgList[3]
   }

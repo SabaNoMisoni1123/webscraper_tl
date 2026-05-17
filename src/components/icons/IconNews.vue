@@ -1,4 +1,5 @@
 <template>
+  <!-- 旧 UI の新着情報切り替えに使う NEWS SVG。 -->
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
     viewBox="0 0 512 512">
     <g>
