@@ -1,20 +1,10 @@
 <template>
   <!-- 現行のサイト別タイムライン列。1 siteId ごとに 1 枚のカードとして横並び表示します。 -->
-  <v-card class="timeline m-0 p-0">
-    <v-toolbar class="timelineBar">
-      <v-toolbar-title>{{ headerTitle }}</v-toolbar-title>
-    </v-toolbar>
-
-    <v-infinite-scroll mode="manual" side="end" class="scrollArea" @load="onInfiniteLoad">
-      <!-- 記事リスト -->
-      <template v-for="art in showArticles" :key="art.url">
-        <div class="art">
-          <ArticleItem :article-source="art.org" :article-description="art.title" :article-url="art.url"
-            :article-epoch="art.epoch" />
-        </div>
-      </template>
+  <TimelineColumnFrame :title="headerTitle" :scroll="false">
+    <v-infinite-scroll mode="manual" side="end" class="timeline__scroll" @load="onInfiniteLoad">
+      <ArticleStack :articles="showArticles" />
     </v-infinite-scroll>
-  </v-card>
+  </TimelineColumnFrame>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +13,8 @@ import { computed, toRefs, watch } from 'vue'
 import { useTimelineStore } from '@/stores/timelineStore'
 import { useSiteStore } from '@/stores/siteStore'
 
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import ArticleStack from '@/components/molecules/ArticleStack.vue'
+import TimelineColumnFrame from '@/components/molecules/TimelineColumnFrame.vue'
 import type { ArticleData } from '@/stores/timelineStore'
 
 const props = defineProps({
@@ -84,37 +75,12 @@ async function onInfiniteLoad({ done }: LoadArg) {
 </script>
 
 <style scoped>
-/* =========================================
-   横並びの1カラム（カード）本体
-   - 親の v-row が row-scroll(height=var(--row-h)) を持つ前提
-   - カード自身も同じ高さに合わせて内部スクロールを成立させる
-   ========================================= */
-.timeline {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* 見出しツールバー固定（任意：使っているなら有効） */
-.timelineBar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--v-theme-surface);
-}
-
-/* 縦スク本体 */
-.scrollArea {
+.timeline__scroll {
   flex: 1 1 auto;
   overflow-y: auto;
   min-height: 0;
+  padding: 8px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-}
-
-.art {
-  margin-bottom: 6px;
 }
 </style>

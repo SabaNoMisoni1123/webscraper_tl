@@ -1,23 +1,43 @@
 <template>
-  <!-- 現行 Vuetify 版の記事カード。検索結果・サイト別タイムラインの共通表示に使います。 -->
-  <v-card class="articleItem">
-    <v-toolbar :title="props.articleSource" v-if="props.showBar">
-    </v-toolbar>
+  <!-- 現行 Vuetify 版の記事カード。全タイムラインで同じ情報密度と操作位置に揃えます。 -->
+  <v-card class="article-item" variant="outlined">
+    <v-toolbar
+      v-if="showBar"
+      :title="articleSource"
+      class="article-item__source"
+      density="compact"
+    />
 
-    <p>{{ articleDescription }}</p>
+    <v-card-text class="article-item__body">
+      {{ articleDescriptionText }}
+    </v-card-text>
 
-    <v-footer>
-      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
-      <v-spacer></v-spacer>
-      <v-btn size="35" icon="mdi-content-copy" @click="copyText"></v-btn>
-      <v-btn size="35" icon="mdi-open-in-new" :href="props.articleUrl" target="_blank" rel="noopener noreferrer"></v-btn>
-    </v-footer>
+    <v-card-actions class="article-item__actions">
+      <span class="article-item__date">{{ formattedDate }}</span>
+      <v-spacer />
+      <v-btn
+        aria-label="記事タイトルとURLをコピー"
+        icon="mdi-content-copy"
+        size="small"
+        variant="text"
+        @click="copyText"
+      />
+      <v-btn
+        :href="articleUrl"
+        aria-label="記事を別タブで開く"
+        icon="mdi-open-in-new"
+        rel="noopener noreferrer"
+        size="small"
+        target="_blank"
+        variant="text"
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   articleDescription?: string
@@ -33,29 +53,55 @@ const props = withDefaults(defineProps<{
   showBar: false,
 })
 
-const dateEpoch = ref(new Date(0));
-dateEpoch.value.setSeconds(props.articleEpoch.valueOf());
-
 // 正式名を優先し、旧 typo props しか渡されない場合も表示できるようにします。
-const articleDescription = computed(() => props.articleDescription || props.articleDesctiption)
+const articleDescriptionText = computed(() => props.articleDescription || props.articleDesctiption)
 
-const copySuccess = ref(false);
-const copyText = async () => {
+const dateFromEpoch = computed(() => {
+  const date = new Date(0)
+  date.setSeconds(props.articleEpoch.valueOf())
+  return date
+})
+
+const formattedDate = computed(() => {
+  const date = dateFromEpoch.value
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+})
+
+async function copyText() {
   try {
     // タイトルと URL を改行区切りにして、チャットやメールへ貼り付けやすい形式にします。
-    await navigator.clipboard.writeText(
-      articleDescription.value + `\n` + props.articleUrl
-    )
-    copySuccess.value = true;
-
-    setTimeout(() => {
-      copySuccess.value = false;
-    }, 1000);
+    await navigator.clipboard.writeText(`${articleDescriptionText.value}\n${props.articleUrl}`)
   } catch (error) {
-    console.error("テキストのコピーに失敗しました。", error);
+    console.error('テキストのコピーに失敗しました。', error)
   }
 }
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.article-item {
+  overflow: hidden;
+}
+
+.article-item__source {
+  font-size: 0.875rem;
+}
+
+.article-item__body {
+  color: rgba(var(--v-theme-on-surface), 0.92);
+  line-height: 1.55;
+  padding-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+
+.article-item__actions {
+  min-height: 40px;
+  padding: 0 8px 6px 12px;
+}
+
+.article-item__date {
+  color: rgba(var(--v-theme-on-surface), 0.68);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+</style>

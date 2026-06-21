@@ -1,11 +1,13 @@
 <template>
   <!-- 検索条件 1 件に対応する横並びタイムライン列。 -->
-  <v-card class="search-timeline">
-    <SearchTimelineHeader
-      v-model:condition="condition"
-      :result-count="searchedArticles.length"
-      :title="headerTitle"
-    />
+  <TimelineColumnFrame :scroll="hasSearchedArticles">
+    <template #header>
+      <SearchTimelineHeader
+        v-model:condition="condition"
+        :result-count="searchedArticles.length"
+        :title="headerTitle"
+      />
+    </template>
 
     <v-alert
       v-if="!condition.word"
@@ -17,32 +19,23 @@
       キーワードを入力してください。
     </v-alert>
 
-    <v-list v-else-if="searchedArticles.length === 0" class="empty-list">
-      <v-list-item
-        prepend-icon="mdi-file-search-outline"
-        title="一致する記事はありません"
-      />
-    </v-list>
+    <TimelineEmptyState
+      v-else-if="!hasSearchedArticles"
+      icon="mdi-file-search-outline"
+      title="一致する記事はありません"
+    />
 
-    <div v-else class="result-list">
-      <ArticleItem
-        v-for="art in searchedArticles"
-        :key="art.url"
-        :article-source="art.org"
-        :article-description="art.title"
-        :article-url="art.url"
-        :article-epoch="art.epoch"
-        show-bar
-      />
-    </div>
-  </v-card>
+    <ArticleStack v-else :articles="searchedArticles" show-source />
+  </TimelineColumnFrame>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import TimelineEmptyState from '@/components/atoms/TimelineEmptyState.vue'
+import ArticleStack from '@/components/molecules/ArticleStack.vue'
 import SearchTimelineHeader from '@/components/molecules/SearchTimelineHeader.vue'
+import TimelineColumnFrame from '@/components/molecules/TimelineColumnFrame.vue'
 import { useSearchConditionStore, type SearchConditionData } from '@/stores/searchCondition'
 import { useSiteStore } from '@/stores/siteStore'
 import { useTimelineStore, type ArticleData } from '@/stores/timelineStore'
@@ -95,6 +88,8 @@ const searchedArticles = computed<ArticleData[]>(() => {
   return [...dateFiltered].sort((a, b) => b.epoch - a.epoch)
 })
 
+const hasSearchedArticles = computed(() => searchedArticles.value.length > 0)
+
 function dateStartEpoch(dateValue?: string) {
   if (!dateValue) return undefined
   const date = new Date(`${dateValue}T00:00:00`)
@@ -110,24 +105,3 @@ function dateEndEpoch(dateValue?: string) {
   return Number.isFinite(epoch) ? epoch : undefined
 }
 </script>
-
-<style scoped>
-.search-timeline {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.result-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.empty-list {
-  flex: 1 1 auto;
-}
-</style>

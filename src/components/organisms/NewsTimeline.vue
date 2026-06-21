@@ -1,47 +1,36 @@
 <template>
   <!-- 設定に従って全サイト横断の新規情報を表示するタイムライン列。 -->
-  <v-card class="news-timeline">
-    <v-toolbar class="news-toolbar">
-      <v-toolbar-title>新規情報</v-toolbar-title>
-      <template #append>
-        <v-chip size="small" variant="tonal">{{ rangeLabel }}</v-chip>
-      </template>
-    </v-toolbar>
+  <TimelineColumnFrame title="新規情報" :scroll="hasNewsArticles">
+    <template #append>
+      <v-chip size="small" variant="tonal">{{ rangeLabel }}</v-chip>
+    </template>
 
-    <v-progress-linear v-if="isLoading" indeterminate />
+    <template #status>
+      <v-progress-linear v-if="isLoading" indeterminate />
+    </template>
 
-    <v-list v-if="targetSiteIds.length === 0" class="empty-list">
-      <v-list-item
-        prepend-icon="mdi-newspaper-variant-outline"
-        title="表示対象の情報源がありません"
-      />
-    </v-list>
+    <TimelineEmptyState
+      v-if="targetSiteIds.length === 0"
+      icon="mdi-newspaper-variant-outline"
+      title="表示対象の情報源がありません"
+    />
 
-    <v-list v-else-if="!isLoading && newsArticles.length === 0" class="empty-list">
-      <v-list-item
-        prepend-icon="mdi-newspaper-variant-outline"
-        title="新規情報はありません"
-      />
-    </v-list>
+    <TimelineEmptyState
+      v-else-if="!isLoading && !hasNewsArticles"
+      icon="mdi-newspaper-variant-outline"
+      title="新規情報はありません"
+    />
 
-    <div v-else class="result-list">
-      <ArticleItem
-        v-for="art in newsArticles"
-        :key="art.url"
-        :article-source="art.org"
-        :article-description="art.title"
-        :article-url="art.url"
-        :article-epoch="art.epoch"
-        show-bar
-      />
-    </div>
-  </v-card>
+    <ArticleStack v-else :articles="newsArticles" show-source />
+  </TimelineColumnFrame>
 </template>
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 
-import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import TimelineEmptyState from '@/components/atoms/TimelineEmptyState.vue'
+import ArticleStack from '@/components/molecules/ArticleStack.vue'
+import TimelineColumnFrame from '@/components/molecules/TimelineColumnFrame.vue'
 import { useAppState } from '@/stores/appState'
 import { useSiteStore } from '@/stores/siteStore'
 import { useTimelineStore, type ArticleData } from '@/stores/timelineStore'
@@ -79,6 +68,8 @@ const newsArticles = computed<ArticleData[]>(() => {
   return [...articles].sort((a, b) => b.epoch - a.epoch)
 })
 
+const hasNewsArticles = computed(() => newsArticles.value.length > 0)
+
 watch(
   [targetSiteIds, sinceEpoch, () => props.dbTimestamp],
   async ([ids, since, ts]) => {
@@ -88,31 +79,3 @@ watch(
   { immediate: true }
 )
 </script>
-
-<style scoped>
-.news-timeline {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.news-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--v-theme-surface);
-}
-
-.result-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.empty-list {
-  flex: 1 1 auto;
-}
-</style>
