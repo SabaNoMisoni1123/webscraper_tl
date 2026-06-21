@@ -1,134 +1,118 @@
 <template>
-  <!-- 旧 UI の全サイト横断「新規情報」タイムライン。現行画面では SearchTimeline/Timeline が主系です。 -->
-  <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlTitle" :style="styles" />
-    <div class="tlItemList">
-      <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
-        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="site.name" :show-bar="props.showBar" />
+  <!-- 設定に従って全サイト横断の新規情報を表示するタイムライン列。 -->
+  <v-card class="news-timeline">
+    <v-toolbar class="news-toolbar">
+      <v-toolbar-title>新規情報</v-toolbar-title>
+      <template #append>
+        <v-chip size="small" variant="tonal">{{ rangeLabel }}</v-chip>
+      </template>
+    </v-toolbar>
+
+    <v-progress-linear v-if="isLoading" indeterminate />
+
+    <v-list v-if="targetSiteIds.length === 0" class="empty-list">
+      <v-list-item
+        prepend-icon="mdi-newspaper-variant-outline"
+        title="表示対象の情報源がありません"
+      />
+    </v-list>
+
+    <v-list v-else-if="!isLoading && newsArticles.length === 0" class="empty-list">
+      <v-list-item
+        prepend-icon="mdi-newspaper-variant-outline"
+        title="新規情報はありません"
+      />
+    </v-list>
+
+    <div v-else class="result-list">
+      <ArticleItem
+        v-for="art in newsArticles"
+        :key="art.url"
+        :article-source="art.org"
+        :article-description="art.title"
+        :article-url="art.url"
+        :article-epoch="art.epoch"
+        show-bar
+      />
     </div>
-    <div class="tlFooter">
-    </div>
-  </div>
+  </v-card>
 </template>
 
-
 <script setup lang="ts">
-import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
-import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue';
-import ColorPallet from '@/assets/ColorPallet.json'
+import { computed, watch } from 'vue'
 
-import { computed } from 'vue'
+import ArticleItem from '@/components/molecules/ArticleItem.vue'
+import { useAppState } from '@/stores/appState'
+import { useSiteStore } from '@/stores/siteStore'
+import { useTimelineStore, type ArticleData } from '@/stores/timelineStore'
 
-import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
-import { useDbDataStore } from '@/stores/dbStore';
+const props = defineProps<{
+  dbTimestamp: number
+}>()
 
-const props = defineProps({
-  tlTitle: {
-    type: String,
-    default: "",
+const appState = useAppState()
+const sites = useSiteStore()
+const timeline = useTimelineStore()
+
+const targetSiteIds = computed(() => {
+  const configured = appState.newsSiteIds.length > 0 ? appState.newsSiteIds : sites.sortedIds
+  return configured.filter(id => Boolean(sites.siteData[id]))
+})
+
+const sinceEpoch = computed(() => {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  start.setDate(start.getDate() - (appState.newsDays - 1))
+  return Math.floor(start.getTime() / 1000)
+})
+
+const rangeLabel = computed(() => {
+  return appState.newsDays === 1 ? '当日分' : `${appState.newsDays}日分`
+})
+
+const isLoading = computed(() =>
+  targetSiteIds.value.some(id => timeline.recentBuckets[id]?.loading)
+)
+
+const newsArticles = computed<ArticleData[]>(() => {
+  const articles = targetSiteIds.value.flatMap(id => timeline.recentBuckets[id]?.scraped ?? [])
+  return [...articles].sort((a, b) => b.epoch - a.epoch)
+})
+
+watch(
+  [targetSiteIds, sinceEpoch, () => props.dbTimestamp],
+  async ([ids, since, ts]) => {
+    if (!Number.isFinite(ts)) return
+    await Promise.all(ids.map(id => timeline.loadRecent(id, ts, since)))
   },
-  showBar: {
-    type: Boolean,
-    default: false,
-  },
-  lastEpoch: {
-    type: Number,
-    default: -1,
-  }
-})
-
-// store
-const dbData = useDbDataStore();
-const wsData = useWsDataStore();
-
-// siteData: 旧実装では全サイト横断列の見出し色・名前に defaultSiteData を使います。
-const site = dbData.defaultSiteData;
-
-const tlTitle = computed(() => {
-  if (props.tlTitle == "") {
-    return site.name;
-  } else {
-    return props.tlTitle;
-  }
-})
-
-const bgList = [
-  ColorPallet.blue1,
-  ColorPallet.red1,
-  ColorPallet.yellow1,
-  ColorPallet.green1,
-  ColorPallet.gray1,
-];
-
-// 表示記事
-const showArticles = computed(() => {
-  let articles = [] as Array<ArticleData>;
-  // 表示対象サイトの記事をすべて結合し、新着情報列としてまとめます。
-  for (const k of dbData.getSortedSiteDataIdFiltered) {
-    articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
-  }
-
-  // エポック時でフィルタ
-  if (articles.length > 0) {
-    articles = articles.filter((e) => {
-      return e.epoch >= props.lastEpoch;
-    })
-  }
-
-  return articles;
-})
-
-const styles = computed(() => {
-  // defaultSiteData.color を利用し、旧タイムライン列と同じ色選択ロジックに合わせます。
-  return {
-    "--tl-background-color": bgList[site.color % bgList.length]
-  }
-})
-
+  { immediate: true }
+)
 </script>
 
 <style scoped>
-.timeline {
-  margin-right: 2pt;
-  display: inline-block;
-  vertical-align: top;
-  width: max(200pt, 20vw);
-  height: 90vh;
-  white-space: normal;
+.news-timeline {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.tlItemList {
-  background: var(--tl-background-color);
-  padding: 2pt;
-  height: 90%;
-
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.news-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--v-theme-surface);
 }
 
-.tlItemList::-webkit-scrollbar {
-  display: none;
+.result-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
 }
 
-.tlFooter {
-  height: 5pt;
-  background: var(--tl-background-color);
-}
-
-.loadingMsg {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
-}
-
-.noDataState {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
+.empty-list {
+  flex: 1 1 auto;
 }
 </style>

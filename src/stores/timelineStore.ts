@@ -7,7 +7,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'
 import {
-  collection, getDocs, limit, orderBy, query, startAfter,
+  collection, getDocs, limit, orderBy, query, startAfter, where,
   type DocumentData, type QueryDocumentSnapshot
 } from 'firebase/firestore'
 
@@ -23,11 +23,22 @@ export interface TlBucket {
 
 export type TlState = Record<string, TlBucket>
 
+export interface RecentBucket {
+  scraped: ArticleData[]
+  loading: boolean
+  dataTimestamp: number
+  sinceEpoch: number
+}
+
+export type RecentState = Record<string, RecentBucket>
+
 export const useTimelineStore = defineStore('timelineStore', () => {
   // 1 回のロード件数
   const pageSize = ref<number>(25)
+  const recentLimit = ref<number>(200)
   // サイトごとの記事バケット
   const buckets = ref<TlState>({})
+  const recentBuckets = ref<RecentState>({})
 
   // いずれかロード中？（グローバルスピナー制御などに）
   const anyLoading = computed(() => Object.values(buckets.value).some(b => b.loading))
@@ -46,6 +57,7 @@ export const useTimelineStore = defineStore('timelineStore', () => {
   }
 
   const setPageSize = (n = 25) => { pageSize.value = n }
+  const setRecentLimit = (n = 200) => { recentLimit.value = n }
 
   /**
    * 初回ロード or キャッシュ更新
@@ -105,5 +117,56 @@ export const useTimelineStore = defineStore('timelineStore', () => {
     return buckets.value[siteId].scraped
   }
 
-  return { pageSize, buckets, anyLoading, setPageSize, load, loadMore }
+  const loadRecent = async (siteId: string, dbTimestamp: number, sinceEpoch: number): Promise<ArticleData[]> => {
+    if (!recentBuckets.value[siteId]) {
+      recentBuckets.value[siteId] = {
+        scraped: [],
+        loading: false,
+        dataTimestamp: -1,
+        sinceEpoch: -1,
+      }
+    }
+
+    const b = recentBuckets.value[siteId]
+    if (b.scraped.length > 0 && b.dataTimestamp === dbTimestamp && b.sinceEpoch === sinceEpoch) {
+      return b.scraped
+    }
+
+    b.loading = true
+    b.dataTimestamp = dbTimestamp
+    b.sinceEpoch = sinceEpoch
+
+    try {
+      const q = query(
+        collection(db, siteId),
+        where('epoch', '>=', sinceEpoch),
+        orderBy('epoch', 'desc'),
+        limit(recentLimit.value)
+      )
+      const snaps = await getDocs(q)
+
+      const fresh: ArticleData[] = []
+      snaps.forEach(d => fresh.push(d.data() as ArticleData))
+      b.scraped = fresh
+    } catch (e) {
+      console.error('[timelineStore] loadRecent error:', e)
+    } finally {
+      b.loading = false
+    }
+
+    return recentBuckets.value[siteId].scraped
+  }
+
+  return {
+    pageSize,
+    recentLimit,
+    buckets,
+    recentBuckets,
+    anyLoading,
+    setPageSize,
+    setRecentLimit,
+    load,
+    loadMore,
+    loadRecent,
+  }
 }, { persist: false })

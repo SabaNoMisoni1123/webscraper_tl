@@ -22,6 +22,10 @@
 
       <!-- 横並び（横スクロール可）: 1 siteId = 1 Timeline -->
       <div v-else class="timeline-row">
+        <v-col v-if="appState.useNews" cols="auto" class="timeline-col pa-0">
+          <NewsTimeline :db-timestamp="dbTimestamp" />
+        </v-col>
+
         <v-col
           v-for="idx in searchColumnIndexes"
           :key="`search-${idx}`"
@@ -42,6 +46,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue'
 import Timeline from '@/components/organisms/Timeline.vue'
+import NewsTimeline from '@/components/organisms/NewsTimeline.vue'
 import SearchTimeline from '@/components/organisms/SearchTimeline.vue'
 
 import { useAppState } from '@/stores/appState'

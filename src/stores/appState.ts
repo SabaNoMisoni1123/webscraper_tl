@@ -12,6 +12,11 @@ export type UIFlags = {
   useNews: boolean
 }
 
+export type NewsSettings = {
+  days: number
+  siteIds: string[]
+}
+
 // 遷移ログ1件
 export type TransitionLog = {
   key: keyof UIFlags
@@ -35,6 +40,11 @@ export const useAppState = defineStore(
       useNews: false,
     })
 
+    const newsSettings = reactive<NewsSettings>({
+      days: 1,
+      siteIds: [],
+    })
+
     // デバッグ/分析用の簡易履歴（非永続）
     const history = ref<TransitionLog[]>([])
 
@@ -56,6 +66,14 @@ export const useAppState = defineStore(
     const useNews = computed<boolean>({
       get: () => ui.useNews,
       set: value => setFlag('useNews', value),
+    })
+    const newsDays = computed<number>({
+      get: () => normalizeNewsDays(newsSettings.days),
+      set: value => setNewsDays(value),
+    })
+    const newsSiteIds = computed<string[]>({
+      get: () => Array.isArray(newsSettings.siteIds) ? newsSettings.siteIds : [],
+      set: value => setNewsSiteIds(value),
     })
 
     // --- actions ---
@@ -105,15 +123,32 @@ export const useAppState = defineStore(
       closeAll()
     }
 
+    function normalizeNewsDays(value: number) {
+      const days = Math.floor(Number(value))
+      if (!Number.isFinite(days)) return 1
+      return Math.min(Math.max(days, 1), 30)
+    }
+
+    function setNewsDays(value: number) {
+      newsSettings.days = normalizeNewsDays(value)
+    }
+
+    function setNewsSiteIds(siteIds: string[]) {
+      newsSettings.siteIds = Array.from(new Set(siteIds.filter(Boolean)))
+    }
+
     // setup-store では「返した値」が store の公開APIになります
     return {
       // state
       appVersion,
       ui,
+      newsSettings,
       history,
       useSearch,
       useMenu,
       useNews,
+      newsDays,
+      newsSiteIds,
 
       // getters
       isAnyPanelOpen,
@@ -122,6 +157,8 @@ export const useAppState = defineStore(
       setFlag,
       toggle,
       setMany,
+      setNewsDays,
+      setNewsSiteIds,
       closeAll,
       resetUI,
     }
@@ -131,7 +168,7 @@ export const useAppState = defineStore(
     // Composition API でも第3引数に options を渡せます
     persist: {
       key: 'appState',
-      paths: ['ui'], // UIフラグのみ保存（履歴やバージョンは保存しない）
+      paths: ['ui', 'newsSettings'], // 履歴やバージョンは保存しない
     },
   }
 )
