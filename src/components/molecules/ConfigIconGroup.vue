@@ -5,7 +5,6 @@
       v-for="section in CONFIG_SECTIONS"
       :key="section.value"
       :icon="section.icon"
-      :active="activeSection === section.value"
       :enabled="isEnabled(section.value)"
       @click="emit('select', section.value)"
     />
@@ -17,10 +16,8 @@ import ConfigIconButton from '@/components/atoms/button/ConfigIconButton.vue'
 import { CONFIG_SECTIONS, type ConfigSection } from '@/components/views/wsConfigTypes'
 
 const props = defineProps<{
-  activeSection: ConfigSection
   useSearch: boolean
   useNews: boolean
-  useMenu: boolean
   rail?: boolean
 }>()
 
@@ -32,7 +29,7 @@ const emit = defineEmits<{
 function isEnabled(section: ConfigSection) {
   if (section === 'search') return props.useSearch
   if (section === 'news') return props.useNews
-  return props.useMenu
+  return false
 }
 </script>
 

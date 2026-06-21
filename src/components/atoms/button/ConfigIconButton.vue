@@ -1,5 +1,5 @@
 <template>
-  <!-- 設定ペイン用の小型アイコンボタン。active と enabled を色・variant に変換します。 -->
+  <!-- 設定ペイン用の小型アイコンボタン。有効な機能だけを色・variant に変換します。 -->
   <v-btn
     :icon="icon"
     size="small"
@@ -14,10 +14,8 @@ import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   icon: string
-  active?: boolean
   enabled?: boolean
 }>(), {
-  active: false,
   enabled: false,
 })
 
@@ -25,7 +23,7 @@ const emit = defineEmits<{
   click: []
 }>()
 
-// active を最優先し、機能が有効なだけの場合は success の tonal 表示にします。
-const color = computed(() => props.active ? 'primary' : props.enabled ? 'success' : undefined)
-const variant = computed(() => props.active || props.enabled ? 'tonal' : 'text')
+// 色付き表示は「表示結果に追加の条件やモードが効いている」場合に限定します。
+const color = computed(() => props.enabled ? 'success' : undefined)
+const variant = computed(() => props.enabled ? 'tonal' : 'text')
 </script>

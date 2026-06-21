@@ -12,10 +12,8 @@
         <v-divider class="my-1" />
         <ConfigIconGroup
           rail
-          :active-section="activeSection"
           :use-search="appState.useSearch"
           :use-news="appState.useNews"
-          :use-menu="appState.useMenu"
           @select="openSection"
         />
       </div>
@@ -32,10 +30,8 @@
         <v-toolbar-title class="text-subtitle-2">設定</v-toolbar-title>
         <v-spacer />
         <ConfigIconGroup
-          :active-section="activeSection"
           :use-search="appState.useSearch"
           :use-news="appState.useNews"
-          :use-menu="appState.useMenu"
           @select="openSection"
         />
       </v-toolbar>

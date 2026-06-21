@@ -1,14 +1,6 @@
 <template>
   <!-- 情報源ごとの表示・並び替えを操作する設定パネル。 -->
   <div class="panel-body pa-2">
-    <v-switch
-      v-model="appState.useMenu"
-      color="success"
-      density="compact"
-      hide-details
-      label="表示設定を有効化"
-    />
-
     <div class="d-flex align-center ga-2 mb-2">
       <v-btn
         size="small"
@@ -103,11 +95,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAppState } from '@/stores/appState'
 import { useSiteStore, type SiteOrderPreset } from '@/stores/siteStore'
 import SiteDataWeightPreset from '@/assets/siteDataWeightPreset.json'
 
-const appState = useAppState()
 const sites = useSiteStore()
 
 const selectedPresetKey = ref<string | null>(null)
