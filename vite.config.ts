@@ -15,6 +15,17 @@ import vuetify from 'vite-plugin-vuetify'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+const manualChunks = {
+  vue: ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+  vuetify: ['vuetify'],
+  firebase: [
+    'firebase/app',
+    'firebase/auth',
+    'firebase/firestore',
+    'firebase/analytics',
+  ],
+}
+
 export default defineConfig(({ mode }) => {
   // .env / .env.local / .env.[mode] をロード
   // ここで得られる env は全て文字列。使う側は import.meta.env.* を参照する。
@@ -47,7 +58,15 @@ export default defineConfig(({ mode }) => {
     // 任意：開発時の依存最適化を明示したい場合（Firebase など）
     optimizeDeps: {
       include: ['firebase/app', 'firebase/firestore', 'firebase/auth'],
-    }
+    },
+
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks,
+        },
+      },
+    },
 
   }
 })

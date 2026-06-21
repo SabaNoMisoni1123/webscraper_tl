@@ -9,6 +9,8 @@ export interface SearchConditionData {
   "year": number | string,
   "month": number | string,
   "day": number | string,
+  "startDate"?: string,
+  "endDate"?: string,
   "color": number,
 }
 
@@ -25,6 +27,8 @@ export const useSearchConditionStore = defineStore('searchConditionStore', () =>
       "year": year,
       "month": month,
       "day": day,
+      "startDate": "",
+      "endDate": "",
       "color": 0
     } as SearchConditionData)
   }
@@ -55,6 +59,8 @@ export const useSearchConditionStore = defineStore('searchConditionStore', () =>
       "year": today.getFullYear(),
       "month": "-",
       "day": "-",
+      "startDate": "",
+      "endDate": "",
       "color": 0
     })
   }

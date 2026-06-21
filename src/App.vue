@@ -60,11 +60,11 @@ import { computed, ref } from 'vue'
 import { RouterView } from 'vue-router'
 import { LAYOUT } from '@/vuetify'
 import AppConfig from '@/assets/AppConfig.json'
-import { useDbDataStore } from '@/stores/dbStore'
+import { useDbMetaStore } from '@/stores/dbMetaStore'
 import IconCrowler from '@/components/icons/IconCrowler.vue'
 
 /** Pinia ストア */
-const dbData = useDbDataStore()
+const dbMeta = useDbMetaStore()
 
 /** 右ドロワーの開閉状態 */
 const drawer = ref(false)
@@ -79,8 +79,8 @@ const CELEBRATE_SPAN = 100
  * - NaN の場合は 0 を採用（表示・演算の安定性を担保）
  */
 const safeNoAccess = computed<number>(() => {
-  const n = Number((dbData as any)?.noAccess)
-  return Number.isFinite(n) ? n : 0
+  const n = Number(dbMeta.noAccess)
+  return Number.isFinite(n) && n >= 0 ? n : 0
 })
 
 /**

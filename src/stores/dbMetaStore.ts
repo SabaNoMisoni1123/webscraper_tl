@@ -4,7 +4,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, increment, updateDoc } from 'firebase/firestore'
 
 export const useDbMetaStore = defineStore('dbMetaStore', () => {
   // データベースの更新時刻（epoch 秒）
@@ -30,7 +30,7 @@ export const useDbMetaStore = defineStore('dbMetaStore', () => {
         dbTimestamp.value = data.lastTimeEpoch
         noAccess.value = data.noAccess + 1
         // アクセス数をインクリメント
-        await updateDoc(docRef, { noAccess: noAccess.value })
+        await updateDoc(docRef, { noAccess: increment(1) })
       }
     } catch (e) {
       console.error('[dbMetaStore] refreshMeta error:', e)

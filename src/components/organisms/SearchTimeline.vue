@@ -1,12 +1,11 @@
 <template>
   <!-- 検索条件 1 件に対応する横並びタイムライン列。 -->
   <v-card class="search-timeline">
-    <v-toolbar class="timeline-bar" density="comfortable">
-      <v-toolbar-title>{{ headerTitle }}</v-toolbar-title>
-      <template #append>
-        <v-chip size="small" variant="tonal">{{ searchedArticles.length }}</v-chip>
-      </template>
-    </v-toolbar>
+    <SearchTimelineHeader
+      v-model:condition="condition"
+      :result-count="searchedArticles.length"
+      :title="headerTitle"
+    />
 
     <v-alert
       v-if="!condition.word"
@@ -43,7 +42,8 @@
 import { computed } from 'vue'
 
 import ArticleItem from '@/components/molecules/ArticleItem.vue'
-import { useSearchConditionStore } from '@/stores/searchCondition'
+import SearchTimelineHeader from '@/components/molecules/SearchTimelineHeader.vue'
+import { useSearchConditionStore, type SearchConditionData } from '@/stores/searchCondition'
 import { useSiteStore } from '@/stores/siteStore'
 import { useTimelineStore, type ArticleData } from '@/stores/timelineStore'
 
@@ -56,17 +56,23 @@ const sites = useSiteStore()
 const timeline = useTimelineStore()
 
 // 検索条件の削除直後などでも描画が落ちないよう、空条件にフォールバックします。
-const condition = computed(() => searchStore.searchCondition[props.searchCondIdx] ?? {
+const emptyCondition: SearchConditionData = {
   word: '',
   year: '-',
   month: '-',
   day: '-',
+  startDate: '',
+  endDate: '',
   color: 0,
+}
+
+const condition = computed<SearchConditionData>({
+  get: () => searchStore.searchCondition[props.searchCondIdx] ?? emptyCondition,
+  set: value => searchStore.setCondition(props.searchCondIdx, value),
 })
 
 const headerTitle = computed(() => {
-  const word = condition.value.word.trim()
-  return word ? `検索: ${word}` : `検索 ${props.searchCondIdx + 1}`
+  return `検索 ${props.searchCondIdx + 1}`
 })
 
 const searchedArticles = computed<ArticleData[]>(() => {
@@ -77,22 +83,32 @@ const searchedArticles = computed<ArticleData[]>(() => {
   const articles = sites.sortedVisibleIds.flatMap(id => timeline.buckets[id]?.scraped ?? [])
   const filtered = articles.filter(article => article.title.includes(word))
 
-  // 年月日がすべて数値のときだけ、該当日の 0:00 から 24 時間で絞り込みます。
-  const year = Number(condition.value.year)
-  const month = Number(condition.value.month)
-  const day = Number(condition.value.day)
-  const hasDate = Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)
-
-  const dateFiltered = hasDate
+  const startAt = dateStartEpoch(condition.value.startDate)
+  const endAt = dateEndEpoch(condition.value.endDate)
+  const dateFiltered = startAt !== undefined || endAt !== undefined
     ? filtered.filter(article => {
-      const start = new Date(year, month - 1, day).getTime() / 1000
-      const end = start + 60 * 60 * 24
-      return start <= article.epoch && article.epoch < end
+      return (startAt === undefined || startAt <= article.epoch)
+        && (endAt === undefined || article.epoch < endAt)
     })
     : filtered
 
   return [...dateFiltered].sort((a, b) => b.epoch - a.epoch)
 })
+
+function dateStartEpoch(dateValue?: string) {
+  if (!dateValue) return undefined
+  const date = new Date(`${dateValue}T00:00:00`)
+  const epoch = date.getTime() / 1000
+  return Number.isFinite(epoch) ? epoch : undefined
+}
+
+function dateEndEpoch(dateValue?: string) {
+  if (!dateValue) return undefined
+  const date = new Date(`${dateValue}T00:00:00`)
+  date.setDate(date.getDate() + 1)
+  const epoch = date.getTime() / 1000
+  return Number.isFinite(epoch) ? epoch : undefined
+}
 </script>
 
 <style scoped>
@@ -102,10 +118,6 @@ const searchedArticles = computed<ArticleData[]>(() => {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-}
-
-.timeline-bar {
-  flex: 0 0 auto;
 }
 
 .result-list {
