@@ -1,14 +1,30 @@
 <template>
   <v-app class="v-app h-100 d-flex flex-column">
     <!-- アプリバー -->
-    <v-app-bar flat :height="LAYOUT.APPBAR_HEIGHT" density="comfortable" border="b" class="app-bar">
-      <template #prepend>
-        <v-app-bar-nav-icon :icon="IconCrowler" @click="toggleDrawer" />
-      </template>
+    <v-app-bar flat :height="LAYOUT.APPBAR_HEIGHT" border="b" class="app-bar px-2">
+      <div class="app-bar-content d-flex align-center w-100">
+        <v-btn
+          :icon="IconCrowler"
+          variant="text"
+          size="small"
+          aria-label="メニューを開く"
+          @click="toggleDrawer"
+        />
 
-      <v-app-bar-title>{{ AppConfig.appName }} v{{ AppConfig.version }}</v-app-bar-title>
+        <div class="app-title text-subtitle-1 text-truncate ms-2">
+          {{ AppConfig.appName }} v{{ AppConfig.version }}
+        </div>
 
-      <v-btn icon="mdi-chevron-double-left" @click="toggleDrawer" />
+        <v-spacer />
+
+        <v-btn
+          icon="mdi-chevron-double-left"
+          variant="text"
+          size="small"
+          aria-label="メニューを開く"
+          @click="toggleDrawer"
+        />
+      </div>
     </v-app-bar>
 
     <!-- メイン領域 -->
@@ -104,6 +120,14 @@ const toggleDrawer = () => {
 
 .app-bar {
   height: var(--appbar-h);
+}
+
+.app-bar-content {
+  height: 100%;
+}
+
+.app-title {
+  min-width: 0;
 }
 
 .footer-bar {

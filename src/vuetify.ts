@@ -12,7 +12,7 @@ import ColorPallet from '@/assets/ColorPallet.json'
 
 // レイアウト設定
 export const LAYOUT = {
-  APPBAR_HEIGHT: 64,
+  APPBAR_HEIGHT: 40,
   FOOTER_HEIGHT: 40,
 } as const
 

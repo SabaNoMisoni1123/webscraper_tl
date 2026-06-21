@@ -69,6 +69,9 @@
 - リスト、設定項目、メニュー、状態表示は `v-list`、`v-list-item`、`v-switch`、`v-checkbox`、`v-select`、`v-text-field`、`v-alert`、`v-progress-linear`、`v-skeleton-loader` などの標準コンポーネントを優先してください。
 - タイムラインや記事表示は `v-card`、`v-toolbar`、`v-card-title`、`v-card-text`、`v-card-actions`、`v-infinite-scroll` などで構成し、独自 CSS はスクロール領域や高さ制御など Vuetify だけでは表しにくい部分に限定してください。
 - 色、余白、角丸、タイポグラフィは、個別 CSS で直接指定する前に Vuetify theme、semantic color、utility class で表現してください。
+- レイアウト崩れや位置揃えの修正では、まず Vuetify コンポーネントの構造、props、slot の使い方、Vuetify utility class の見直しで解決してください。`v-app-bar-title` など内部ラッパーを多く生成するコンポーネントが目的に合わない場合は、`v-app-bar` 内に `d-flex align-center` の単純な行を置くなど、人間が読みやすい HTML 構造へ改めることを優先してください。
+- CSS でのレイアウト調整は、Vuetify の構造・props・utility class で表現できない場合に限定してください。特に `:deep(.v-toolbar__content)` のような Vuetify 内部クラスへの細かな上書きは、将来の Vuetify 更新で壊れやすいため最終手段とし、採用する場合は理由をコメントまたは回答で明示してください。
+- 高さ・中央揃え・余白などの基本レイアウトは、細かな pixel 補正を積み重ねず、親子構造を単純化して `d-flex`、`align-center`、`justify-*`、`v-spacer`、`v-container`、`v-row`、`v-col` などで意図が読める形にしてください。
 - 既存の `src/components/icons` や `src/components/atoms/button` の独自 SVG ボタンは、段階的に MDI アイコン付き `v-btn` へ置き換える対象です。新規コードでは原則として増やさないでください。
 - 移行時は画面単位またはコンポーネント単位で小さく進め、旧ストア参照や旧 UI コンポーネントを同時に大きく削除しないでください。削除は参照確認と動作確認後に行ってください。
 - Vuetify コンポーネントへ置き換える場合でも、現在の主機能である「情報源ごとの横並びタイムライン」「サイト表示制御」「記事の追加読み込み」「外部リンク・コピー操作」は維持してください。
