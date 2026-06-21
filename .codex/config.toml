@@ -36,7 +36,7 @@ personality = "pragmatic"
 # live: 最新情報取得。--search 相当
 # disabled: 無効
 web_search = "cached"
-approvals_reviewer = "user"
+approvals_reviewer = "auto_review"
 
 # 通知
 [tui]
@@ -50,7 +50,7 @@ notification_method = "auto"
 # workspace-write にした場合のみ有効
 # read-only のままなら実質使われません
 [sandbox_workspace_write]
-network_access = false
+network_access = true
 exclude_slash_tmp = true
 exclude_tmpdir_env_var = true
 
