@@ -80,28 +80,32 @@ async function copyText() {
 
 <style scoped>
 .article-item {
+  /* カード外側の余白を調整する場合は margin を追加します。
+     例: margin: 0 0 8px 0; は上 0 / 右 0 / 下 8px / 左 0。 */
+  --article-item-inline-padding: 16px;
+
   overflow: hidden;
 }
 
 .article-item__source {
-  font-size: 0.875rem;
+  font-size: 1.0rem;
 }
 
 .article-item__body {
-  color: rgba(var(--v-theme-on-surface), 0.92);
-  line-height: 1.55;
-  padding-bottom: 8px;
+  color: rgba(var(--v-theme-on-surface), 1);
+  line-height: 1.2;
+  padding: 16px var(--article-item-inline-padding) 8px;
   overflow-wrap: anywhere;
 }
 
 .article-item__actions {
   min-height: 40px;
-  padding: 0 8px 6px 12px;
+  padding: 0 8px 0 var(--article-item-inline-padding);
 }
 
 .article-item__date {
-  color: rgba(var(--v-theme-on-surface), 0.68);
-  font-size: 0.8125rem;
+  color: rgba(var(--v-theme-on-surface), 1.0);
+  font-size: 1.0rem;
   white-space: nowrap;
 }
 </style>

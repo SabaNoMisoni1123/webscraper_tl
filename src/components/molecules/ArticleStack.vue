@@ -32,6 +32,6 @@ withDefaults(defineProps<{
 .article-stack {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 </style>
