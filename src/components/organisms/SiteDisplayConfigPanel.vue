@@ -56,24 +56,30 @@
       />
     </div>
 
-    <v-list class="site-list" density="compact" lines="one">
+    <v-list class="site-list" density="compact">
       <v-list-item
         v-for="id in pagedSiteIds"
         :key="id"
-        :title="sites.siteData[id]?.name"
+        class="site-list-item px-2"
       >
-        <template #prepend>
-          <v-switch
-            :model-value="sites.siteData[id]?.isShow"
-            color="success"
-            density="compact"
-            hide-details
-            @update:model-value="sites.setShow(id, Boolean($event))"
-          />
-        </template>
+        <div class="site-row">
+          <div class="site-switch-cell">
+            <v-switch
+              :model-value="sites.siteData[id]?.isShow"
+              :aria-label="`${sites.siteData[id]?.name ?? id}を表示`"
+              class="site-switch"
+              color="success"
+              density="compact"
+              hide-details
+              @update:model-value="sites.setShow(id, Boolean($event))"
+            />
+          </div>
 
-        <template #append>
-          <div class="d-flex align-center ga-1">
+          <div class="site-title text-body-2">
+            {{ sites.siteData[id]?.name }}
+          </div>
+
+          <div class="site-actions d-flex align-center ga-1">
             <v-btn
               icon="mdi-arrow-up"
               size="x-small"
@@ -87,7 +93,7 @@
               @click="sites.moveDown(id)"
             />
           </div>
-        </template>
+        </div>
       </v-list-item>
     </v-list>
   </div>
@@ -151,10 +157,63 @@ async function resetSites() {
 .panel-body {
   height: 100%;
   min-height: 0;
+  max-width: 100%;
   overflow: hidden;
 }
 
 .site-list {
+  max-width: 100%;
   overflow: hidden;
+}
+
+.site-list-item {
+  min-height: 42px;
+  max-width: 100%;
+}
+
+.site-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.site-switch-cell {
+  flex: 0 0 58px;
+  min-width: 58px;
+  max-width: 58px;
+  padding-inline-start: 10px;
+  overflow: visible;
+}
+
+.site-switch {
+  width: 48px;
+  max-width: 48px;
+}
+
+.site-switch :deep(.v-input__control),
+.site-switch :deep(.v-selection-control) {
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+}
+
+.site-switch :deep(.v-selection-control) {
+  flex: 0 0 48px;
+}
+
+.site-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.site-actions {
+  flex: 0 0 auto;
+  margin-inline-start: 4px;
 }
 </style>

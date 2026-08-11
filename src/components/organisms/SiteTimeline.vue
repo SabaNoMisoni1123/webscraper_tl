@@ -1,6 +1,6 @@
 <template>
   <!-- 現行のサイト別タイムライン列。1 siteId ごとに 1 枚のカードとして横並び表示します。 -->
-  <TimelineColumnFrame :title="headerTitle" :scroll="false">
+  <TimelineColumnFrame :title="headerTitle" :scroll="false" toolbarDensity="compact">
     <v-infinite-scroll mode="manual" side="end" class="timeline__scroll" @load="onInfiniteLoad">
       <ArticleStack :articles="showArticles" />
     </v-infinite-scroll>

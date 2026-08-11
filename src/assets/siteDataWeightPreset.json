@@ -62,32 +62,15 @@
       }
     ]
   },
-  "digital": {
-    "name": "デジ庁",
+  "other": {
+    "name": "デジ庁他",
     "order": [
-      {
-        "id": "digitalConf",
-        "weight": 0
-      },
-      {
-        "id": "digitalNews",
-        "weight": 1
-      },
       {
         "id": "digitalRSS",
-        "weight": 2
-      }
-    ]
-  },
-  "other": {
-    "name": "厚労省他",
-    "order": [
+        "weight": 0
+      }, 
       {
         "id": "mhlwRSS",
-        "weight": 0
-      },
-      {
-        "id": "envCentralEarth",
         "weight": 1
       },
       {
