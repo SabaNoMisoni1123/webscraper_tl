@@ -20,7 +20,7 @@
         表示可能なサイトが見つかりません。
       </v-alert>
 
-      <!-- 横並び（横スクロール可）: 1 siteId = 1 Timeline -->
+      <!-- 横並び（横スクロール可）: 1 siteId = 1 SiteTimeline -->
       <div v-else class="timeline-row">
         <v-col v-if="appState.useNews" cols="auto" class="timeline-col pa-0">
           <NewsTimeline :db-timestamp="dbTimestamp" />
@@ -36,7 +36,7 @@
         </v-col>
 
         <v-col v-for="id in visibleIds" :key="id" cols="auto" class="timeline-col pa-0">
-          <Timeline :site-id="id" :db-timestamp="dbTimestamp" @reload="handleManualReload" />
+          <SiteTimeline :site-id="id" :db-timestamp="dbTimestamp" />
         </v-col>
       </div>
     </div>
@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue'
-import Timeline from '@/components/organisms/Timeline.vue'
+import SiteTimeline from '@/components/organisms/SiteTimeline.vue'
 import NewsTimeline from '@/components/organisms/NewsTimeline.vue'
 import SearchTimeline from '@/components/organisms/SearchTimeline.vue'
 
@@ -102,13 +102,6 @@ onMounted(async () => {
   await loadInitialData()
 })
 
-/** 子から「更新」ボタンが押された際の挙動（任意） */
-async function handleManualReload() {
-  const updated = await refreshMeta()
-  if (updated) {
-    await sites.fetchSites()
-  }
-}
 </script>
 
 <style scoped>

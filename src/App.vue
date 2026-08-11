@@ -4,7 +4,7 @@
     <v-app-bar flat :height="LAYOUT.APPBAR_HEIGHT" border="b" class="app-bar px-2">
       <div class="app-bar-content d-flex align-center w-100">
         <v-btn
-          :icon="IconCrowler"
+          :icon="IconCrawler"
           variant="text"
           size="small"
           aria-label="メニューを開く"
@@ -39,7 +39,7 @@
 
     <!-- フッター -->
     <v-footer app :height="LAYOUT.FOOTER_HEIGHT" border="t" class="footer-bar">
-      <v-icon :icon="IconCrowler" class="mr-5" />
+      <v-icon :icon="IconCrawler" class="mr-5" />
       {{ AppConfig.appName }}
 
       <v-spacer />
@@ -77,7 +77,7 @@ import { RouterView } from 'vue-router'
 import { LAYOUT } from '@/vuetify'
 import AppConfig from '@/assets/AppConfig.json'
 import { useDbMetaStore } from '@/stores/dbMetaStore'
-import IconCrowler from '@/components/icons/IconCrowler.vue'
+import IconCrawler from '@/components/icons/IconCrawler.vue'
 
 /** Pinia ストア */
 const dbMeta = useDbMetaStore()

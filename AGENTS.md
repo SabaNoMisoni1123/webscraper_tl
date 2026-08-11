@@ -72,7 +72,7 @@
 - レイアウト崩れや位置揃えの修正では、まず Vuetify コンポーネントの構造、props、slot の使い方、Vuetify utility class の見直しで解決してください。`v-app-bar-title` など内部ラッパーを多く生成するコンポーネントが目的に合わない場合は、`v-app-bar` 内に `d-flex align-center` の単純な行を置くなど、人間が読みやすい HTML 構造へ改めることを優先してください。
 - CSS でのレイアウト調整は、Vuetify の構造・props・utility class で表現できない場合に限定してください。特に `:deep(.v-toolbar__content)` のような Vuetify 内部クラスへの細かな上書きは、将来の Vuetify 更新で壊れやすいため最終手段とし、採用する場合は理由をコメントまたは回答で明示してください。
 - 高さ・中央揃え・余白などの基本レイアウトは、細かな pixel 補正を積み重ねず、親子構造を単純化して `d-flex`、`align-center`、`justify-*`、`v-spacer`、`v-container`、`v-row`、`v-col` などで意図が読める形にしてください。
-- 既存の `src/components/icons` や `src/components/atoms/button` の独自 SVG ボタンは、段階的に MDI アイコン付き `v-btn` へ置き換える対象です。新規コードでは原則として増やさないでください。
+- `src/components/icons/IconCrawler.vue` はブランドロゴとして利用しています。それ以外の新規アイコン操作には MDI アイコン付き `v-btn` を使い、独自 SVG ボタンは増やさないでください。
 - 移行時は画面単位またはコンポーネント単位で小さく進め、旧ストア参照や旧 UI コンポーネントを同時に大きく削除しないでください。削除は参照確認と動作確認後に行ってください。
 - Vuetify コンポーネントへ置き換える場合でも、現在の主機能である「情報源ごとの横並びタイムライン」「サイト表示制御」「記事の追加読み込み」「外部リンク・コピー操作」は維持してください。
 
@@ -83,7 +83,7 @@
 - 旧系: `dbStore.ts`, `wsStore.ts`
 - 新系: `dbMetaStore.ts`, `siteStore.ts`, `timelineStore.ts`
 
-現在の主要画面 `WsAppView.vue` と `Timeline.vue` は新系ストアを使っています。一方、`AboutView.vue`、`TestView.vue`、`CfgTabBar.vue`、`NewsTimeline.vue`、`SearchedTimeline.vue`、`Timeline_old.vue`、`TlTitleBlock.vue` などには旧系ストア参照が残っています。ストアを整理・削除する場合は、参照箇所を `rg "useDbDataStore|useWsDataStore|dbStore|wsStore"` で確認してから進めてください。
+現在のコンポーネントは `SiteTimeline.vue` を含めて新系ストアを使っています。旧系ストアはコンポーネントから参照されていません。ストアを整理・削除する場合は、参照箇所を `rg "useDbDataStore|useWsDataStore|dbStore|wsStore"` で確認してから進めてください。
 
 ## UI 上の注意
 

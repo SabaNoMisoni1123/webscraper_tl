@@ -20,20 +20,16 @@ import type { ArticleData } from '@/stores/timelineStore'
 const props = defineProps({
   siteId: { type: String, required: true },
   dbTimestamp: { type: Number, default: -1 },
-  title: { type: String, default: '' },
-  showBar: { type: Boolean, default: false }
+  title: { type: String, default: '' }
 })
 
-/** 任意: 親でリロードボタン等を置く場合（既存のI/F維持） */
-defineEmits<{ (e: 'reload'): void }>()
-
-const { siteId, dbTimestamp, title, showBar } = toRefs(props)
+const { siteId, dbTimestamp, title } = toRefs(props)
 
 // store
 const tl = useTimelineStore()
 const sites = useSiteStore()
 
-// この Timeline が扱う記事バケット（存在しなければ undefined → store が初期化するまで待つ）
+// このサイト別タイムラインが扱う記事バケット（存在しなければ store が初期化するまで待つ）
 const bucket = computed(() => tl.buckets[siteId.value])
 
 // 見出し文言（props.title が無ければサイト名にフォールバック）
@@ -68,7 +64,7 @@ async function onInfiniteLoad({ done }: LoadArg) {
     if (added <= 0) done('empty')
     else done('ok')
   } catch (e) {
-    console.error('[Timeline.vue] loadMore error:', e)
+    console.error('[SiteTimeline.vue] loadMore error:', e)
     done('error')
   }
 }

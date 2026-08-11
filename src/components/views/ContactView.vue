@@ -1,45 +1,60 @@
 <template>
-  <!-- フィードバック導線を案内する静的ページ。アプリ名とバージョンは設定 JSON から表示します。 -->
-  <div class="contact">
-    <div class="contactBoddy">
-      <h1>{{ AppConfig.appName }} v{{ AppConfig.version }}</h1>
-      <p>官公庁ウェブサイトから新着情報を収集し、ライムライン形式でまとめるサイトです。</p>
-      <p>詳しくは、本ウェブサイトコードのレポジトリ<a
-          href="https://github.com/SabaNoMisoni1123/webscraper_tl">https://github.com/SabaNoMisoni1123/webscraper_tl</a>をご参照ください。
-      </p>
-      <h2>アンケートのご依頼</h2>
-      <p>下記のMCUナレッジシェアのメール内容や近藤さんツールにつきまして、ご意見・ご要望などございましたらご記入いただけますと幸いです。</p>
-      <p>なお、ご質問やフィードバックのため、担当者からご連絡させていただく場合がございます。そのため、お名前を自動的に収集することご容赦ください。収集したお名前は<u>担当者のみ</u>が確認いたします。</p>
-      <br>
-      <p>何卒よろしくお願いいたします。</p>
-      <br>
-      <p>MCUナレッジシェア担当（MC3安部・近藤）</p>
-      <br>
-      <p>アンケートURL: <a href="https://forms.office.com/r/FHCs8pHmi8">https://forms.office.com/r/FHCs8pHmi8</a></p>
+  <v-container class="content-page h-100 py-6" fluid>
+    <div class="content-page__inner">
+      <header class="mb-6">
+        <h1 class="text-h5 mb-2">{{ AppConfig.appName }} v{{ AppConfig.version }}</h1>
+        <p class="text-body-1">官公庁ウェブサイトから新着情報を収集し、タイムライン形式でまとめるサイトです。</p>
+      </header>
+
+      <v-divider class="mb-6" />
+
+      <section aria-labelledby="repository-heading" class="mb-8">
+        <h2 id="repository-heading" class="text-h6 mb-3">リポジトリ</h2>
+        <v-btn
+          href="https://github.com/SabaNoMisoni1123/webscraper_tl"
+          prepend-icon="mdi-github"
+          rel="noopener noreferrer"
+          target="_blank"
+          variant="outlined"
+        >
+          GitHub でコードを確認
+        </v-btn>
+      </section>
+
+      <section aria-labelledby="survey-heading">
+        <h2 id="survey-heading" class="text-h6 mb-3">アンケートのご依頼</h2>
+        <p class="text-body-1 mb-3">
+          MCUナレッジシェアのメール内容や近藤さんツールについて、ご意見・ご要望をご記入ください。
+        </p>
+        <p class="text-body-2 mb-3">
+          ご質問やフィードバックのため、担当者からご連絡する場合があります。お名前は担当者のみが確認します。
+        </p>
+        <p class="text-body-2 mb-5">MCUナレッジシェア担当（MC3安部・近藤）</p>
+        <v-btn
+          color="primary"
+          href="https://forms.office.com/r/FHCs8pHmi8"
+          prepend-icon="mdi-form-select"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          アンケートを開く
+        </v-btn>
+      </section>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-// 表示文言内のアプリ名・バージョンを AppConfig に合わせます。
-import AppConfig from '@/assets/AppConfig.json';
+import AppConfig from '@/assets/AppConfig.json'
 </script>
 
-<style>
-.contact {
-  width: 90vw;
-  white-space: normal;
-  padding: 10pt;
+<style scoped>
+.content-page {
+  overflow-y: auto;
 }
 
-.contactBoddy {
-  width: 70vw;
-  margin-right: auto;
-  margin-left: auto;
-  margin-bottom: 30pt;
-}
-
-.contactBoddy h2 {
-  margin-top: 20pt;
+.content-page__inner {
+  width: min(100%, 800px);
+  margin: 0 auto;
 }
 </style>

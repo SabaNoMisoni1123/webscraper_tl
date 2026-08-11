@@ -40,21 +40,16 @@
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  articleDescription?: string
-  // 旧コンポーネント由来の typo 名。呼び出し側の互換性のため一時的に受けます。
-  articleDesctiption?: string
+  articleDescription: string
   articleSource: string
   articleUrl: string
   articleEpoch: number
   showBar?: boolean
 }>(), {
-  articleDescription: '',
-  articleDesctiption: '',
   showBar: false,
 })
 
-// 正式名を優先し、旧 typo props しか渡されない場合も表示できるようにします。
-const articleDescriptionText = computed(() => props.articleDescription || props.articleDesctiption)
+const articleDescriptionText = computed(() => props.articleDescription)
 
 const dateFromEpoch = computed(() => {
   const date = new Date(0)
