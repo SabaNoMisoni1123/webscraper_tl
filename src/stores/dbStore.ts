@@ -1,3 +1,5 @@
+// 旧系ストア: スクレイプ対象サイトのメタ情報と DB メタ情報をまとめて扱います。
+// 現行主要画面では siteStore/dbMetaStore へ分割済みですが、旧 UI 互換のため残しています。
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { db } from '@/firebase'
@@ -154,10 +156,10 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
         const site = doc.data() as DbSiteData;
 
         // 新規追加
-        siteData.value[site.id] = {
+        newSiteData[site.id] = {
           "name": site.name,
           "url": site.url,
-          "weight": Object.keys(siteData.value).length,
+          "weight": Object.keys(newSiteData).length,
           "color": 0,
           "isShow": true,
           "valid": true,
@@ -172,6 +174,8 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
     } catch (error) {
       console.error("Error fetching documents: ", error);
       console.log("データベースにアクセスできなかったため、サイト情報を更新できませんでした。");
+    } finally {
+      isLoadingSiteData.value = false;
     }
   };
 
@@ -188,7 +192,9 @@ export const useDbDataStore = defineStore('dbDataStore', () => {
         v.weight = v.weight + weightPreset.order.length + 10;
       }
       for (const item of weightPreset.order) {
-        siteData.value[item.id].weight = item.weight;
+        if (siteData.value[item.id]) {
+          siteData.value[item.id].weight = item.weight;
+        }
       }
       reweighSiteData();
     }

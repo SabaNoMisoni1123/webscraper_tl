@@ -1,131 +1,81 @@
 <template>
-  <div class="timeline" :style="styles">
-    <TLTitleBar :tl-title="tlTitle" :style="styles" />
-    <div class="tlItemList">
-      <ArticleItem v-for="item in showArticles" :article-source="item!.org" :article-description="item!.title"
-        :article-url="item!.url" :article-epoch="item!.epoch" :tl-title="site.name" :show-bar="props.showBar" />
-    </div>
-    <div class="tlFooter">
-    </div>
-  </div>
+  <!-- 設定に従って全サイト横断の新規情報を表示するタイムライン列。 -->
+  <TimelineColumnFrame title="新規情報" :scroll="hasNewsArticles">
+    <template #append>
+      <v-chip size="small" variant="tonal">{{ rangeLabel }}</v-chip>
+    </template>
+
+    <template #status>
+      <v-progress-linear v-if="isLoading" indeterminate />
+    </template>
+
+    <TimelineEmptyState
+      v-if="targetSiteIds.length === 0"
+      icon="mdi-newspaper-variant-outline"
+      title="表示対象の情報源がありません"
+    />
+
+    <TimelineEmptyState
+      v-else-if="!isLoading && !hasNewsArticles"
+      icon="mdi-newspaper-variant-outline"
+      title="新規情報はありません"
+    />
+
+    <ArticleStack v-else :articles="newsArticles" show-source />
+  </TimelineColumnFrame>
 </template>
 
-
 <script setup lang="ts">
-import TLTitleBar from '@/components/atoms/bar/TLTitleBar.vue';
-import ArticleItem from '@/components/molecules/ArticleItemNoButton.vue';
-import ColorPallet from '@/assets/ColorPallet.json'
+import { computed, watch } from 'vue'
 
-import { computed } from 'vue'
+import TimelineEmptyState from '@/components/atoms/TimelineEmptyState.vue'
+import ArticleStack from '@/components/molecules/ArticleStack.vue'
+import TimelineColumnFrame from '@/components/molecules/TimelineColumnFrame.vue'
+import { useAppState } from '@/stores/appState'
+import { useSiteStore } from '@/stores/siteStore'
+import { useTimelineStore, type ArticleData } from '@/stores/timelineStore'
 
-import { useWsDataStore, type ArticleData } from '@/stores/wsStore';
-import { useDbDataStore } from '@/stores/dbStore';
+const props = defineProps<{
+  dbTimestamp: number
+}>()
 
-const props = defineProps({
-  tlTitle: {
-    type: String,
-    default: "",
+const appState = useAppState()
+const sites = useSiteStore()
+const timeline = useTimelineStore()
+
+const targetSiteIds = computed(() => {
+  const configured = appState.newsSiteIds.length > 0 ? appState.newsSiteIds : sites.sortedIds
+  return configured.filter(id => Boolean(sites.siteData[id]))
+})
+
+const sinceEpoch = computed(() => {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  start.setDate(start.getDate() - (appState.newsDays - 1))
+  return Math.floor(start.getTime() / 1000)
+})
+
+const rangeLabel = computed(() => {
+  return appState.newsDays === 1 ? '当日分' : `${appState.newsDays}日分`
+})
+
+const isLoading = computed(() =>
+  targetSiteIds.value.some(id => timeline.recentBuckets[id]?.loading)
+)
+
+const newsArticles = computed<ArticleData[]>(() => {
+  const articles = targetSiteIds.value.flatMap(id => timeline.recentBuckets[id]?.scraped ?? [])
+  return [...articles].sort((a, b) => b.epoch - a.epoch)
+})
+
+const hasNewsArticles = computed(() => newsArticles.value.length > 0)
+
+watch(
+  [targetSiteIds, sinceEpoch, () => props.dbTimestamp],
+  async ([ids, since, ts]) => {
+    if (!Number.isFinite(ts)) return
+    await Promise.all(ids.map(id => timeline.loadRecent(id, ts, since)))
   },
-  showBar: {
-    type: Boolean,
-    default: false,
-  },
-  lastEpoch: {
-    type: Number,
-    default: -1,
-  }
-})
-
-// store
-const dbData = useDbDataStore();
-const wsData = useWsDataStore();
-
-// siteData
-const site = dbData.defaultSiteData;
-
-const tlTitle = computed(() => {
-  if (props.tlTitle == "") {
-    return site.name;
-  } else {
-    return props.tlTitle;
-  }
-})
-
-const bgList = [
-  ColorPallet.blue1,
-  ColorPallet.red1,
-  ColorPallet.yellow1,
-  ColorPallet.green1,
-  ColorPallet.gray1,
-];
-
-// 表示記事
-const showArticles = computed(() => {
-  let articles = [] as Array<ArticleData>;
-  for (const k of dbData.getSortedSiteDataIdFiltered) {
-    articles = [...articles, ...wsData.tlData[k]["scrapedData"]]
-  }
-
-  // エポック時でフィルタ
-  if (articles.length > 0) {
-    articles = articles.filter((e) => {
-      return e.epoch >= props.lastEpoch;
-    })
-  }
-
-  return articles;
-})
-
-const styles = computed(() => {
-  return {
-    "--tl-background-color": bgList[site.color % bgList.length]
-  }
-})
-
+  { immediate: true }
+)
 </script>
-
-<style scoped>
-.timeline {
-  margin-right: 2pt;
-  display: inline-block;
-  vertical-align: top;
-  width: max(200pt, 20vw);
-  height: 90vh;
-  white-space: normal;
-}
-
-.tlItemList {
-  background: var(--tl-background-color);
-  padding: 2pt;
-  height: 90%;
-
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.tlItemList::-webkit-scrollbar {
-  display: none;
-}
-
-.tlFooter {
-  height: 5pt;
-  background: var(--tl-background-color);
-}
-
-.loadingMsg {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
-}
-
-.noDataState {
-  color: white;
-  padding: 2pt 15pt;
-  margin: 0pt;
-  text-align: left;
-  font-weight: bold;
-}
-</style>

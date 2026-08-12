@@ -1,79 +1,106 @@
 <template>
-  <div class="articleItem">
-    <ItemTitleBar :item-title="props.articleSource"></ItemTitleBar>
-    <ItemBox :item-string="props.articleDesctiption"></ItemBox>
-    <div class="itemFooter">
-      <a :href="props.articleUrl">Link</a>
-      <p>{{ dateEpoch.getFullYear() }}年{{ dateEpoch.getMonth() + 1 }}月{{ dateEpoch.getDate() }}日</p>
-      <FlagButton v-model:flag-value="flag" :width="15" :height="15" />
-      <GoodButton v-model:good-value="good" :width="15" :height="15" />
-    </div>
+  <!-- 現行 Vuetify 版の記事カード。全タイムラインで同じ情報密度と操作位置に揃えます。 -->
+  <v-card class="article-item" variant="outlined">
+    <v-toolbar
+      v-if="showBar"
+      :title="articleSource"
+      class="article-item__source"
+      density="compact"
+    />
 
-  </div>
+    <v-card-text class="article-item__body">
+      {{ articleDescriptionText }}
+    </v-card-text>
+
+    <v-card-actions class="article-item__actions">
+      <span class="article-item__date">{{ formattedDate }}</span>
+      <v-spacer />
+      <v-btn
+        aria-label="記事タイトルとURLをコピー"
+        icon="mdi-content-copy"
+        size="small"
+        variant="text"
+        @click="copyText"
+      />
+      <v-btn
+        :href="articleUrl"
+        aria-label="記事を別タブで開く"
+        icon="mdi-open-in-new"
+        rel="noopener noreferrer"
+        size="small"
+        target="_blank"
+        variant="text"
+      />
+    </v-card-actions>
+  </v-card>
 </template>
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ItemTitleBar from "@/components/atoms/bar/ItemTitleBar.vue"
-import ItemBox from "@/components/atoms/box/ItemBox.vue"
-import GoodButton from "@/components/atoms/button/GoodButton.vue"
-import FlagButton from "@/components/atoms/button/FlagButton.vue"
+import { computed } from 'vue'
 
-const good = ref(false)
-const flag = ref(0)
-
-const props = defineProps({
-  articleDesctiption: {
-    type: String,
-    required: true
-  },
-  articleSource: {
-    type: String,
-    required: true
-  },
-  articleUrl: {
-    type: String,
-    required: true
-  },
-  articleEpoch: {
-    type: Number,
-    required: true
-  }
-
+const props = withDefaults(defineProps<{
+  articleDescription: string
+  articleSource: string
+  articleUrl: string
+  articleEpoch: number
+  showBar?: boolean
+}>(), {
+  showBar: false,
 })
 
-const dateEpoch = ref(new Date(0))
-dateEpoch.value.setSeconds(props.articleEpoch.valueOf())
+const articleDescriptionText = computed(() => props.articleDescription)
+
+const dateFromEpoch = computed(() => {
+  const date = new Date(0)
+  date.setSeconds(props.articleEpoch.valueOf())
+  return date
+})
+
+const formattedDate = computed(() => {
+  const date = dateFromEpoch.value
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+})
+
+async function copyText() {
+  try {
+    // タイトルと URL を改行区切りにして、チャットやメールへ貼り付けやすい形式にします。
+    await navigator.clipboard.writeText(`${articleDescriptionText.value}\n${props.articleUrl}`)
+  } catch (error) {
+    console.error('テキストのコピーに失敗しました。', error)
+  }
+}
 
 </script>
 
 <style scoped>
-.articleItem {
-  margin-bottom: 5pt;
+.article-item {
+  /* カード外側の余白を調整する場合は margin を追加します。
+     例: margin: 0 0 8px 0; は上 0 / 右 0 / 下 8px / 左 0。 */
+  --article-item-inline-padding: 16px;
+
+  overflow: hidden;
 }
 
-.itemFooter {
-  margin: 0pt;
-  background: #E6E6E6;
-  text-align: right;
+.article-item__source {
+  font-size: 1.0rem;
 }
 
-.itemFooter p {
-  color: black;
-  margin-left: 10pt;
-  margin-right: 10pt;
-  margin-top: 0pt;
-  margin-bottom: 2pt;
-  display: inline-block;
+.article-item__body {
+  color: rgba(var(--v-theme-on-surface), 1);
+  line-height: 1.2;
+  padding: 16px var(--article-item-inline-padding) 8px;
+  overflow-wrap: anywhere;
 }
 
-.itemFooter a {
-  float: left;
-  margin-left: 10pt;
-  margin-right: 10pt;
-  margin-top: 0pt;
-  margin-bottom: 2pt;
+.article-item__actions {
+  min-height: 40px;
+  padding: 0 8px 0 var(--article-item-inline-padding);
+}
+
+.article-item__date {
+  color: rgba(var(--v-theme-on-surface), 1.0);
+  font-size: 1.0rem;
+  white-space: nowrap;
 }
 </style>
-

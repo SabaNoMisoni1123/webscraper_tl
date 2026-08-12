@@ -1,4 +1,16 @@
 /* color palette from <https://github.com/vuejs/theme> */
+
+/* 既存のリセット/タイポグラフィはそのまま。以下を追加 */
+
+/* アプリ全体で使う寸法変数（後から一箇所で調整できる） */
+:root {
+  /* AppBar / Footer の高さ：モバイル~デスクトップでなめらかに変化 */
+  --appbar-h: clamp(56px, 10vh, 96px);
+  --footer-h: clamp(40px, 5vh, 72px);
+
+  --vh: 100dvh;
+}
+
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -36,6 +48,10 @@
   --section-gap: 160px;
 }
 
+/* できればここで Normalize/Reset（既にあればOK） */
+/* body, html の最小高さなどもベースで */
+html, body, #app { height: 100dvh; }
+
 /* @media (prefers-color-scheme: dark) { */
 /*   :root { */
 /*     --color-background: var(--vt-c-black); */
@@ -59,7 +75,7 @@
 }
 
 body {
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--color-text);
   background: var(--color-background);
   transition:
